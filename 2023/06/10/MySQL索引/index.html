@@ -1,0 +1,1289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="keywords" content="Hexo Theme Redefine">
+    
+    <meta name="author" content="MinGe">
+    <!-- preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    
+    <!--- Seo Part-->
+    
+    <link rel="canonical" href="http://example.com/2023/06/10/mysql索引/"/>
+    <meta name="robots" content="index,follow">
+    <meta name="googlebot" content="index,follow">
+    <meta name="revisit-after" content="1 days">
+    
+        <meta name="description" content="索引1.1 索引概述索引是帮助数据库快速查询数据的一种数据结构，在数据库中，数据库系统除了存储数据之外还维护着一种特殊的数据结构，这种数据结构以某种方式指向数据，这样就可以在这种数据结构上实现高级算法来查询数据，这种数据结构就是索引。  索引示意图：   如图所示，索引能够帮我们快速的定位到数据的具体位置，高效查询。一般来说，索引本身也很大，不可能全部存储在内存当中，因此索引往往以索引文件的形式存">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MySQL索引">
+<meta property="og:url" content="http://example.com/2023/06/10/MySQL%E7%B4%A2%E5%BC%95/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="索引1.1 索引概述索引是帮助数据库快速查询数据的一种数据结构，在数据库中，数据库系统除了存储数据之外还维护着一种特殊的数据结构，这种数据结构以某种方式指向数据，这样就可以在这种数据结构上实现高级算法来查询数据，这种数据结构就是索引。  索引示意图：   如图所示，索引能够帮我们快速的定位到数据的具体位置，高效查询。一般来说，索引本身也很大，不可能全部存储在内存当中，因此索引往往以索引文件的形式存">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/images/MySQL%E7%B4%A2%E5%BC%95/1.png">
+<meta property="og:image" content="http://example.com/images/MySQL%E7%B4%A2%E5%BC%95/100.png">
+<meta property="og:image" content="http://example.com/images/MySQL%E7%B4%A2%E5%BC%95/98.png">
+<meta property="og:image" content="http://example.com/images/MySQL%E7%B4%A2%E5%BC%95/95.png">
+<meta property="og:image" content="http://example.com/images/MySQL%E7%B4%A2%E5%BC%95/60.png">
+<meta property="og:image" content="http://example.com/images/MySQL%E7%B4%A2%E5%BC%95/94.png">
+<meta property="og:image" content="http://example.com/images/MySQL%E7%B4%A2%E5%BC%95/93.png">
+<meta property="og:image" content="http://example.com/images/MySQL%E7%B4%A2%E5%BC%95/92.png">
+<meta property="og:image" content="http://example.com/images/MySQL%E7%B4%A2%E5%BC%95/91.png">
+<meta property="og:image" content="http://example.com/images/MySQL%E7%B4%A2%E5%BC%95/90.png">
+<meta property="og:image" content="http://example.com/images/MySQL%E7%B4%A2%E5%BC%95/200.png">
+<meta property="og:image" content="http://example.com/images/MySQL%E7%B4%A2%E5%BC%95/199.png">
+<meta property="og:image" content="http://example.com/images/MySQL%E7%B4%A2%E5%BC%95/198.png">
+<meta property="og:image" content="http://example.com/images/MySQL%E7%B4%A2%E5%BC%95/197.png">
+<meta property="og:image" content="http://example.com/images/MySQL%E7%B4%A2%E5%BC%95/196.png">
+<meta property="og:image" content="http://example.com/images/MySQL%E7%B4%A2%E5%BC%95/195.png">
+<meta property="og:image" content="http://example.com/images/MySQL%E7%B4%A2%E5%BC%95/194.png">
+<meta property="og:image" content="http://example.com/images/MySQL%E7%B4%A2%E5%BC%95/192.png">
+<meta property="og:image" content="http://example.com/images/MySQL%E7%B4%A2%E5%BC%95/193.png">
+<meta property="og:image" content="http://example.com/images/MySQL%E7%B4%A2%E5%BC%95/191.png">
+<meta property="og:image" content="http://example.com/images/MySQL%E7%B4%A2%E5%BC%95/190.png">
+<meta property="og:image" content="http://example.com/images/MySQL%E7%B4%A2%E5%BC%95/189.png">
+<meta property="og:image" content="http://example.com/images/MySQL%E7%B4%A2%E5%BC%95/188.png">
+<meta property="og:image" content="http://example.com/images/MySQL%E7%B4%A2%E5%BC%95/187.png">
+<meta property="og:image" content="http://example.com/images/MySQL%E7%B4%A2%E5%BC%95/186.png">
+<meta property="og:image" content="http://example.com/images/MySQL%E7%B4%A2%E5%BC%95/185.png">
+<meta property="og:image" content="http://example.com/images/MySQL%E7%B4%A2%E5%BC%95/158.png">
+<meta property="article:published_time" content="2023-06-10T01:11:00.000Z">
+<meta property="article:modified_time" content="2024-11-11T06:06:23.906Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="数据库">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/images/MySQL%E7%B4%A2%E5%BC%95/1.png">
+    
+    
+    <!--- Icon Part-->
+    <link rel="icon" type="image/png" href="/images/redefine-favicon.svg" sizes="192x192">
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/redefine-favicon.svg">
+    <meta name="theme-color" content="#A31F34">
+    <link rel="shortcut icon" href="/images/redefine-favicon.svg">
+    <!--- Page Info-->
+    
+    <title>
+        
+            MySQL索引 -
+        
+        MinGe 博客
+    </title>
+
+    
+<link rel="stylesheet" href="/fonts/Chillax/chillax.css">
+
+
+    <!--- Inject Part-->
+    
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+    
+        
+<link rel="stylesheet" href="/assets/build/styles.css">
+
+    
+
+    
+<link rel="stylesheet" href="/fonts/GeistMono/geist-mono.css">
+
+    
+<link rel="stylesheet" href="/fonts/Geist/geist.css">
+
+    <!--- Font Part-->
+    
+    
+    
+    
+    
+    
+
+    <script id="hexo-configurations">
+    window.config = {"hostname":"example.com","root":"/","language":"en"};
+    window.theme = {"articles":{"style":{"font_size":"16px","line_height":1.5,"image_border_radius":"14px","image_alignment":"center","image_caption":false,"link_icon":true,"title_alignment":"left","headings_top_spacing":{"h1":"3.2rem","h2":"2.4rem","h3":"1.9rem","h4":"1.6rem","h5":"1.4rem","h6":"1.3rem"}},"word_count":{"enable":true,"count":true,"min2read":true},"author_label":{"enable":true,"auto":false,"list":[]},"code_block":{"copy":true,"style":"mac","highlight_theme":{"light":"github","dark":"vs2015"},"font":{"enable":false,"family":null,"url":null}},"toc":{"enable":true,"max_depth":3,"number":false,"expand":true,"init_open":true},"copyright":{"enable":true,"default":"cc_by_nc_sa"},"lazyload":true,"recommendation":{"enable":false,"title":"推荐阅读","limit":3,"mobile_limit":2,"placeholder":"/images/wallhaven-wqery6-light.webp","skip_dirs":[]}},"colors":{"primary":"#A31F34","secondary":null,"default_mode":"dark"},"global":{"fonts":{"chinese":{"enable":false,"family":null,"url":null},"english":{"enable":false,"family":null,"url":null},"title":{"enable":false,"family":null,"url":null}},"content_max_width":"1000px","sidebar_width":"210px","hover":{"shadow":true,"scale":false},"scroll_progress":{"bar":false,"percentage":true},"website_counter":{"url":"https://cn.vercount.one/js","enable":false,"site_pv":true,"site_uv":true,"post_pv":true},"single_page":true,"preloader":{"enable":false,"custom_message":null},"open_graph":true,"google_analytics":{"enable":false,"id":null}},"home_banner":{"enable":true,"style":"fixed","image":{"light":"/images/wallhaven-wqery6-light.webp","dark":"/images/wallhaven-wqery6-dark.webp"},"title":"MinGe 博客","subtitle":{"text":[],"hitokoto":{"enable":false,"show_author":false,"api":"https://v1.hitokoto.cn"},"typing_speed":100,"backing_speed":80,"starting_delay":500,"backing_delay":1500,"loop":true,"smart_backspace":true},"text_color":{"light":"#fff","dark":"#d1d1b6"},"text_style":{"title_size":"2.8rem","subtitle_size":"1.5rem","line_height":1.2},"custom_font":{"enable":false,"family":null,"url":null},"social_links":{"enable":false,"style":"default","links":{"github":null,"instagram":null,"zhihu":null,"twitter":null,"email":null},"qrs":{"weixin":null}}},"plugins":{"feed":{"enable":false},"aplayer":{"enable":false,"type":"fixed","audios":[{"name":null,"artist":null,"url":null,"cover":null,"lrc":null}]},"mermaid":{"enable":false,"version":"9.3.0"}},"version":"2.7.1","navbar":{"auto_hide":false,"color":{"left":"#f78736","right":"#367df7","transparency":35},"width":{"home":"1200px","pages":"1000px"},"links":{"Home":{"path":"/","icon":"fa-regular fa-house"},"resume":{"path":"/2024/10/01/minge/","icon":"fa-regular"}},"search":{"enable":false,"preload":true}},"page_templates":{"friends_column":2,"tags_style":"blur"},"home":{"sidebar":{"enable":true,"position":"left","first_item":"menu","announcement":null,"show_on_mobile":true,"links":{"Archives":{"path":"/archives","icon":"fa-regular fa-archive"},"Tags":{"path":"/tags","icon":"fa-regular fa-tags"},"Categories":{"path":"/categories","icon":"fa-regular fa-folder"}}},"article_date_format":"auto","excerpt_length":200,"categories":{"enable":true,"limit":3},"tags":{"enable":true,"limit":3}},"footerStart":"2022/09/25 08:00:00"};
+    window.lang_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"};
+    window.data = {"masonry":false};
+  </script>
+    
+    <!--- Fontawesome Part-->
+    
+<link rel="stylesheet" href="/fontawesome/fontawesome.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/brands.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/solid.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/regular.min.css">
+
+    
+    
+    
+    
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+
+    
+        <span class="pjax-progress-bar"></span>
+<!--        <span class="swup-progress-icon">-->
+<!--            <i class="fa-solid fa-circle-notch fa-spin"></i>-->
+<!--        </span>-->
+    
+</div>
+
+
+
+<main class="page-container" id="swup">
+
+    
+
+    <div class="main-content-container">
+
+
+        <div class="main-content-header">
+            <header class="navbar-container px-6 md:px-12">
+
+    <div class="navbar-content ">
+        <div class="left">
+            
+            <a class="logo-title" href="/">
+                
+                MinGe 博客
+                
+            </a>
+        </div>
+
+        <div class="right">
+            <!-- PC -->
+            <div class="desktop">
+                <ul class="navbar-list">
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/"
+                                        >
+                                    <i class="fa-regular fa-house fa-fw"></i>
+                                    HOME
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/2024/10/01/minge/"
+                                        >
+                                    <i class="fa-regular fa-fw"></i>
+                                    RESUME
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                    
+                </ul>
+            </div>
+            <!-- Mobile -->
+            <div class="mobile">
+                
+                <div class="icon-item navbar-bar">
+                    <div class="navbar-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile sheet -->
+    <div class="navbar-drawer h-screen w-full absolute top-0 left-0 bg-background-color flex flex-col justify-between">
+        <ul class="drawer-navbar-list flex flex-col px-4 justify-center items-start">
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/"
+                        >
+                            <span>
+                                HOME
+                            </span>
+                            
+                                <i class="fa-regular fa-house fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/2024/10/01/minge/"
+                        >
+                            <span>
+                                RESUME
+                            </span>
+                            
+                                <i class="fa-regular fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+
+            
+            
+                
+                    
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full active"
+                           href="/archives"
+                        >
+                            <span>Archives</span>
+                            <i class="fa-regular fa-archive fa-sm fa-fw"></i>
+                        </a>
+                    </li>
+                
+                    
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full active"
+                           href="/tags"
+                        >
+                            <span>Tags</span>
+                            <i class="fa-regular fa-tags fa-sm fa-fw"></i>
+                        </a>
+                    </li>
+                
+                    
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full active"
+                           href="/categories"
+                        >
+                            <span>Categories</span>
+                            <i class="fa-regular fa-folder fa-sm fa-fw"></i>
+                        </a>
+                    </li>
+                
+            
+        </ul>
+
+        <div class="statistics flex justify-around my-2.5">
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/tags">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">3</div>
+        <div class="label text-third-text-color text-sm">Tags</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/categories">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">2</div>
+        <div class="label text-third-text-color text-sm">Categories</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">19</div>
+        <div class="label text-third-text-color text-sm">Posts</div>
+    </a>
+</div>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="main-content-body">
+
+            
+
+            <div class="main-content">
+
+                
+                    <div class="post-page-container flex relative justify-between box-border w-full h-full">
+    <div class="article-content-container">
+
+        <div class="article-title relative w-full">
+            
+                <div class="w-full flex items-center pt-6 justify-start">
+                    <h1 class="article-title-regular text-second-text-color tracking-tight text-4xl md:text-6xl font-semibold px-2 sm:px-6 md:px-8 py-3">MySQL索引</h1>
+                </div>
+            
+            </div>
+
+        
+            <div class="article-header flex flex-row gap-2 items-center px-2 sm:px-6 md:px-8">
+                <div class="avatar w-[46px] h-[46px] flex-shrink-0 rounded-medium border border-border-color p-[1px]">
+                    <img src="/images/redefine-avatar.svg">
+                </div>
+                <div class="info flex flex-col justify-between">
+                    <div class="author flex items-center">
+                        <span class="name text-default-text-color text-lg font-semibold">MinGe</span>
+                        
+                            <span class="author-label ml-1.5 text-xs px-2 py-0.5 rounded-small text-third-text-color border border-shadow-color-1">Lv3</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fa-regular fa-pen-fancy"></i>&nbsp;
+        <span class="desktop">2023-06-10 09:11</span>
+        <span class="mobile">2023-06-10 09:11</span>
+        <span class="hover-info">Created</span>
+    </span>
+    
+        <span class="article-date article-meta-item">
+            <i class="fa-regular fa-wrench"></i>&nbsp;
+            <span class="desktop">2024-11-11 14:06:23</span>
+            <span class="mobile">2024-11-11 14:06:23</span>
+            <span class="hover-info">Updated</span>
+        </span>
+    
+
+    
+        <span class="article-categories article-meta-item">
+            <i class="fa-regular fa-folders"></i>&nbsp;
+            <ul>
+                
+                
+                    
+                        
+                        <li>
+                            <a href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>&nbsp;
+                        </li>
+                    
+                    
+                
+            </ul>
+        </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fa-regular fa-tags"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+    
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        
+
+
+        <div class="article-content markdown-body px-2 sm:px-6 md:px-8 pb-8">
+            <h1 id="索引"><a href="#索引" class="headerlink" title="索引"></a>索引</h1><h2 id="1-1-索引概述"><a href="#1-1-索引概述" class="headerlink" title="1.1 索引概述"></a>1.1 索引概述</h2><p>索引是帮助数据库快速查询数据的一种<strong>数据结构</strong>，在数据库中，数据库系统除了存储数据之外还维护着一种特殊的数据结构，这种数据结构以某种方式指向数据，这样就可以在这种数据结构上实现高级算法来查询数据，这种数据结构就是索引。</p>
+<ul>
+<li>索引示意图：</li>
+</ul>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/MySQL%E7%B4%A2%E5%BC%95/1.png"
+                     
+                ></p>
+<p>如图所示，索引能够帮我们快速的定位到数据的具体位置，高效查询。一般来说，索引本身也很大，不可能全部存储在内存当中，因此索引往往以索引文件的形式存储在磁盘上。索引是用来提供高性能数据库的常用工具。</p>
+<h2 id="1-2-索引的优缺点"><a href="#1-2-索引的优缺点" class="headerlink" title="1.2 索引的优缺点"></a>1.2 索引的优缺点</h2><ul>
+<li>优点</li>
+</ul>
+<p>1） 类似于书籍的目录索引，提高数据检索的效率，降低数据库的IO成本。</p>
+<p>2） 通过索引列对数据进行排序，降低数据排序的成本，降低CPU的消耗。</p>
+<ul>
+<li>缺点</li>
+</ul>
+<p>1） <strong>实际上索引也是一张表</strong>，该表中保存了主键与索引字段，并指向实体类的记录，所以索引列也是要占用空的。</p>
+<p>2）索引虽然大大提升了查询效率，但同时也降低了更新表的速度，如果对表进行了insert&#x2F;update&#x2F;delete等语句时，数据库不仅要保存数据，还需更新索引文件，每次更新添加了索引列的字段，都会调整索引的结构。</p>
+<h2 id="1-3-索引的类型"><a href="#1-3-索引的类型" class="headerlink" title="1.3 索引的类型"></a>1.3 索引的类型</h2><p>索引是在MySQL的存储引擎层中实现的，而不是在服务器层实现的。所以每种存储引擎的索引都不一定完全相同，也不是所有的存储引擎都支持所有的索引类型的。</p>
+<h3 id="1-3-1-数据结构角度"><a href="#1-3-1-数据结构角度" class="headerlink" title="1.3.1 数据结构角度"></a>1.3.1 数据结构角度</h3><ul>
+<li>B-Tree：常见的索引类型，B+Tree就是在此数据结构上做的优化</li>
+<li>Hash：是基于哈希表实现的，只有精确匹配索引所有列的查询才会生效。对于每一行数据，存储引擎都会对所有的索引列计算一个hash code,并将有的hash code存储在索引中，同时在哈希表中保存指向每个数据行的指针。</li>
+<li>R-Tree：R-Tree是B-Tree在高维空间的扩展，也叫空间索引，主要用于地理空间数据类型，存储高维数据的平衡树。</li>
+<li>Full-text：Full-text索引就是我们常说的全文索引，类似于Lucene的文本全文检索技术，比like要高效许多。</li>
+</ul>
+<p>MyISAM、InnoDB、Memory三种存储引擎对各种索引类型的支持</p>
+<table>
+<thead>
+<tr>
+<th>索引</th>
+<th>InnoDB</th>
+<th>MyISAM</th>
+<th>Memory</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>B-Tree</td>
+<td>支持</td>
+<td>支持</td>
+<td>支持</td>
+</tr>
+<tr>
+<td>Hash</td>
+<td>不支持</td>
+<td>不支持</td>
+<td>支持</td>
+</tr>
+<tr>
+<td>R-Tree</td>
+<td>不支持</td>
+<td>支持</td>
+<td>不支持</td>
+</tr>
+<tr>
+<td>Full-text</td>
+<td>5.6版本之后支持</td>
+<td>支持</td>
+<td>不支持</td>
+</tr>
+</tbody></table>
+<p>我们平常所说的索引，如果没有特别指明，都是指B+Tree（多路搜索树，并不一定是二叉的）结构组织的索引。其中聚集索引、复合索引、前缀索引、唯一索引默认都是使用 B+Tree 索引，统称为索引。</p>
+<h4 id="1-3-1-1-二叉树"><a href="#1-3-1-1-二叉树" class="headerlink" title="1.3.1.1 二叉树"></a>1.3.1.1 二叉树</h4><p>B+Tree中的B代表平衡（balance），而不是二叉（binary），因为B+Tree是从最早的<strong>平衡二叉树</strong>演化而来的。在讲B+Tree之前必须先了解二叉查找树、平衡二叉树（AVLTree）和平衡多路查找树（B-Tree），B+Tree即由这些树逐步优化而来。</p>
+<blockquote>
+<p>数据结构可视化网址：<a class="link"   target="_blank" rel="noopener" href="https://www.cs.usfca.edu/~galles/visualization/Algorithms.html" >https://www.cs.usfca.edu/~galles/visualization/Algorithms.html <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+</blockquote>
+<ul>
+<li>特点：左子树的键值小于右子树的键值。</li>
+</ul>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/MySQL%E7%B4%A2%E5%BC%95/100.png"
+                     
+                ></p>
+<p>对该二叉树的节点进行查找发现深度为1的节点的查找次数为1，深度为2的查找次数为2，深度为n的节点的查找次数为n，因此其平均查找次数为 (1+2+2+3+3+3+3) &#x2F; 7 &#x3D; 2.428次</p>
+<p>二叉查找树可以任意地构造，同样是2,3,5,6,7,8这六个数字，也可以按照下图的方式来构造：</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/MySQL%E7%B4%A2%E5%BC%95/98.png"
+                     
+                ></p>
+<p>计算这颗树的平均查找次数：(1+2+3+4+5+6+6)&#x2F;7&#x3D;3.857次</p>
+<p>这棵二叉树的查询效率明显就低了。因此若想二叉树的查询效率尽可能高，需要这棵二叉树是平衡的，从而引出新的定义——平衡二叉树，或称AVL树。</p>
+<h4 id="1-3-1-2-平衡二叉树"><a href="#1-3-1-2-平衡二叉树" class="headerlink" title="1.3.1.2 平衡二叉树"></a>1.3.1.2 平衡二叉树</h4><p>平衡二叉树（AVL树）在符合二叉查找树的条件下，<strong>还满足任何节点的两个子树的高度最大差为1</strong>。</p>
+<p>我们按照顺序依次插入<code>6,3,7,2,4,1,5</code>数据，观察AVL树与普通二叉树的演变：</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/MySQL%E7%B4%A2%E5%BC%95/95.png"
+                     
+                ></p>
+<h4 id="1-3-1-3-B-Tree"><a href="#1-3-1-3-B-Tree" class="headerlink" title="1.3.1.3 B-Tree"></a>1.3.1.3 B-Tree</h4><p>B-Tree又叫多路<strong>平衡</strong>搜索树，一颗m叉的B-Tree特性如下：</p>
+<ul>
+<li>树中每个节点最多包含m个孩子。</li>
+<li>除根节点与叶子节点外（非根叶子节点），每个节点至少有[ceil(m&#x2F;2)]个孩子。</li>
+<li>若根节点不是叶子节点（说明树的层级最少为2），则至少有两个孩子。</li>
+<li><strong>所有的叶子节点都在同一层。</strong></li>
+<li>每个非叶子节点由n个<strong>key</strong>与n+1个<strong>指针</strong>组成，其中[ceil(m&#x2F;2)-1] &lt;&#x3D; n &lt;&#x3D; m-1</li>
+</ul>
+<p>B-Tree中的每个节点根据实际情况可以包含大量的关键字信息和分支，如下图所示为一个3阶的B-Tree：</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/MySQL%E7%B4%A2%E5%BC%95/60.png"
+                      alt=" "
+                ></p>
+<p><strong>每个节点都会占用一个磁盘块的磁盘空间</strong>，当在数据检索时，会将此磁盘块加载到内存中，<strong>每个非叶子点上都有两个升序排序的键值和三个指向子树的指针</strong>，该指针存储的是子节点所在磁盘块的内存地址</p>
+<p>以磁盘块1为例，假设现在加载了磁盘块1到内存中，我们通过磁盘块的三个指针（P1、P2、P3）就能够判断，<strong>P1指针指向的子树的数据范围为小于26，P2指针指向的子树的数据范围为26~37，P3指针指向的子树的数据范围为大于35</strong>。</p>
+<ul>
+<li><strong>模拟查找关键字21的过程</strong>：</li>
+</ul>
+<p>1）首先加载根节点，根据根节点找到磁盘块1，读入内存。【磁盘I&#x2F;O操作第1次】</p>
+<p>2）发现21比26小，根据磁盘块1中的P1指针找到对应的磁盘2，读入内存。【磁盘I&#x2F;O操作第2次】</p>
+<p>3）发现21比18大，根据磁盘块2中的P3指针找到磁盘块7，读入内存。【磁盘I&#x2F;O操作第3次】</p>
+<p>4）根据磁盘块7中的数据找到21。</p>
+<h4 id="1-3-1-4-B-Tree"><a href="#1-3-1-4-B-Tree" class="headerlink" title="1.3.1.4 B+Tree"></a>1.3.1.4 B+Tree</h4><p>MySQL索引数据结构对经典的B-Tree进行了优化。在原B-Tree的基础上，增加一个指向相邻叶子节点的链表指针，就形成了带有顺序指针的B+Tree，<strong>提高区间访问的性能</strong>。并且B+Tree数据结构将数据全部存储在最底层的叶子节点，<strong>这样可以保证每个磁盘块能够存储更多的指针</strong>，查询数据更广。</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/MySQL%E7%B4%A2%E5%BC%95/94.png"
+                     
+                ></p>
+<p>通常在B+Tree上有两个头指针，一个指向根节点，另一个指向关键字最小的叶子节点，而且所有叶子节点（即数据节点）之间是一种链式环结构。</p>
+<h3 id="1-3-2-InnoDB数据页"><a href="#1-3-2-InnoDB数据页" class="headerlink" title="1.3.2 InnoDB数据页"></a>1.3.2 InnoDB数据页</h3><h4 id="1-3-2-1-操作系统的局部性原理"><a href="#1-3-2-1-操作系统的局部性原理" class="headerlink" title="1.3.2.1 操作系统的局部性原理"></a>1.3.2.1 操作系统的局部性原理</h4><p>我们知道数据最终是存储在磁盘上，当我们要做数据处理时，需要把磁盘中的数据调出到内存中来进行处理，这个过程会产生磁盘的IO（输入输出），由于磁盘IO是非常昂贵的操作，所以计算机操作系统对此做了优化。每一次IO时，不仅仅把当前磁盘地址的数据加载到内存，同时也把相邻数据也加载到内存缓冲区中</p>
+<p>当访问一个地址数据的时候，与其相邻的数据很快也会被访问到。每次磁盘IO读取的数据我们称之为一页（page）。一页的大小与操作系统有关，一般为4k或者8k。这也就意味着读取一页内数据的时候，实际上发生了一次磁盘IO。</p>
+<h4 id="1-3-2-2-InnoDB数据页管理"><a href="#1-3-2-2-InnoDB数据页管理" class="headerlink" title="1.3.2.2 InnoDB数据页管理"></a>1.3.2.2 InnoDB数据页管理</h4><p>在InnoDB中，页是其磁盘管理的最小单位。InnoDB存储引擎中默认每个页的大小为16KB，可通过参数<code>innodb_page_size</code>将页的大小设置为4K、8K、16K，在MySQL中可通过如下命令查看页的大小：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">show</span> variables <span class="keyword">like</span> <span class="string">&#x27;innodb_page_size&#x27;</span>;</span><br></pre></td></tr></table></figure></div>
+
+<p>而系统一个磁盘块的存储空间往往没有这么大，因此InnoDB每次申请磁盘空间时都会是若干地址连续磁盘块来达到页的大小16KB。InnoDB在把磁盘数据读入到磁盘时会以页为基本单位，在查询数据时一个页中的每条数据都能有助于定位数据记录的位置，这将会减少磁盘I&#x2F;O次数，提高查询效率。</p>
+<ul>
+<li>B-Tree：</li>
+</ul>
+<p>B-Tree结构图中可以看到每个节点中不仅包含数据的key值，还有data值。而每一个页的存储空间是有限的，如果data数据较大时将会导致每个节点能存储的key的数量很小，当存储的数据量很大时同样会导致B-Tree的深度较大，增大查询时的磁盘I&#x2F;O次数，进而影响查询效率。</p>
+<ul>
+<li>B+Tree：</li>
+</ul>
+<p>在B+Tree中，所有数据记录节点都是按照键值大小顺序存放在同一层的叶子节点上，而非叶子节点上只存储key值信息，这样可以大大加大每个节点存储的key值数量，降低B+Tree的高度。</p>
+<blockquote>
+<p>Tips：InnoDB存储引擎中页的大小为16KB，一般表的主键类型为INT（占用4个字节）或BIGINT（占用8个字节），指针类型也一般为4或8个字节，也就是说一个页（B+Tree中的一个节点）中大概存储16KB&#x2F;(8B+8B)&#x3D;1K个键值（因为是估值，为方便计算，这里的K取值为<code>10^3</code>）。也就是说一个深度为3的B+Tree索引可以维护10^3 * 10^3 * 10^3 &#x3D; 10亿 条记录。</p>
+</blockquote>
+<h3 id="1-3-3-物理存储角度"><a href="#1-3-3-物理存储角度" class="headerlink" title="1.3.3 物理存储角度"></a>1.3.3 物理存储角度</h3><h4 id="1-3-3-1-聚集索引与非聚集索引"><a href="#1-3-3-1-聚集索引与非聚集索引" class="headerlink" title="1.3.3.1 聚集索引与非聚集索引"></a>1.3.3.1 聚集索引与非聚集索引</h4><p>索引按照物理存储结构划分分为<strong>聚集索引和非聚集索引</strong></p>
+<p><strong>聚集索引：</strong>也叫聚簇索引（ClusterIndex），一般来说是以主键创建的索引，一张表只能有一个聚集索引，<strong>而且只有InnoDB能够创建聚集索引。</strong></p>
+<p><strong>非聚集索引</strong>：也叫普通索引、辅助索引（Secondary Index）、二级索引等，<strong>除了聚集索引外的索引都是非聚集索引。</strong></p>
+<blockquote>
+<p>&#x3D;&#x3D;<strong>聚集索引的B+Tree叶子节点上存储的是整行的数据，而非聚集索引的B+Tree索引树上只会存储当前索引列的数据与主键索引列的数据，并不会存放整行数据，当需要通过非聚集索引去检索一行数据时，首先非聚集索引通过索引树找到主键，然后通过主键去主键建立的B+Tree上查询出整行的数据；</strong>&#x3D;&#x3D; </p>
+</blockquote>
+<ul>
+<li><strong>聚集索引与非聚集索引示意图：</strong></li>
+</ul>
+<img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/MySQL索引/93.png"
+                       
+                >
+
+<blockquote>
+<p>回表查询需要把聚集索引加载进内存，<strong>首先加载的应该是根节点，而不是直接定位到叶子节点</strong></p>
+</blockquote>
+<p>通过上面的索引图我们能够很直观的发现，普通索引（非聚集索引）的查询如果查询到了其他列的数据，那么需要借助主键索引来查询整行的数据，这个过程也称为<strong>回表查询</strong>；</p>
+<h4 id="1-3-3-2-索引组织表"><a href="#1-3-3-2-索引组织表" class="headerlink" title="1.3.3.2 索引组织表"></a>1.3.3.2 索引组织表</h4><p>其实，MySQL中的表的所有的数据都是按照主键排序的方式存储在一颗B+Tree上（InnoDB引擎），这颗B+Tree也叫聚集索引，所以MySQL叫索引组织表（InnoDB引擎）；</p>
+<p>索引组织表的数据按主键排序手段被存储在B+Tree索引中，除了存储主键列值外还存储非主键列的值。普通索引只存储索引列，<strong>索引组织表就是索引（主键索引）存储表的所有列的值</strong></p>
+<blockquote>
+<p>&#x3D;&#x3D;<strong>在MySQL中，聚集索引就是我们看到的表，表就是一颗聚集索引；</strong>&#x3D;&#x3D;</p>
+</blockquote>
+<h4 id="1-3-3-3-聚集索引说明"><a href="#1-3-3-3-聚集索引说明" class="headerlink" title="1.3.3.3 聚集索引说明"></a>1.3.3.3 聚集索引说明</h4><p>&#x3D;&#x3D;<strong>关于聚集索引还有一个定义：数据行的物理排列顺序与该列值（主键）的逻辑顺序相同，并且一个表中只能拥有一个聚集索引；</strong>&#x3D;&#x3D;</p>
+<p>测试表：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">DROP</span> <span class="keyword">TABLE</span> IF <span class="keyword">EXISTS</span> `t_user`;</span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> `t_user`  (</span><br><span class="line">  `id` <span class="type">int</span>(<span class="number">11</span>) <span class="keyword">NOT</span> <span class="keyword">NULL</span>,</span><br><span class="line">  `username` <span class="type">varchar</span>(<span class="number">255</span>) <span class="type">CHARACTER</span> <span class="keyword">SET</span> utf8 <span class="keyword">COLLATE</span> utf8_general_ci <span class="keyword">NULL</span> <span class="keyword">DEFAULT</span> <span class="keyword">NULL</span>,</span><br><span class="line">  `age` <span class="type">int</span>(<span class="number">11</span>) <span class="keyword">NULL</span> <span class="keyword">DEFAULT</span> <span class="keyword">NULL</span>,</span><br><span class="line">  <span class="keyword">PRIMARY</span> KEY (`id`) <span class="keyword">USING</span> BTREE</span><br><span class="line">) ENGINE <span class="operator">=</span> InnoDB <span class="type">CHARACTER</span> <span class="keyword">SET</span> <span class="operator">=</span> utf8 <span class="keyword">COLLATE</span> <span class="operator">=</span> utf8_general_ci ROW_FORMAT <span class="operator">=</span> <span class="keyword">Dynamic</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- ----------------------------</span></span><br><span class="line"><span class="comment">-- Records of t_user</span></span><br><span class="line"><span class="comment">-- ----------------------------</span></span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> `t_user` <span class="keyword">VALUES</span> (<span class="number">1</span>, <span class="string">&#x27;小龙&#x27;</span>, <span class="number">20</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> `t_user` <span class="keyword">VALUES</span> (<span class="number">2</span>, <span class="string">&#x27;小明&#x27;</span>, <span class="number">29</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> `t_user` <span class="keyword">VALUES</span> (<span class="number">3</span>, <span class="string">&#x27;小刚&#x27;</span>, <span class="number">30</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> `t_user` <span class="keyword">VALUES</span> (<span class="number">4</span>, <span class="string">&#x27;小美&#x27;</span>, <span class="number">24</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> `t_user` <span class="keyword">VALUES</span> (<span class="number">5</span>, <span class="string">&#x27;小军&#x27;</span>, <span class="number">26</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> `t_user` <span class="keyword">VALUES</span> (<span class="number">6</span>, <span class="string">&#x27;小龙&#x27;</span>, <span class="number">19</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> `t_user` <span class="keyword">VALUES</span> (<span class="number">7</span>, <span class="string">&#x27;小康&#x27;</span>, <span class="number">25</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> `t_user` <span class="keyword">VALUES</span> (<span class="number">8</span>, <span class="string">&#x27;小红&#x27;</span>, <span class="number">20</span>);</span><br></pre></td></tr></table></figure></div>
+
+<ul>
+<li>什么是”数据行的物理排列顺序”？</li>
+</ul>
+<p><strong>数据行的物理排列顺序就是我们眼睛直观看到的列的排列顺序</strong></p>
+<img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/MySQL索引/92.png"
+                      style="zoom:50%;" 
+                >
+
+<p>一般来说我们主键都是自增的，大小都是从小到大，因此会忽略一个问题：<strong>数据行的物理排列顺序与聚集索引的逻辑排列顺序是保持一致的</strong></p>
+<p>我们把”小军”的ID改为50，重新查看数据库表，发现排列顺序如下：</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/MySQL%E7%B4%A2%E5%BC%95/91.png"
+                     
+                ></p>
+<blockquote>
+<p>发现数据行的物理排列顺序默认是和主键顺序保存一致的；</p>
+</blockquote>
+<p><strong>这也是聚集索引在一张表中只能有一个的原因，为什么呢？因为我数据表的逻辑排列顺序要与聚集索引的排列顺序保持一致！那如果有多个聚集索引我到底跟谁保持一致呢？？</strong></p>
+<p><strong>而且我们知道MySQL是索引组织表的，如果聚集索引有多份，那么数据是否也会存在多份呢？这样存储效率明显下降</strong></p>
+<h4 id="1-3-3-4-MySIAM引擎索引底层实现原理图"><a href="#1-3-3-4-MySIAM引擎索引底层实现原理图" class="headerlink" title="1.3.3.4 MySIAM引擎索引底层实现原理图"></a>1.3.3.4 MySIAM引擎索引底层实现原理图</h4><p>虽然MyISAM和InnoDB的索引底层采用的都是B+Tree数据结构，但MyISAM和InnoDB索引的底层实现稍有不同：</p>
+<img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/MySQL索引/90.png"
+                       
+                >
+
+<blockquote>
+<p><strong>MyISAM没有聚集索引，MyISAM建立的都是普通索引（即使是主键）；</strong></p>
+</blockquote>
+<p>MyISAM引擎是没有聚集索引的，因为MyISAM引擎不属于索引组织表，即有单独的空间存储表数据，表数据并不是和主键建立的B+Tree存储在一起的；<strong>MyISAM表通过任何索引来查询数据都需要回表查询；</strong></p>
+<h4 id="1-3-3-5-InnoDB的主键策略"><a href="#1-3-3-5-InnoDB的主键策略" class="headerlink" title="1.3.3.5 InnoDB的主键策略"></a>1.3.3.5 InnoDB的主键策略</h4><p>我们知道InnoDB表是属于索引组织表，整表的数据都需要根据主键（聚集索引）来排序，并且数据也是存储在主键（聚集索引）的B+Tree上的；那么万一我们在表中没有创建主键（聚集索引）那么怎么办呢？</p>
+<p>&#x3D;&#x3D;<strong>答：InnoDB必须要有且只有一个主键（聚集索引），不能没有主键（聚集索引）</strong>&#x3D;&#x3D;</p>
+<p>主键（聚集索引）对于InnoDB实在是太重要了，InnoDB不能没有他，如果你不创建他会根据规则来选出较为合适的一列来做聚集索引，实在不行他就帮你创建一个隐藏的列作为聚集索引，规则如下：</p>
+<p><strong>（1）如果表定义了主键，则该列就是聚集索引；</strong></p>
+<p><strong>（2）如果表没有定义主键，则第一个<code>not null unique</code>列是聚集索引；</strong></p>
+<p><strong>（3）以上条件都不满足：InnoDB会创建一个隐藏的<code>row-id</code>作为聚集索引；</strong></p>
+<h2 id="1-4-其他索引"><a href="#1-4-其他索引" class="headerlink" title="1.4 其他索引"></a>1.4 其他索引</h2><h3 id="1-4-1-覆盖索引"><a href="#1-4-1-覆盖索引" class="headerlink" title="1.4.1 覆盖索引"></a>1.4.1 覆盖索引</h3><h4 id="1-4-1-1-覆盖索引概念"><a href="#1-4-1-1-覆盖索引概念" class="headerlink" title="1.4.1.1 覆盖索引概念"></a>1.4.1.1 覆盖索引概念</h4><p>覆盖索引（或称索引覆盖）：即从二级索引中就可以得到要查询的记录，而不需要查询聚簇索引中的记录（回表查询），很显然，聚簇索引就是一种覆盖索引，因为聚簇索引中包含了数据行的全部数据，而非聚集索引的话，要看SQL语句查询的列是在索引树上，如果不在则需要回表查询；简单的说就是<strong>查询的列要被所使用的索引覆盖</strong>，换句话说就是<strong>查询的列要在索引树上，不需要回表查询</strong>。</p>
+<h4 id="1-4-1-2-覆盖索引应用"><a href="#1-4-1-2-覆盖索引应用" class="headerlink" title="1.4.1.2 覆盖索引应用"></a>1.4.1.2 覆盖索引应用</h4><p>使用覆盖索引的SQL语句：只需要在一棵索引树上就能获取SQL所需的所有列数据，无需回表，速度更快。</p>
+<p>我们给username列加上索引：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">create</span> index idx_name <span class="keyword">on</span> t_user(username);</span><br></pre></td></tr></table></figure></div>
+
+<ul>
+<li>执行如下SQL：</li>
+</ul>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- username创建的B+Tree上有值（使用了覆盖索引）</span></span><br><span class="line">explain <span class="keyword">select</span> username <span class="keyword">from</span> t_user <span class="keyword">where</span> username<span class="operator">=</span><span class="string">&#x27;xxx&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- username创建的B+Tree上有值（使用了覆盖索引）</span></span><br><span class="line">explain <span class="keyword">select</span> id,username <span class="keyword">from</span> t_user <span class="keyword">where</span> username<span class="operator">=</span><span class="string">&#x27;xxx&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- username创建的B+Tree上没有值,age列需要回表到聚集索引上去查询（没有使用覆盖索引）</span></span><br><span class="line">explain <span class="keyword">select</span> id,username,age <span class="keyword">from</span> t_user <span class="keyword">where</span> username<span class="operator">=</span><span class="string">&#x27;xxx&#x27;</span>;</span><br></pre></td></tr></table></figure></div>
+
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/MySQL%E7%B4%A2%E5%BC%95/200.png"
+                     
+                ></p>
+<h4 id="1-4-1-3-覆盖索引总结"><a href="#1-4-1-3-覆盖索引总结" class="headerlink" title="1.4.1.3 覆盖索引总结"></a>1.4.1.3 覆盖索引总结</h4><p><strong>覆盖索引：查询的数据被索引树覆盖了，即：查询的数据在索引树上，不需要回表查询；</strong></p>
+<h3 id="1-4-2-前缀索引"><a href="#1-4-2-前缀索引" class="headerlink" title="1.4.2 前缀索引"></a>1.4.2 前缀索引</h3><h4 id="1-4-2-1-前缀索引概念"><a href="#1-4-2-1-前缀索引概念" class="headerlink" title="1.4.2.1 前缀索引概念"></a>1.4.2.1 前缀索引概念</h4><p><strong>前缀索引也是一种概念，或者说是操作索引的一种技巧</strong>；当索引列的数据是非常大时，那么该列建立的索引会非常大，而且检索速度也会很慢，这个时候我们考虑能否让该列的前面几个字符拿出来建立索引，而不是整列是数据建立索引，因此前缀索引的概念就由此产生；</p>
+<p>我们知道前缀索引其实就是拿出该列数据的前几个字符出来建立索引以降低索引的大小，以及加快索引的速度的一种&#x3D;&#x3D;<strong>技巧性索引</strong>&#x3D;&#x3D;，<strong>但是毕竟前面几个字符不能够代替整列数据</strong>，有可能重复，我们应该尽量的减低重复的概率，&#x3D;&#x3D;<strong>降低重复概率</strong>&#x3D;&#x3D;，这样的前缀索引检索速度更快；</p>
+<h4 id="1-4-2-2-前缀索引的应用"><a href="#1-4-2-2-前缀索引的应用" class="headerlink" title="1.4.2.2 前缀索引的应用"></a>1.4.2.2 前缀索引的应用</h4><ul>
+<li>数据准备：</li>
+</ul>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> `student`  (</span><br><span class="line">  `id` <span class="type">int</span>(<span class="number">11</span>) <span class="keyword">NOT</span> <span class="keyword">NULL</span> AUTO_INCREMENT,</span><br><span class="line">  `name` <span class="type">varchar</span>(<span class="number">20</span>) <span class="keyword">DEFAULT</span> <span class="keyword">NULL</span>,</span><br><span class="line">  `birthday` <span class="type">varchar</span>(<span class="number">20</span>) <span class="keyword">DEFAULT</span> <span class="keyword">NULL</span>,</span><br><span class="line">  <span class="keyword">PRIMARY</span> KEY (`id`) <span class="keyword">USING</span> BTREE</span><br><span class="line">) ENGINE <span class="operator">=</span> InnoDB ;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- ----------------------------</span></span><br><span class="line"><span class="comment">-- Records of student</span></span><br><span class="line"><span class="comment">-- ----------------------------</span></span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> `student` <span class="keyword">VALUES</span> (<span class="number">1</span>, <span class="string">&#x27;小明&#x27;</span>, <span class="string">&#x27;1999-10-20&#x27;</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> `student` <span class="keyword">VALUES</span> (<span class="number">2</span>, <span class="string">&#x27;小军&#x27;</span>, <span class="string">&#x27;1999-02-21&#x27;</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> `student` <span class="keyword">VALUES</span> (<span class="number">3</span>, <span class="string">&#x27;小龙&#x27;</span>, <span class="string">&#x27;1999-01-19&#x27;</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> `student` <span class="keyword">VALUES</span> (<span class="number">4</span>, <span class="string">&#x27;小刚&#x27;</span>, <span class="string">&#x27;1999-06-06&#x27;</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> `student` <span class="keyword">VALUES</span> (<span class="number">5</span>, <span class="string">&#x27;小红&#x27;</span>, <span class="string">&#x27;1999-02-05&#x27;</span>);</span><br></pre></td></tr></table></figure></div>
+
+<ul>
+<li>计算重复率公式：<code>去重后的数据 / 总的数据</code></li>
+</ul>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 在列的最左边去除num个字符后去重后,查询记录</span></span><br><span class="line"><span class="keyword">select</span> <span class="keyword">distinct</span> <span class="keyword">left</span>(birthday,num) <span class="keyword">from</span> student;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 在列的最左边去除num个字符后去重后,统计总条数</span></span><br><span class="line"><span class="keyword">select</span> <span class="number">1.0</span><span class="operator">*</span><span class="built_in">count</span>(<span class="keyword">distinct</span> <span class="keyword">left</span>(birthday,num)) <span class="keyword">from</span> student;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 将去重后的数据的总条数 / 表中的总条数 = 不重复率</span></span><br><span class="line"><span class="keyword">select</span> <span class="number">1.0</span><span class="operator">*</span><span class="built_in">count</span>(<span class="keyword">distinct</span> <span class="keyword">left</span>(birthday,num))<span class="operator">/</span><span class="built_in">count</span>(<span class="operator">*</span>) <span class="keyword">from</span> student;</span><br></pre></td></tr></table></figure></div>
+
+<p>建立前缀索引就是计算数据到了前缀的第几个字符后，数据没有重复的；我们就可以以前面几个字符来建立索引，这样索引的大小就可以得到压缩，查询速度可以加快；</p>
+<ul>
+<li>案例：</li>
+</ul>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br></pre></td><td class="code"><pre><span class="line">mysql<span class="operator">&gt;</span> <span class="keyword">select</span> <span class="number">1.0</span><span class="operator">*</span><span class="built_in">count</span>(<span class="keyword">distinct</span> birthday)<span class="operator">/</span><span class="built_in">count</span>(<span class="operator">*</span>) <span class="keyword">from</span> student;</span><br><span class="line"><span class="operator">+</span><span class="comment">---------------------------------------+</span></span><br><span class="line"><span class="operator">|</span> <span class="number">1.0</span><span class="operator">*</span><span class="built_in">count</span>(<span class="keyword">distinct</span> birthday)<span class="operator">/</span><span class="built_in">count</span>(<span class="operator">*</span>) <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">---------------------------------------+</span></span><br><span class="line"><span class="operator">|</span>                               <span class="number">1.00000</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">---------------------------------------+</span></span><br><span class="line"><span class="number">1</span> <span class="type">row</span> <span class="keyword">in</span> <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line">mysql<span class="operator">&gt;</span> <span class="keyword">select</span> <span class="number">1.0</span><span class="operator">*</span><span class="built_in">count</span>(<span class="keyword">distinct</span> <span class="keyword">left</span>(birthday,<span class="number">1</span>))<span class="operator">/</span><span class="built_in">count</span>(<span class="operator">*</span>) <span class="keyword">from</span> student;		# <span class="number">1</span> <span class="operator">/</span> <span class="number">5</span> <span class="operator">=</span> <span class="number">0.2</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-----------------------------------------------+</span></span><br><span class="line"><span class="operator">|</span> <span class="number">1.0</span><span class="operator">*</span><span class="built_in">count</span>(<span class="keyword">distinct</span> <span class="keyword">left</span>(birthday,<span class="number">1</span>))<span class="operator">/</span><span class="built_in">count</span>(<span class="operator">*</span>) <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-----------------------------------------------+</span></span><br><span class="line"><span class="operator">|</span>                                       <span class="number">0.20000</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-----------------------------------------------+</span></span><br><span class="line"><span class="number">1</span> <span class="type">row</span> <span class="keyword">in</span> <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line">mysql<span class="operator">&gt;</span> <span class="keyword">select</span> <span class="number">1.0</span><span class="operator">*</span><span class="built_in">count</span>(<span class="keyword">distinct</span> <span class="keyword">left</span>(birthday,<span class="number">2</span>))<span class="operator">/</span><span class="built_in">count</span>(<span class="operator">*</span>) <span class="keyword">from</span> student;		# <span class="number">1</span> <span class="operator">/</span> <span class="number">5</span> <span class="operator">=</span> <span class="number">0.2</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-----------------------------------------------+</span></span><br><span class="line"><span class="operator">|</span> <span class="number">1.0</span><span class="operator">*</span><span class="built_in">count</span>(<span class="keyword">distinct</span> <span class="keyword">left</span>(birthday,<span class="number">2</span>))<span class="operator">/</span><span class="built_in">count</span>(<span class="operator">*</span>) <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-----------------------------------------------+</span></span><br><span class="line"><span class="operator">|</span>                                       <span class="number">0.20000</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-----------------------------------------------+</span></span><br><span class="line"><span class="number">1</span> <span class="type">row</span> <span class="keyword">in</span> <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line">mysql<span class="operator">&gt;</span> <span class="keyword">select</span> <span class="number">1.0</span><span class="operator">*</span><span class="built_in">count</span>(<span class="keyword">distinct</span> <span class="keyword">left</span>(birthday,<span class="number">3</span>))<span class="operator">/</span><span class="built_in">count</span>(<span class="operator">*</span>) <span class="keyword">from</span> student;		# <span class="number">1</span> <span class="operator">/</span> <span class="number">5</span> <span class="operator">=</span> <span class="number">0.2</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-----------------------------------------------+</span></span><br><span class="line"><span class="operator">|</span> <span class="number">1.0</span><span class="operator">*</span><span class="built_in">count</span>(<span class="keyword">distinct</span> <span class="keyword">left</span>(birthday,<span class="number">3</span>))<span class="operator">/</span><span class="built_in">count</span>(<span class="operator">*</span>) <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-----------------------------------------------+</span></span><br><span class="line"><span class="operator">|</span>                                       <span class="number">0.20000</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-----------------------------------------------+</span></span><br><span class="line"><span class="number">1</span> <span class="type">row</span> <span class="keyword">in</span> <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line">mysql<span class="operator">&gt;</span> <span class="keyword">select</span> <span class="number">1.0</span><span class="operator">*</span><span class="built_in">count</span>(<span class="keyword">distinct</span> <span class="keyword">left</span>(birthday,<span class="number">4</span>))<span class="operator">/</span><span class="built_in">count</span>(<span class="operator">*</span>) <span class="keyword">from</span> student;		# <span class="number">1</span> <span class="operator">/</span> <span class="number">5</span> <span class="operator">=</span> <span class="number">0.2</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-----------------------------------------------+</span></span><br><span class="line"><span class="operator">|</span> <span class="number">1.0</span><span class="operator">*</span><span class="built_in">count</span>(<span class="keyword">distinct</span> <span class="keyword">left</span>(birthday,<span class="number">4</span>))<span class="operator">/</span><span class="built_in">count</span>(<span class="operator">*</span>) <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-----------------------------------------------+</span></span><br><span class="line"><span class="operator">|</span>                                       <span class="number">0.20000</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-----------------------------------------------+</span></span><br><span class="line"><span class="number">1</span> <span class="type">row</span> <span class="keyword">in</span> <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line">mysql<span class="operator">&gt;</span> <span class="keyword">select</span> <span class="number">1.0</span><span class="operator">*</span><span class="built_in">count</span>(<span class="keyword">distinct</span> <span class="keyword">left</span>(birthday,<span class="number">5</span>))<span class="operator">/</span><span class="built_in">count</span>(<span class="operator">*</span>) <span class="keyword">from</span> student;		# <span class="number">1</span> <span class="operator">/</span> <span class="number">5</span> <span class="operator">=</span> <span class="number">0.2</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-----------------------------------------------+</span></span><br><span class="line"><span class="operator">|</span> <span class="number">1.0</span><span class="operator">*</span><span class="built_in">count</span>(<span class="keyword">distinct</span> <span class="keyword">left</span>(birthday,<span class="number">5</span>))<span class="operator">/</span><span class="built_in">count</span>(<span class="operator">*</span>) <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-----------------------------------------------+</span></span><br><span class="line"><span class="operator">|</span>                                       <span class="number">0.20000</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-----------------------------------------------+</span></span><br><span class="line"><span class="number">1</span> <span class="type">row</span> <span class="keyword">in</span> <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line">mysql<span class="operator">&gt;</span> <span class="keyword">select</span> <span class="number">1.0</span><span class="operator">*</span><span class="built_in">count</span>(<span class="keyword">distinct</span> <span class="keyword">left</span>(birthday,<span class="number">6</span>))<span class="operator">/</span><span class="built_in">count</span>(<span class="operator">*</span>) <span class="keyword">from</span> student;		# <span class="number">2</span> <span class="operator">/</span> <span class="number">5</span> <span class="operator">=</span> <span class="number">0.4</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-----------------------------------------------+</span></span><br><span class="line"><span class="operator">|</span> <span class="number">1.0</span><span class="operator">*</span><span class="built_in">count</span>(<span class="keyword">distinct</span> <span class="keyword">left</span>(birthday,<span class="number">6</span>))<span class="operator">/</span><span class="built_in">count</span>(<span class="operator">*</span>) <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-----------------------------------------------+</span></span><br><span class="line"><span class="operator">|</span>                                       <span class="number">0.40000</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-----------------------------------------------+</span></span><br><span class="line"><span class="number">1</span> <span class="type">row</span> <span class="keyword">in</span> <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line">mysql<span class="operator">&gt;</span> <span class="keyword">select</span> <span class="number">1.0</span><span class="operator">*</span><span class="built_in">count</span>(<span class="keyword">distinct</span> <span class="keyword">left</span>(birthday,<span class="number">7</span>))<span class="operator">/</span><span class="built_in">count</span>(<span class="operator">*</span>) <span class="keyword">from</span> student;		# <span class="number">2</span> <span class="operator">/</span> <span class="number">5</span> <span class="operator">=</span> <span class="number">0.4</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-----------------------------------------------+</span></span><br><span class="line"><span class="operator">|</span> <span class="number">1.0</span><span class="operator">*</span><span class="built_in">count</span>(<span class="keyword">distinct</span> <span class="keyword">left</span>(birthday,<span class="number">7</span>))<span class="operator">/</span><span class="built_in">count</span>(<span class="operator">*</span>) <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-----------------------------------------------+</span></span><br><span class="line"><span class="operator">|</span>                                       <span class="number">0.80000</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-----------------------------------------------+</span></span><br><span class="line"><span class="number">1</span> <span class="type">row</span> <span class="keyword">in</span> <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line">mysql<span class="operator">&gt;</span> <span class="keyword">select</span> <span class="number">1.0</span><span class="operator">*</span><span class="built_in">count</span>(<span class="keyword">distinct</span> <span class="keyword">left</span>(birthday,<span class="number">8</span>))<span class="operator">/</span><span class="built_in">count</span>(<span class="operator">*</span>) <span class="keyword">from</span> student;		# <span class="number">4</span> <span class="operator">/</span> <span class="number">5</span> <span class="operator">=</span> <span class="number">0.8</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-----------------------------------------------+</span></span><br><span class="line"><span class="operator">|</span> <span class="number">1.0</span><span class="operator">*</span><span class="built_in">count</span>(<span class="keyword">distinct</span> <span class="keyword">left</span>(birthday,<span class="number">8</span>))<span class="operator">/</span><span class="built_in">count</span>(<span class="operator">*</span>) <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-----------------------------------------------+</span></span><br><span class="line"><span class="operator">|</span>                                       <span class="number">0.80000</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-----------------------------------------------+</span></span><br><span class="line"><span class="number">1</span> <span class="type">row</span> <span class="keyword">in</span> <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line">mysql<span class="operator">&gt;</span> <span class="keyword">select</span> <span class="number">1.0</span><span class="operator">*</span><span class="built_in">count</span>(<span class="keyword">distinct</span> <span class="keyword">left</span>(birthday,<span class="number">9</span>))<span class="operator">/</span><span class="built_in">count</span>(<span class="operator">*</span>) <span class="keyword">from</span> student;		# <span class="number">5</span> <span class="operator">/</span> <span class="number">5</span> <span class="operator">=</span> <span class="number">1</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-----------------------------------------------+</span></span><br><span class="line"><span class="operator">|</span> <span class="number">1.0</span><span class="operator">*</span><span class="built_in">count</span>(<span class="keyword">distinct</span> <span class="keyword">left</span>(birthday,<span class="number">9</span>))<span class="operator">/</span><span class="built_in">count</span>(<span class="operator">*</span>) <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-----------------------------------------------+</span></span><br><span class="line"><span class="operator">|</span>                                       <span class="number">1.00000</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-----------------------------------------------+</span></span><br><span class="line"><span class="number">1</span> <span class="type">row</span> <span class="keyword">in</span> <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br></pre></td></tr></table></figure></div>
+
+<p>发现不重复率在<code>birthday</code>字段在第9个字符时，达到100%，也就是说，在的倒数第二个字符时，数据没有重复的。</p>
+<p><strong>重复概率为0，不重复概率为100%</strong></p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/MySQL%E7%B4%A2%E5%BC%95/199.png"
+                     
+                ></p>
+<p>计算出重复率最高时是在该列的低9个字符，因此我们可以把第9个字符之外的数据不用建立索引，来降低索引的大小，提高索引的检索速度；</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">alter</span> <span class="keyword">table</span> student <span class="keyword">add</span> key(birthday(<span class="number">9</span>));</span><br></pre></td></tr></table></figure></div>
+
+<p>下次根据birthday字段查询，会发现使用了索引查询：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">explain <span class="keyword">select</span> birthday <span class="keyword">from</span> student <span class="keyword">where</span> birthday<span class="operator">=</span><span class="string">&#x27;1999-02-21&#x27;</span>;</span><br></pre></td></tr></table></figure></div>
+
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/MySQL%E7%B4%A2%E5%BC%95/198.png"
+                     
+                ></p>
+<p>如果建立的前缀索引有重复数据会怎么样？</p>
+<p>我们刚刚建立前缀索引时，首先要计算重复率，然后再根据得出合适的位置来建立索引，那么如果不计算重复率会怎么样？？</p>
+<p>我们把刚刚建立的索引删除，在第4个字符位置上建立索引：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">alter</span> <span class="keyword">table</span> student <span class="keyword">drop</span> index birthday;</span><br><span class="line"></span><br><span class="line"><span class="keyword">alter</span> <span class="keyword">table</span> student <span class="keyword">add</span> key(birthday(<span class="number">4</span>));</span><br></pre></td></tr></table></figure></div>
+
+<img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/MySQL索引/197.png"
+                      style="zoom: 50%;" 
+                >
+
+<p>执行如下SQL分析执行计划：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">explain <span class="keyword">select</span> birthday <span class="keyword">from</span> student <span class="keyword">where</span> birthday<span class="operator">=</span><span class="string">&#x27;1999&#x27;</span>;</span><br><span class="line"></span><br><span class="line">explain <span class="keyword">select</span> birthday <span class="keyword">from</span> student <span class="keyword">where</span> birthday<span class="operator">=</span><span class="string">&#x27;1999-02-21&#x27;</span>;</span><br><span class="line"></span><br><span class="line">explain <span class="keyword">select</span> birthday <span class="keyword">from</span> student <span class="keyword">where</span> birthday<span class="operator">=</span><span class="string">&#x27;1999-10-21&#x27;</span>;</span><br></pre></td></tr></table></figure></div>
+
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/MySQL%E7%B4%A2%E5%BC%95/196.png"
+                     
+                ></p>
+<p>我们随机执行了几条SQL语句，发现都没有走索引查询，而是全表顺序扫描，因为重复的数据太多了（占整表数据），MySQL优化器认为走索引还不如不走索引，因此选择顺序扫描查询；</p>
+<p>我们切换个案例，把索引前缀字符切换为7：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">alter</span> <span class="keyword">table</span> student <span class="keyword">drop</span> index birthday;</span><br><span class="line"></span><br><span class="line"><span class="keyword">alter</span> <span class="keyword">table</span> student <span class="keyword">add</span> key(birthday(<span class="number">7</span>));</span><br></pre></td></tr></table></figure></div>
+
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/MySQL%E7%B4%A2%E5%BC%95/195.png"
+                     
+                ></p>
+<p>执行如下SQL：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">explain <span class="keyword">select</span> birthday <span class="keyword">from</span> student <span class="keyword">where</span> birthday<span class="operator">=</span><span class="string">&#x27;1999-10-21&#x27;</span>;</span><br><span class="line"></span><br><span class="line">explain <span class="keyword">select</span> birthday <span class="keyword">from</span> student <span class="keyword">where</span> birthday<span class="operator">=</span><span class="string">&#x27;1999&#x27;</span>;</span><br></pre></td></tr></table></figure></div>
+
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/MySQL%E7%B4%A2%E5%BC%95/194.png"
+                     
+                ></p>
+<h3 id="1-4-3-全文索引"><a href="#1-4-3-全文索引" class="headerlink" title="1.4.3 全文索引"></a>1.4.3 全文索引</h3><h4 id="1-4-3-1-全文索引概念"><a href="#1-4-3-1-全文索引概念" class="headerlink" title="1.4.3.1 全文索引概念"></a>1.4.3.1 全文索引概念</h4><p>如果希望通过关键字的匹配度来进行查询过滤，那么就需要基于相似度的查询，而不是原来的精确数值比较。全文索引就是为这种场景设计的。MySQL也提供有类似于Lucene的全文检索技术，用于处理大规模数据检索，其处理速度比like高效的多</p>
+<p>全文索引使用说明：</p>
+<ul>
+<li><p>MySQL 5.6 以前的版本，只有 MyISAM 存储引擎支持全文索引；MySQL 5.6 及以后的版本，MyISAM 和 InnoDB 存储引擎均支持全文索引；</p>
+</li>
+<li><p>只有字段的数据类型为 char、varchar、text 及其系列才可以建全文索引。</p>
+</li>
+</ul>
+<p>创建全文索引：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">create</span> fulltext index index_name <span class="keyword">on</span> table_name(col_name);</span><br><span class="line"></span><br><span class="line"><span class="keyword">alter</span> <span class="keyword">table</span> table_name <span class="keyword">add</span> fulltext index index_name(col_name);</span><br></pre></td></tr></table></figure></div>
+
+<p>使用全文索引：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> table_name <span class="keyword">where</span> <span class="keyword">match</span>(fulltext_col) against(<span class="string">&#x27;content&#x27;</span>);</span><br></pre></td></tr></table></figure></div>
+
+<blockquote>
+<p>match函数中指定全文索引列，asainst函数中指定具体要搜索的内容；</p>
+</blockquote>
+<h4 id="1-4-3-2-匹配长度"><a href="#1-4-3-2-匹配长度" class="headerlink" title="1.4.3.2 匹配长度"></a>1.4.3.2 匹配长度</h4><p>MySQL 中的全文索引，有两个变量，<strong>最小搜索长度和最大搜索长度</strong>，对于长度小于最小搜索长度和大于最大搜索长度的词语，都不会被索引。通俗点就是说，想对一个词语使用全文索引搜索，那么这个词语的长度必须在以上两个变量的区间内。</p>
+<p>我们可以通过以下命令查询：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">show</span> variables <span class="keyword">like</span> <span class="string">&#x27;%ft%&#x27;</span>;</span><br></pre></td></tr></table></figure></div>
+
+<img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/MySQL索引/192.png"
+                      style="zoom:67%;" 
+                >
+
+<p>其中前缀带有innodb的为innodb引擎变量，其余为myisam引擎变量</p>
+<div class="highlight-container" data-rel="Shell"><figure class="iseeu highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">// MyISAM变量</span><br><span class="line">ft_min_word_len = 4;</span><br><span class="line">ft_max_word_len = 84;</span><br><span class="line"></span><br><span class="line">// InnoDB变量</span><br><span class="line">innodb_ft_min_token_size = 3;</span><br><span class="line">innodb_ft_max_token_size = 84;</span><br></pre></td></tr></table></figure></div>
+
+<blockquote>
+<p>Tips：我们可以看出innodb的最小搜索长度为3，最大搜索长度为84；实际开发中最大搜索长度可能会设大</p>
+</blockquote>
+<p>创建测试表：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> test (</span><br><span class="line">    id <span class="type">int</span>(<span class="number">11</span>) <span class="keyword">not</span> <span class="keyword">null</span> auto_increment,</span><br><span class="line">    content <span class="type">varchar</span>(<span class="number">30</span>) <span class="keyword">not</span> <span class="keyword">null</span>,</span><br><span class="line">    <span class="keyword">PRIMARY</span> KEY (`id`) <span class="keyword">USING</span> BTREE,</span><br><span class="line">    FULLTEXT INDEX (`content`)</span><br><span class="line">) engine<span class="operator">=</span>myisam <span class="keyword">default</span> charset<span class="operator">=</span>utf8;</span><br><span class="line"></span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> test(content) <span class="keyword">values</span>(<span class="string">&#x27;a&#x27;</span>),(<span class="string">&#x27;aa&#x27;</span>),(<span class="string">&#x27;aaa&#x27;</span>),(<span class="string">&#x27;aaaa&#x27;</span>);</span><br></pre></td></tr></table></figure></div>
+
+<p>执行查询：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> test <span class="keyword">where</span> <span class="keyword">match</span>(content) against(<span class="string">&#x27;a&#x27;</span>);</span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> test <span class="keyword">where</span> <span class="keyword">match</span>(content) against(<span class="string">&#x27;aa&#x27;</span>);</span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> test <span class="keyword">where</span> <span class="keyword">match</span>(content) against(<span class="string">&#x27;aaa&#x27;</span>);</span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> test <span class="keyword">where</span> <span class="keyword">match</span>(content) against(<span class="string">&#x27;aaaa&#x27;</span>);</span><br></pre></td></tr></table></figure></div>
+
+<p>发现只有搜索<code>aaa</code>和<code>aaaa</code>时才会出现记录；</p>
+<img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/MySQL索引/193.png"
+                      style="zoom: 67%;" 
+                >
+
+<p>我们可以尝试修改mysql的系统配置（<code>/etc/my.cnf</code>）：</p>
+<div class="highlight-container" data-rel="Shell"><figure class="iseeu highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[mysqld]</span><br><span class="line">innodb_ft_min_token_size = 1</span><br><span class="line">ft_min_word_len = 1</span><br></pre></td></tr></table></figure></div>
+
+<p>重启mysql服务：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl restart mysqld</span><br></pre></td></tr></table></figure></div>
+
+<p>修复索引：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">repair <span class="keyword">table</span> test quick;		<span class="comment">-- myisam(修复表)</span></span><br><span class="line"></span><br><span class="line">optimize <span class="keyword">table</span> test;			<span class="comment">-- innodb(优化表)</span></span><br></pre></td></tr></table></figure></div>
+
+<blockquote>
+<p>Tips：修改完参数以后，一定要修复下索引，因为当初建立索引是基于<code>innodb_ft_min_token_size=3</code>的</p>
+</blockquote>
+<h4 id="1-4-3-2-全文索引的模式"><a href="#1-4-3-2-全文索引的模式" class="headerlink" title="1.4.3.2 全文索引的模式"></a>1.4.3.2 全文索引的模式</h4><h5 id="1）自然语言处理模式"><a href="#1）自然语言处理模式" class="headerlink" title="1）自然语言处理模式"></a>1）自然语言处理模式</h5><p><code>in natural language mode</code>：自然语言处理模式；默认情况下，MySQL使用 in natural language mode 修饰符，match() 函数对文本集合执行自然语言搜索，实现从一个文本集合中搜索给定的字符串</p>
+<p>创建测试表：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> `goods`  (</span><br><span class="line">  `id` <span class="type">int</span>(<span class="number">11</span>) <span class="keyword">NOT</span> <span class="keyword">NULL</span>,</span><br><span class="line">  `title` <span class="type">varchar</span>(<span class="number">255</span>),</span><br><span class="line">  <span class="keyword">PRIMARY</span> KEY (`id`) <span class="keyword">USING</span> BTREE,</span><br><span class="line">  FULLTEXT INDEX (`title`)</span><br><span class="line">) ENGINE <span class="operator">=</span> InnoDB ;</span><br><span class="line"></span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> `goods`(`id`, `title`) <span class="keyword">VALUES</span> (<span class="number">1</span>, <span class="string">&#x27;huawei 5G zhineng paizhao shouji&#x27;</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> `goods`(`id`, `title`) <span class="keyword">VALUES</span> (<span class="number">2</span>, <span class="string">&#x27;xiaomi 5G zhineng youxi shouji&#x27;</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> `goods`(`id`, `title`) <span class="keyword">VALUES</span> (<span class="number">3</span>, <span class="string">&#x27;xiaomi 4G fashao shouji&#x27;</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> `goods`(`id`, `title`) <span class="keyword">VALUES</span> (<span class="number">4</span>, <span class="string">&#x27;huawei 4G youxi qumianping shouji&#x27;</span>);</span><br></pre></td></tr></table></figure></div>
+
+<p>查询：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> goods <span class="keyword">where</span> <span class="keyword">match</span>(title) against(<span class="string">&#x27;xiaomi 5G&#x27;</span> <span class="keyword">in</span> <span class="keyword">natural</span> <span class="keyword">language</span> mode);</span><br><span class="line"></span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> goods <span class="keyword">where</span> <span class="keyword">match</span>(title) against(<span class="string">&#x27;xiaomi 5G&#x27;</span>);		<span class="comment">-- 简写</span></span><br></pre></td></tr></table></figure></div>
+
+<img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/MySQL索引/191.png"
+                      style="zoom:50%;" 
+                >
+
+<h5 id="2）布尔处理模式"><a href="#2）布尔处理模式" class="headerlink" title="2）布尔处理模式"></a>2）布尔处理模式</h5><p><code>in boolean mode</code>：布尔处理模式；如果在against()函数中指定了in boolean mode模式，则MySQL会执行布尔全文搜索。在该搜索模式下，待搜索单词前或后的一些特定字符会有特殊的含义。</p>
+<ul>
+<li><strong>+</strong> 必须包含该词</li>
+<li><strong>-</strong> 必须不包含该词</li>
+<li><strong>&gt;</strong> 提高该词的相关性，查询的结果靠前</li>
+<li><strong>&lt;</strong> 降低该词的相关性，查询的结果靠后</li>
+<li>***** 通配符，只能接在词后面</li>
+<li><strong>()</strong> 分组查询</li>
+</ul>
+<p><strong>1）包含与不包含：</strong></p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 分词查询</span></span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> goods <span class="keyword">where</span> <span class="keyword">match</span>(title) against(<span class="string">&#x27;xiaomi 5G&#x27;</span> <span class="keyword">in</span> <span class="type">boolean</span> mode);</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 必须不包含5G词条</span></span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> goods <span class="keyword">where</span> <span class="keyword">match</span>(title) against(<span class="string">&#x27;xiaomi -5G&#x27;</span> <span class="keyword">in</span> <span class="type">boolean</span> mode);</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 必须包含5G词条</span></span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> goods <span class="keyword">where</span> <span class="keyword">match</span>(title) against(<span class="string">&#x27;xiaomi +5G&#x27;</span> <span class="keyword">in</span> <span class="type">boolean</span> mode);</span><br></pre></td></tr></table></figure></div>
+
+<img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/MySQL索引/190.png"
+                      style="zoom:50%;" 
+                >
+
+<p><strong>2）提高&#x2F;降低权重（相关性）</strong></p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> goods <span class="keyword">where</span> <span class="keyword">match</span>(title) against(<span class="string">&#x27;xiaomi &gt;4G&#x27;</span> <span class="keyword">in</span> <span class="type">boolean</span> mode);</span><br><span class="line"></span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> goods <span class="keyword">where</span> <span class="keyword">match</span>(title) against(<span class="string">&#x27;xiaomi &lt;4G&#x27;</span> <span class="keyword">in</span> <span class="type">boolean</span> mode);</span><br></pre></td></tr></table></figure></div>
+
+<img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/MySQL索引/189.png"
+                      style="zoom:50%;" 
+                >
+
+<p><strong>3）通配符（模糊）查询：</strong></p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> goods <span class="keyword">where</span> <span class="keyword">match</span>(title) against(<span class="string">&#x27;xiao&#x27;</span> <span class="keyword">in</span> <span class="type">boolean</span> mode);</span><br><span class="line"></span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> goods <span class="keyword">where</span> <span class="keyword">match</span>(title) against(<span class="string">&#x27;xiao*&#x27;</span> <span class="keyword">in</span> <span class="type">boolean</span> mode);</span><br></pre></td></tr></table></figure></div>
+
+<img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/MySQL索引/188.png"
+                      style="zoom:50%;" 
+                >
+
+<p><strong>4）分组查询：</strong></p>
+<p>查询必须包含<code>5G</code>并且必须包含<code>paizhao</code>或<code>youxi</code>的商品，<code>youxi</code>商品权重降低</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> goods <span class="keyword">where</span> <span class="keyword">match</span>(title) against(<span class="string">&#x27;+5G +(paizhao &lt;youxi)&#x27;</span> <span class="keyword">in</span> <span class="type">boolean</span> mode);</span><br></pre></td></tr></table></figure></div>
+
+<img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/MySQL索引/187.png"
+                      style="zoom:50%;" 
+                >
+
+<h4 id="1-4-3-3-N-gram中文分词"><a href="#1-4-3-3-N-gram中文分词" class="headerlink" title="1.4.3.3 N-gram中文分词"></a>1.4.3.3 N-gram中文分词</h4><p>MySQL的全文搜索对于英文是基于空格的分词，由于中文没有空格，因此MySQL的全文索引对中文支持的不是很友好</p>
+<p>中文查询测试：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> `test`.`goods`(`id`, `title`) <span class="keyword">VALUES</span> (<span class="number">5</span>, <span class="string">&#x27;华为5G智能拍照手机&#x27;</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> `test`.`goods`(`id`, `title`) <span class="keyword">VALUES</span> (<span class="number">6</span>, <span class="string">&#x27;小米5G智能游戏手机&#x27;</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> `test`.`goods`(`id`, `title`) <span class="keyword">VALUES</span> (<span class="number">7</span>, <span class="string">&#x27;小米4G发烧 手机&#x27;</span>);			<span class="comment">-- 故意弄一个空格用于分词</span></span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> `test`.`goods`(`id`, `title`) <span class="keyword">VALUES</span> (<span class="number">8</span>, <span class="string">&#x27;华为4G游戏曲面屏手机&#x27;</span>);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> goods <span class="keyword">where</span> <span class="keyword">match</span>(title) against(<span class="string">&#x27;华为&#x27;</span>);</span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> goods <span class="keyword">where</span> <span class="keyword">match</span>(title) against(<span class="string">&#x27;小米&#x27;</span>);</span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> goods <span class="keyword">where</span> <span class="keyword">match</span>(title) against(<span class="string">&#x27;手机&#x27;</span>);</span><br></pre></td></tr></table></figure></div>
+
+<img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/MySQL索引/186.png"
+                      style="zoom:50%;" 
+                >
+
+<p>使用ngram中文分词：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> `article`  (</span><br><span class="line">  `id` <span class="type">int</span>(<span class="number">11</span>) <span class="keyword">NOT</span> <span class="keyword">NULL</span>,</span><br><span class="line">  `title` <span class="type">varchar</span>(<span class="number">255</span>) ,</span><br><span class="line">  <span class="keyword">PRIMARY</span> KEY (`id`) <span class="keyword">USING</span> BTREE,</span><br><span class="line">  FULLTEXT INDEX `title`(`title`) <span class="keyword">with</span> parser ngram<span class="comment">-- 使用ngram中文分词器</span></span><br><span class="line">) ENGINE <span class="operator">=</span> InnoDB ;</span><br><span class="line"></span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> `article`(`id`, `title`) <span class="keyword">VALUES</span> (<span class="number">1</span>, <span class="string">&#x27;华为5G智能游戏手机&#x27;</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> `article`(`id`, `title`) <span class="keyword">VALUES</span> (<span class="number">2</span>, <span class="string">&#x27;小米5G全面屏拍照手机&#x27;</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> `article`(`id`, `title`) <span class="keyword">VALUES</span> (<span class="number">3</span>, <span class="string">&#x27;vivo美颜拍照手机&#x27;</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> `article`(`id`, `title`) <span class="keyword">VALUES</span> (<span class="number">4</span>, <span class="string">&#x27;新款oppo高性能音乐拍照全网通&#x27;</span>);</span><br></pre></td></tr></table></figure></div>
+
+<p>执行查询：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> article <span class="keyword">where</span> <span class="keyword">match</span>(title) against(&quot;拍照&quot;);</span><br></pre></td></tr></table></figure></div>
+
+<img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/MySQL索引/185.png"
+                      
+                >
+
+<blockquote>
+<p>MySQL全文索引官方手册：<a class="link"   target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/innodb-fulltext-index.html" >https://dev.mysql.com/doc/refman/5.7/en/innodb-fulltext-index.html <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+<p>n-gram parser：<a class="link"   target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/fulltext-search-ngram.html" >https://dev.mysql.com/doc/refman/5.7/en/fulltext-search-ngram.html <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+</blockquote>
+<h3 id="1-4-4-一级索引与二级索引"><a href="#1-4-4-一级索引与二级索引" class="headerlink" title="1.4.4 一级索引与二级索引"></a>1.4.4 一级索引与二级索引</h3><p>关于一级索引的定义：<strong>索引和数据存储是在一起的，都存储在同一个B+Tree中的叶子节点。一般主键索引都是一级索引。</strong></p>
+<p>关于二级索引的定义：<strong>二级索引树的叶子节点存储的是本列索引值和主键值；而不是数据。在使用二级索引检索数据时，需要借助一级索引；也就是说，在找到索引后，得到对应的主键，再回到一级索引中找主键对应的数据记录。</strong></p>
+<blockquote>
+<p>一级索引就是聚集索引，二索引就是非聚集索引</p>
+</blockquote>
+<h3 id="1-4-5-辅助索引"><a href="#1-4-5-辅助索引" class="headerlink" title="1.4.5 辅助索引"></a>1.4.5 辅助索引</h3><p>辅助索引就是辅助我们查询的索引，一般指的就是非聚集索引（二级索引）</p>
+<h2 id="1-5-索引列的离散性"><a href="#1-5-索引列的离散性" class="headerlink" title="1.5 索引列的离散性"></a>1.5 索引列的离散性</h2><p>我们都知道MySQL底层是有优化器的，最终是否使用到索引，以及具体使用哪个索引是MySQL优化器根据一系列成本计算最终得出的结果，如果&#x3D;&#x3D;<strong>列的离散性越高，证明列的不重复性越高</strong>&#x3D;&#x3D;，优化器更容易选择，如果列的离散性非常底，那么优化器在选择列的时候也会有选择困难症，降低检索速度，如果<strong>列的离散性非常低，那么很有可能优化器就不选择索引</strong>，直接进行<strong>全表扫描</strong>了；</p>
+<p>离散性计算公式：<code>count(distinct col)/count(col)</code>；</p>
+<p>测试数据：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> `student`  (</span><br><span class="line">  `id` <span class="type">int</span>(<span class="number">11</span>) <span class="keyword">NOT</span> <span class="keyword">NULL</span> AUTO_INCREMENT,</span><br><span class="line">  `name` <span class="type">varchar</span>(<span class="number">255</span>) <span class="type">CHARACTER</span> <span class="keyword">SET</span> utf8mb4 <span class="keyword">COLLATE</span> utf8mb4_general_ci <span class="keyword">NULL</span> <span class="keyword">DEFAULT</span> <span class="keyword">NULL</span>,</span><br><span class="line">  `age` <span class="type">int</span>(<span class="number">11</span>) <span class="keyword">NULL</span> <span class="keyword">DEFAULT</span> <span class="keyword">NULL</span>,</span><br><span class="line">  `gender` <span class="type">varchar</span>(<span class="number">255</span>) <span class="type">CHARACTER</span> <span class="keyword">SET</span> utf8mb4 <span class="keyword">COLLATE</span> utf8mb4_general_ci <span class="keyword">NULL</span> <span class="keyword">DEFAULT</span> <span class="keyword">NULL</span>,</span><br><span class="line">  <span class="keyword">PRIMARY</span> KEY (`id`) <span class="keyword">USING</span> BTREE</span><br><span class="line">) ENGINE <span class="operator">=</span> InnoDB;</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> `test`.`student`(`id`, `name`, `age`, `gender`) <span class="keyword">VALUES</span> (<span class="number">1</span>, <span class="string">&#x27;张三&#x27;</span>, <span class="number">20</span>, <span class="string">&#x27;0&#x27;</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> `test`.`student`(`id`, `name`, `age`, `gender`) <span class="keyword">VALUES</span> (<span class="number">2</span>, <span class="string">&#x27;李四&#x27;</span>, <span class="number">18</span>, <span class="string">&#x27;1&#x27;</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> `test`.`student`(`id`, `name`, `age`, `gender`) <span class="keyword">VALUES</span> (<span class="number">3</span>, <span class="string">&#x27;王五&#x27;</span>, <span class="number">19</span>, <span class="string">&#x27;0&#x27;</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> `test`.`student`(`id`, `name`, `age`, `gender`) <span class="keyword">VALUES</span> (<span class="number">4</span>, <span class="string">&#x27;赵六&#x27;</span>, <span class="number">18</span>, <span class="string">&#x27;1&#x27;</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> `test`.`student`(`id`, `name`, `age`, `gender`) <span class="keyword">VALUES</span> (<span class="number">5</span>, <span class="string">&#x27;孙七&#x27;</span>, <span class="number">20</span>, <span class="string">&#x27;1&#x27;</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> `test`.`student`(`id`, `name`, `age`, `gender`) <span class="keyword">VALUES</span> (<span class="number">6</span>, <span class="string">&#x27;周八&#x27;</span>, <span class="number">20</span>, <span class="string">&#x27;1&#x27;</span>);</span><br></pre></td></tr></table></figure></div>
+
+<p>计算name、age、gender的离散值：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> </span><br><span class="line">(<span class="keyword">select</span> <span class="built_in">count</span>(<span class="keyword">distinct</span> name)<span class="operator">/</span><span class="built_in">count</span>(<span class="number">1</span>) <span class="keyword">from</span> student) name_col,</span><br><span class="line">(<span class="keyword">select</span> <span class="built_in">count</span>(<span class="keyword">distinct</span> age)<span class="operator">/</span><span class="built_in">count</span>(<span class="number">1</span>) <span class="keyword">from</span> student) name_col,</span><br><span class="line">(<span class="keyword">select</span> <span class="built_in">count</span>(<span class="keyword">distinct</span> gender)<span class="operator">/</span><span class="built_in">count</span>(<span class="number">1</span>) <span class="keyword">from</span> student) name_col</span><br></pre></td></tr></table></figure></div>
+
+<img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/MySQL索引/158.png"
+                      style="zoom:67%;" 
+                >
+
+<h2 id="1-6-索引的分类"><a href="#1-6-索引的分类" class="headerlink" title="1.6 索引的分类"></a>1.6 索引的分类</h2><p>MySQL的索引实在是太多了，这么多索引我们该怎么记？？以及该如何区分？？</p>
+<p>我们看待事物的角度不同，索引也可以分为以下角度：</p>
+<ul>
+<li>数据结构角度<ul>
+<li><strong>B+Tree索引</strong></li>
+<li><strong>R-Tree索引（空间索引）</strong></li>
+<li><strong>Hash索引</strong></li>
+<li><strong>Full-text索引（全文索引）</strong></li>
+</ul>
+</li>
+<li>物理存储角度<ul>
+<li><strong>聚集索引 （一级索引）</strong></li>
+<li><strong>非聚集索引（二级索引）</strong></li>
+</ul>
+</li>
+<li>逻辑角度<ul>
+<li><strong>主键索引</strong></li>
+<li><strong>普通索引（单列索引）</strong></li>
+<li><strong>多列索引（复合索引）</strong></li>
+<li><strong>唯一索引</strong></li>
+<li><strong>非唯一索引</strong></li>
+<li><strong>空间索引</strong></li>
+</ul>
+</li>
+<li>业务角度<ul>
+<li><strong>覆盖索引</strong></li>
+<li><strong>前缀索引</strong></li>
+<li><strong>辅助索引（非聚集索引）</strong></li>
+</ul>
+</li>
+</ul>
+<h2 id="1-7-索引的设计"><a href="#1-7-索引的设计" class="headerlink" title="1.7 索引的设计"></a>1.7 索引的设计</h2><p>索引的设计可以遵循一些已有的原则，创建索引的时候请尽量考虑符合这些原则，便于提升索引的使用效率，更高效的使用索引。</p>
+<ul>
+<li>尽量选择离散性高的列建立索引（优化器选择性好）</li>
+<li>采用联合索引（联合索引底层原理）</li>
+<li>严格避免索引列的失效（索引失效）</li>
+<li>注意最左前缀法则</li>
+</ul>
+
+        </div>
+
+        
+            <div class="post-copyright-info w-full my-8 px-2 sm:px-6 md:px-8">
+                <div class="article-copyright-info-container">
+    <ul>
+        <li><strong>Title:</strong> MySQL索引</li>
+        <li><strong>Author:</strong> MinGe</li>
+        <li><strong>Created at
+                :</strong> 2023-06-10 09:11:00</li>
+        
+            <li>
+                <strong>Updated at
+                    :</strong> 2024-11-11 14:06:23
+            </li>
+        
+        <li>
+            <strong>Link:</strong> https://redefine.ohevan.com/2023/06/10/MySQL索引/
+        </li>
+        <li>
+            <strong>
+                License:
+            </strong>
+            
+
+            
+                This work is licensed under <a class="license" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0">CC BY-NC-SA 4.0</a>.
+            
+        </li>
+    </ul>
+</div>
+
+            </div>
+        
+
+        
+            <ul class="post-tags-box text-lg mt-1.5 flex-wrap justify-center flex md:hidden">
+                
+                    <li class="tag-item mx-0.5">
+                        <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/">#数据库</a>&nbsp;
+                    </li>
+                
+            </ul>
+        
+
+        
+
+        
+            <div class="article-nav my-8 flex justify-between items-center px-2 sm:px-6 md:px-8">
+                
+                    <div class="article-prev border-border-color shadow-redefine-flat shadow-shadow-color-2 rounded-medium px-4 py-2 hover:shadow-redefine-flat-hover hover:shadow-shadow-color-2">
+                        <a class="prev"
+                        rel="prev"
+                        href="/2023/06/10/MySQL%E4%BA%8B%E5%8A%A1/"
+                        >
+                            <span class="left arrow-icon flex justify-center items-center">
+                                <i class="fa-solid fa-chevron-left"></i>
+                            </span>
+                            <span class="title flex justify-center items-center">
+                                <span class="post-nav-title-item">MySQL事务</span>
+                                <span class="post-nav-item">Prev posts</span>
+                            </span>
+                        </a>
+                    </div>
+                
+                
+                    <div class="article-next border-border-color shadow-redefine-flat shadow-shadow-color-2 rounded-medium px-4 py-2 hover:shadow-redefine-flat-hover hover:shadow-shadow-color-2">
+                        <a class="next"
+                        rel="next"
+                        href="/2023/06/10/SQL%E8%AF%AD%E5%8F%A5/"
+                        >
+                            <span class="title flex justify-center items-center">
+                                <span class="post-nav-title-item">SQL语句简介</span>
+                                <span class="post-nav-item">Next posts</span>
+                            </span>
+                            <span class="right arrow-icon flex justify-center items-center">
+                                <i class="fa-solid fa-chevron-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                
+            </div>
+        
+
+
+        
+    </div>
+
+    
+        <div class="toc-content-container">
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <div class="toc-title">On this page</div>
+        <div class="page-title">MySQL索引</div>
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%B4%A2%E5%BC%95"><span class="nav-text">索引</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-%E7%B4%A2%E5%BC%95%E6%A6%82%E8%BF%B0"><span class="nav-text">1.1 索引概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-2-%E7%B4%A2%E5%BC%95%E7%9A%84%E4%BC%98%E7%BC%BA%E7%82%B9"><span class="nav-text">1.2 索引的优缺点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-3-%E7%B4%A2%E5%BC%95%E7%9A%84%E7%B1%BB%E5%9E%8B"><span class="nav-text">1.3 索引的类型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-3-1-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E8%A7%92%E5%BA%A6"><span class="nav-text">1.3.1 数据结构角度</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-3-2-InnoDB%E6%95%B0%E6%8D%AE%E9%A1%B5"><span class="nav-text">1.3.2 InnoDB数据页</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-3-3-%E7%89%A9%E7%90%86%E5%AD%98%E5%82%A8%E8%A7%92%E5%BA%A6"><span class="nav-text">1.3.3 物理存储角度</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-4-%E5%85%B6%E4%BB%96%E7%B4%A2%E5%BC%95"><span class="nav-text">1.4 其他索引</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-4-1-%E8%A6%86%E7%9B%96%E7%B4%A2%E5%BC%95"><span class="nav-text">1.4.1 覆盖索引</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-4-2-%E5%89%8D%E7%BC%80%E7%B4%A2%E5%BC%95"><span class="nav-text">1.4.2 前缀索引</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-4-3-%E5%85%A8%E6%96%87%E7%B4%A2%E5%BC%95"><span class="nav-text">1.4.3 全文索引</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-4-4-%E4%B8%80%E7%BA%A7%E7%B4%A2%E5%BC%95%E4%B8%8E%E4%BA%8C%E7%BA%A7%E7%B4%A2%E5%BC%95"><span class="nav-text">1.4.4 一级索引与二级索引</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-4-5-%E8%BE%85%E5%8A%A9%E7%B4%A2%E5%BC%95"><span class="nav-text">1.4.5 辅助索引</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-5-%E7%B4%A2%E5%BC%95%E5%88%97%E7%9A%84%E7%A6%BB%E6%95%A3%E6%80%A7"><span class="nav-text">1.5 索引列的离散性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-6-%E7%B4%A2%E5%BC%95%E7%9A%84%E5%88%86%E7%B1%BB"><span class="nav-text">1.6 索引的分类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-7-%E7%B4%A2%E5%BC%95%E7%9A%84%E8%AE%BE%E8%AE%A1"><span class="nav-text">1.7 索引的设计</span></a></li></ol></li></ol>
+
+    </div>
+</div>
+        </div>
+    
+</div>
+
+
+
+                
+
+            </div>
+
+            
+
+        </div>
+
+        <div class="main-content-footer">
+            <footer class="footer mt-5 py-5 h-auto text-base text-third-text-color relative border-t-2 border-t-border-color">
+    <div class="info-container py-3 text-center">
+        
+        <div class="text-center">
+            &copy;
+            
+              <span>2022</span>
+              -
+            
+            2024&nbsp;&nbsp;<i class="fa-solid fa-heart fa-beat" style="--fa-animation-duration: 0.5s; color: #f54545"></i>&nbsp;&nbsp;<a href="/">MinGe</a>
+            
+                
+                <p class="post-count space-x-0.5">
+                    <span>
+                        19 posts in total
+                    </span>
+                    
+                </p>
+            
+        </div>
+        
+        <div class="relative text-center lg:absolute lg:left-[20px] lg:top-1/2 lg:-translate-y-1/2 lg:text-left">
+            <span class="lg:block text-sm">POWERED BY <?xml version="1.0" encoding="utf-8"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg class="relative top-[2px] inline-block align-baseline" version="1.1" id="圖層_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="1rem" height="1rem" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve"><path fill="#0E83CD" d="M256.4,25.8l-200,115.5L56,371.5l199.6,114.7l200-115.5l0.4-230.2L256.4,25.8z M349,354.6l-18.4,10.7l-18.6-11V275H200v79.6l-18.4,10.7l-18.6-11v-197l18.5-10.6l18.5,10.8V237h112v-79.6l18.5-10.6l18.5,10.8V354.6z"/></svg><a target="_blank" class="text-base" href="https://hexo.io">Hexo</a></span>
+            <span class="text-sm lg:block">THEME&nbsp;<a class="text-base" target="_blank" href="https://github.com/EvanNotFound/hexo-theme-redefine">Redefine v2.7.1</a></span>
+        </div>
+        
+        
+            <div>
+                Blog up for <span class="odometer" id="runtime_days" ></span> days <span class="odometer" id="runtime_hours"></span> hrs <span class="odometer" id="runtime_minutes"></span> Min <span class="odometer" id="runtime_seconds"></span> Sec
+            </div>
+        
+        
+            <script data-swup-reload-script>
+                try {
+                    function odometer_init() {
+                    const elements = document.querySelectorAll('.odometer');
+                    elements.forEach(el => {
+                        new Odometer({
+                            el,
+                            format: '( ddd).dd',
+                            duration: 200
+                        });
+                    });
+                    }
+                    odometer_init();
+                } catch (error) {}
+            </script>
+        
+        
+        
+    </div>  
+</footer>
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="article-tools-list">
+        <!-- TOC aside toggle -->
+        
+            <li class="right-bottom-tools page-aside-toggle">
+                <i class="fa-regular fa-outdent"></i>
+            </li>
+        
+
+        <!-- go comment -->
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-side-tools-container">
+        <div class="side-tools-container">
+    <ul class="hidden-tools-list">
+        <li class="right-bottom-tools tool-font-adjust-plus flex justify-center items-center">
+            <i class="fa-regular fa-magnifying-glass-plus"></i>
+        </li>
+
+        <li class="right-bottom-tools tool-font-adjust-minus flex justify-center items-center">
+            <i class="fa-regular fa-magnifying-glass-minus"></i>
+        </li>
+
+        <li class="right-bottom-tools tool-dark-light-toggle flex justify-center items-center">
+            <i class="fa-regular fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+
+        <li class="right-bottom-tools tool-scroll-to-bottom flex justify-center items-center">
+            <i class="fa-regular fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="visible-tools-list">
+        <li class="right-bottom-tools toggle-tools-list flex justify-center items-center">
+            <i class="fa-regular fa-cog fa-spin"></i>
+        </li>
+        
+            <li class="right-bottom-tools tool-scroll-to-top flex justify-center items-center">
+                <i class="arrow-up fas fa-arrow-up"></i>
+                <span class="percent"></span>
+            </li>
+        
+        
+    </ul>
+</div>
+
+    </div>
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+
+</main>
+
+
+    
+<script src="/js/libs/Swup.min.js"></script>
+
+<script src="/js/libs/SwupSlideTheme.min.js"></script>
+
+<script src="/js/libs/SwupScriptsPlugin.min.js"></script>
+
+<script src="/js/libs/SwupProgressPlugin.min.js"></script>
+
+<script src="/js/libs/SwupScrollPlugin.min.js"></script>
+
+<script src="/js/libs/SwupPreloadPlugin.min.js"></script>
+
+<script>
+    const swup = new Swup({
+        plugins: [
+            new SwupScriptsPlugin({
+                optin: true,
+            }),
+            new SwupProgressPlugin(),
+            new SwupScrollPlugin({
+                offset: 80,
+            }),
+            new SwupSlideTheme({
+                mainElement: ".main-content-body",
+            }),
+            new SwupPreloadPlugin(),
+        ],
+        containers: ["#swup"],
+    });
+</script>
+
+
+
+
+
+
+
+<script src="/js/tools/imageViewer.js" type="module"></script>
+
+<script src="/js/utils.js" type="module"></script>
+
+<script src="/js/main.js" type="module"></script>
+
+<script src="/js/layouts/navbarShrink.js" type="module"></script>
+
+<script src="/js/tools/scrollTopBottom.js" type="module"></script>
+
+<script src="/js/tools/lightDarkSwitch.js" type="module"></script>
+
+<script src="/js/layouts/categoryList.js" type="module"></script>
+
+
+
+
+
+    
+<script src="/js/tools/codeBlock.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/layouts/lazyload.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/tools/runtime.js"></script>
+
+    
+<script src="/js/libs/odometer.min.js"></script>
+
+    
+<link rel="stylesheet" href="/assets/odometer-theme-minimal.css">
+
+
+
+
+  
+<script src="/js/libs/Typed.min.js"></script>
+
+  
+<script src="/js/plugins/typed.js" type="module"></script>
+
+
+
+
+
+
+
+
+    
+<script src="/js/libs/anime.min.js"></script>
+
+
+
+<div class="post-scripts" data-swup-reload-script>
+    
+        
+<script src="/js/tools/tocToggle.js" type="module"></script>
+
+<script src="/js/layouts/toc.js" type="module"></script>
+
+<script src="/js/plugins/tabs.js" type="module"></script>
+
+    
+</div>
+
+
+</body>
+</html>

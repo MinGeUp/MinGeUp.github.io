@@ -1,0 +1,1414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="keywords" content="Hexo Theme Redefine">
+    
+    <meta name="author" content="MinGe">
+    <!-- preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    
+    <!--- Seo Part-->
+    
+    <link rel="canonical" href="http://example.com/2023/06/10/mysql架构/"/>
+    <meta name="robots" content="index,follow">
+    <meta name="googlebot" content="index,follow">
+    <meta name="revisit-after" content="1 days">
+    
+        <meta name="description" content="一、MySQL架构与执行流程MySQL 数据库是单进程多线程的架构，和 SQL Server 类似，和 Oracle 不一样，Oracle 是多进程架构。  MySQL官网（5.7版本）：https:&#x2F;&#x2F;dev.mysql.com&#x2F;doc&#x2F;refman&#x2F;5.7&#x2F;en&#x2F;   1.1 MySQL架构组件 MySQL主要有如下组件构成：  Connectors：连接组件：  向外界的其他应用程序提供连接">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MySQL架构">
+<meta property="og:url" content="http://example.com/2023/06/10/MySQL%E6%9E%B6%E6%9E%84/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="一、MySQL架构与执行流程MySQL 数据库是单进程多线程的架构，和 SQL Server 类似，和 Oracle 不一样，Oracle 是多进程架构。  MySQL官网（5.7版本）：https:&#x2F;&#x2F;dev.mysql.com&#x2F;doc&#x2F;refman&#x2F;5.7&#x2F;en&#x2F;   1.1 MySQL架构组件 MySQL主要有如下组件构成：  Connectors：连接组件：  向外界的其他应用程序提供连接">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/images/MySQL%E6%9E%B6%E6%9E%84/1.png">
+<meta property="og:image" content="http://example.com/images/MySQL%E6%9E%B6%E6%9E%84/4.png">
+<meta property="og:image" content="http://example.com/images/MySQL%E6%9E%B6%E6%9E%84/001.png">
+<meta property="og:image" content="http://example.com/images/MySQL%E6%9E%B6%E6%9E%84/120.png">
+<meta property="og:image" content="http://example.com/images/MySQL%E6%9E%B6%E6%9E%84/2.png">
+<meta property="og:image" content="http://example.com/images/MySQL%E6%9E%B6%E6%9E%84/3.png">
+<meta property="og:image" content="http://example.com/images/MySQL%E7%B4%A2%E5%BC%95/7.png">
+<meta property="og:image" content="http://example.com/images/MySQL%E7%B4%A2%E5%BC%95/8.png">
+<meta property="og:image" content="http://example.com/images/MySQL%E7%B4%A2%E5%BC%95/9.png">
+<meta property="og:image" content="http://example.com/images/MySQL%E7%B4%A2%E5%BC%95/11.png">
+<meta property="og:image" content="http://example.com/images/MySQL%E7%B4%A2%E5%BC%95/10.png">
+<meta property="og:image" content="http://example.com/images/MySQL%E7%B4%A2%E5%BC%95/12.png">
+<meta property="og:image" content="http://example.com/images/MySQL%E7%B4%A2%E5%BC%95/13.png">
+<meta property="og:image" content="http://example.com/images/MySQL%E7%B4%A2%E5%BC%95/14.png">
+<meta property="og:image" content="http://example.com/images/MySQL%E7%B4%A2%E5%BC%95/15.png">
+<meta property="og:image" content="http://example.com/images/MySQL%E7%B4%A2%E5%BC%95/16.png">
+<meta property="og:image" content="http://example.com/images/MySQL%E7%B4%A2%E5%BC%95/17.png">
+<meta property="og:image" content="http://example.com/images/MySQL%E7%B4%A2%E5%BC%95/18.png">
+<meta property="og:image" content="http://example.com/images/MySQL%E7%B4%A2%E5%BC%95/19.png">
+<meta property="og:image" content="http://example.com/images/MySQL%E7%B4%A2%E5%BC%95/20.png">
+<meta property="og:image" content="http://example.com/images/MySQL%E7%B4%A2%E5%BC%95/21.png">
+<meta property="og:image" content="http://example.com/images/MySQL%E7%B4%A2%E5%BC%95/001.png">
+<meta property="og:image" content="http://example.com/images/MySQL%E7%B4%A2%E5%BC%95/002.png">
+<meta property="og:image" content="http://example.com/images/MySQL%E7%B4%A2%E5%BC%95/003.png">
+<meta property="og:image" content="http://example.com/images/MySQL%E7%B4%A2%E5%BC%95/004.png">
+<meta property="article:published_time" content="2023-06-10T01:11:00.000Z">
+<meta property="article:modified_time" content="2024-11-11T06:02:11.009Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="java">
+<meta property="article:tag" content="数据库">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/images/MySQL%E6%9E%B6%E6%9E%84/1.png">
+    
+    
+    <!--- Icon Part-->
+    <link rel="icon" type="image/png" href="/images/redefine-favicon.svg" sizes="192x192">
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/redefine-favicon.svg">
+    <meta name="theme-color" content="#A31F34">
+    <link rel="shortcut icon" href="/images/redefine-favicon.svg">
+    <!--- Page Info-->
+    
+    <title>
+        
+            MySQL架构 -
+        
+        MinGe 博客
+    </title>
+
+    
+<link rel="stylesheet" href="/fonts/Chillax/chillax.css">
+
+
+    <!--- Inject Part-->
+    
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+    
+        
+<link rel="stylesheet" href="/assets/build/styles.css">
+
+    
+
+    
+<link rel="stylesheet" href="/fonts/GeistMono/geist-mono.css">
+
+    
+<link rel="stylesheet" href="/fonts/Geist/geist.css">
+
+    <!--- Font Part-->
+    
+    
+    
+    
+    
+    
+
+    <script id="hexo-configurations">
+    window.config = {"hostname":"example.com","root":"/","language":"en"};
+    window.theme = {"articles":{"style":{"font_size":"16px","line_height":1.5,"image_border_radius":"14px","image_alignment":"center","image_caption":false,"link_icon":true,"title_alignment":"left","headings_top_spacing":{"h1":"3.2rem","h2":"2.4rem","h3":"1.9rem","h4":"1.6rem","h5":"1.4rem","h6":"1.3rem"}},"word_count":{"enable":true,"count":true,"min2read":true},"author_label":{"enable":true,"auto":false,"list":[]},"code_block":{"copy":true,"style":"mac","highlight_theme":{"light":"github","dark":"vs2015"},"font":{"enable":false,"family":null,"url":null}},"toc":{"enable":true,"max_depth":3,"number":false,"expand":true,"init_open":true},"copyright":{"enable":true,"default":"cc_by_nc_sa"},"lazyload":true,"recommendation":{"enable":false,"title":"推荐阅读","limit":3,"mobile_limit":2,"placeholder":"/images/wallhaven-wqery6-light.webp","skip_dirs":[]}},"colors":{"primary":"#A31F34","secondary":null,"default_mode":"dark"},"global":{"fonts":{"chinese":{"enable":false,"family":null,"url":null},"english":{"enable":false,"family":null,"url":null},"title":{"enable":false,"family":null,"url":null}},"content_max_width":"1000px","sidebar_width":"210px","hover":{"shadow":true,"scale":false},"scroll_progress":{"bar":false,"percentage":true},"website_counter":{"url":"https://cn.vercount.one/js","enable":false,"site_pv":true,"site_uv":true,"post_pv":true},"single_page":true,"preloader":{"enable":false,"custom_message":null},"open_graph":true,"google_analytics":{"enable":false,"id":null}},"home_banner":{"enable":true,"style":"fixed","image":{"light":"/images/wallhaven-wqery6-light.webp","dark":"/images/wallhaven-wqery6-dark.webp"},"title":"MinGe 博客","subtitle":{"text":[],"hitokoto":{"enable":false,"show_author":false,"api":"https://v1.hitokoto.cn"},"typing_speed":100,"backing_speed":80,"starting_delay":500,"backing_delay":1500,"loop":true,"smart_backspace":true},"text_color":{"light":"#fff","dark":"#d1d1b6"},"text_style":{"title_size":"2.8rem","subtitle_size":"1.5rem","line_height":1.2},"custom_font":{"enable":false,"family":null,"url":null},"social_links":{"enable":false,"style":"default","links":{"github":null,"instagram":null,"zhihu":null,"twitter":null,"email":null},"qrs":{"weixin":null}}},"plugins":{"feed":{"enable":false},"aplayer":{"enable":false,"type":"fixed","audios":[{"name":null,"artist":null,"url":null,"cover":null,"lrc":null}]},"mermaid":{"enable":false,"version":"9.3.0"}},"version":"2.7.1","navbar":{"auto_hide":false,"color":{"left":"#f78736","right":"#367df7","transparency":35},"width":{"home":"1200px","pages":"1000px"},"links":{"Home":{"path":"/","icon":"fa-regular fa-house"},"resume":{"path":"/2024/10/01/minge/","icon":"fa-regular"}},"search":{"enable":false,"preload":true}},"page_templates":{"friends_column":2,"tags_style":"blur"},"home":{"sidebar":{"enable":true,"position":"left","first_item":"menu","announcement":null,"show_on_mobile":true,"links":{"Archives":{"path":"/archives","icon":"fa-regular fa-archive"},"Tags":{"path":"/tags","icon":"fa-regular fa-tags"},"Categories":{"path":"/categories","icon":"fa-regular fa-folder"}}},"article_date_format":"auto","excerpt_length":200,"categories":{"enable":true,"limit":3},"tags":{"enable":true,"limit":3}},"footerStart":"2022/09/25 08:00:00"};
+    window.lang_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"};
+    window.data = {"masonry":false};
+  </script>
+    
+    <!--- Fontawesome Part-->
+    
+<link rel="stylesheet" href="/fontawesome/fontawesome.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/brands.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/solid.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/regular.min.css">
+
+    
+    
+    
+    
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+
+    
+        <span class="pjax-progress-bar"></span>
+<!--        <span class="swup-progress-icon">-->
+<!--            <i class="fa-solid fa-circle-notch fa-spin"></i>-->
+<!--        </span>-->
+    
+</div>
+
+
+
+<main class="page-container" id="swup">
+
+    
+
+    <div class="main-content-container">
+
+
+        <div class="main-content-header">
+            <header class="navbar-container px-6 md:px-12">
+
+    <div class="navbar-content ">
+        <div class="left">
+            
+            <a class="logo-title" href="/">
+                
+                MinGe 博客
+                
+            </a>
+        </div>
+
+        <div class="right">
+            <!-- PC -->
+            <div class="desktop">
+                <ul class="navbar-list">
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/"
+                                        >
+                                    <i class="fa-regular fa-house fa-fw"></i>
+                                    HOME
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/2024/10/01/minge/"
+                                        >
+                                    <i class="fa-regular fa-fw"></i>
+                                    RESUME
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                    
+                </ul>
+            </div>
+            <!-- Mobile -->
+            <div class="mobile">
+                
+                <div class="icon-item navbar-bar">
+                    <div class="navbar-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile sheet -->
+    <div class="navbar-drawer h-screen w-full absolute top-0 left-0 bg-background-color flex flex-col justify-between">
+        <ul class="drawer-navbar-list flex flex-col px-4 justify-center items-start">
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/"
+                        >
+                            <span>
+                                HOME
+                            </span>
+                            
+                                <i class="fa-regular fa-house fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/2024/10/01/minge/"
+                        >
+                            <span>
+                                RESUME
+                            </span>
+                            
+                                <i class="fa-regular fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+
+            
+            
+                
+                    
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full active"
+                           href="/archives"
+                        >
+                            <span>Archives</span>
+                            <i class="fa-regular fa-archive fa-sm fa-fw"></i>
+                        </a>
+                    </li>
+                
+                    
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full active"
+                           href="/tags"
+                        >
+                            <span>Tags</span>
+                            <i class="fa-regular fa-tags fa-sm fa-fw"></i>
+                        </a>
+                    </li>
+                
+                    
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full active"
+                           href="/categories"
+                        >
+                            <span>Categories</span>
+                            <i class="fa-regular fa-folder fa-sm fa-fw"></i>
+                        </a>
+                    </li>
+                
+            
+        </ul>
+
+        <div class="statistics flex justify-around my-2.5">
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/tags">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">3</div>
+        <div class="label text-third-text-color text-sm">Tags</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/categories">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">2</div>
+        <div class="label text-third-text-color text-sm">Categories</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">19</div>
+        <div class="label text-third-text-color text-sm">Posts</div>
+    </a>
+</div>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="main-content-body">
+
+            
+
+            <div class="main-content">
+
+                
+                    <div class="post-page-container flex relative justify-between box-border w-full h-full">
+    <div class="article-content-container">
+
+        <div class="article-title relative w-full">
+            
+                <div class="w-full flex items-center pt-6 justify-start">
+                    <h1 class="article-title-regular text-second-text-color tracking-tight text-4xl md:text-6xl font-semibold px-2 sm:px-6 md:px-8 py-3">MySQL架构</h1>
+                </div>
+            
+            </div>
+
+        
+            <div class="article-header flex flex-row gap-2 items-center px-2 sm:px-6 md:px-8">
+                <div class="avatar w-[46px] h-[46px] flex-shrink-0 rounded-medium border border-border-color p-[1px]">
+                    <img src="/images/redefine-avatar.svg">
+                </div>
+                <div class="info flex flex-col justify-between">
+                    <div class="author flex items-center">
+                        <span class="name text-default-text-color text-lg font-semibold">MinGe</span>
+                        
+                            <span class="author-label ml-1.5 text-xs px-2 py-0.5 rounded-small text-third-text-color border border-shadow-color-1">Lv3</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fa-regular fa-pen-fancy"></i>&nbsp;
+        <span class="desktop">2023-06-10 09:11</span>
+        <span class="mobile">2023-06-10 09:11</span>
+        <span class="hover-info">Created</span>
+    </span>
+    
+        <span class="article-date article-meta-item">
+            <i class="fa-regular fa-wrench"></i>&nbsp;
+            <span class="desktop">2024-11-11 14:02:11</span>
+            <span class="mobile">2024-11-11 14:02:11</span>
+            <span class="hover-info">Updated</span>
+        </span>
+    
+
+    
+        <span class="article-categories article-meta-item">
+            <i class="fa-regular fa-folders"></i>&nbsp;
+            <ul>
+                
+                
+                    
+                        
+                        <li>
+                            <a href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>&nbsp;
+                        </li>
+                    
+                    
+                
+            </ul>
+        </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fa-regular fa-tags"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/tags/java/">java</a>&nbsp;
+                    </li>
+                
+                    <li>
+                        | <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+    
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        
+
+
+        <div class="article-content markdown-body px-2 sm:px-6 md:px-8 pb-8">
+            <h1 id="一、MySQL架构与执行流程"><a href="#一、MySQL架构与执行流程" class="headerlink" title="一、MySQL架构与执行流程"></a>一、MySQL架构与执行流程</h1><p>MySQL 数据库是<strong>单进程多线程</strong>的架构，和 SQL Server 类似，和 Oracle 不一样，Oracle 是多进程架构。</p>
+<blockquote>
+<p>MySQL官网（5.7版本）：<a class="link"   target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/" >https://dev.mysql.com/doc/refman/5.7/en/ <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+</blockquote>
+<h2 id="1-1-MySQL架构组件"><a href="#1-1-MySQL架构组件" class="headerlink" title="1.1 MySQL架构组件"></a>1.1 MySQL架构组件</h2><p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/MySQL%E6%9E%B6%E6%9E%84/1.png"
+                     
+                ></p>
+<p>MySQL主要有如下组件构成：</p>
+<ul>
+<li><p><strong>Connectors</strong>：连接组件：</p>
+<ul>
+<li>向外界的其他应用程序提供连接接口，实现外部程序访问MySQL，与MySQL进行交互</li>
+</ul>
+</li>
+<li><p><strong>Management Service&amp;Utilities</strong>：服务管理与工具组件</p>
+<ul>
+<li>提供MySQL系统管理、安全管理、权限校验、系统表管理、主从复制、集群等模块功能</li>
+</ul>
+</li>
+<li><p><strong>Connection Pool</strong>：连接池管理</p>
+<ul>
+<li>负责外部连接MySQL校验、线程池的维护、线程重用、连接限制等，当一个外部连接成功连接MySQL之后，MySQL将会为其分配一个线程与固定的内存与该客户端进行交互，当此次会话结束后，线程将重回线程池；</li>
+</ul>
+</li>
+<li><p><strong>SQL Interface</strong>：MySQL对外提供的一系列功能性接口方法，例如我们调用存储过程、创建视图、触发器等都是调用对应的接口来实现对应的功能</p>
+</li>
+<li><p><strong>Parser</strong>：MySQL语法解析器，将对应的SQL进行解析、生成解析树，并对SQL语句进行语法校验；最后生成预处理报告，交由优化器进行优化</p>
+</li>
+<li><p><strong>Optimizer</strong>：优化器；我们实际发送的SQL语句并不是MySQL真正执行的SQL语句，优化器会有一系列成本计算方法来帮我们计算出一个最佳效率的SQL语句</p>
+</li>
+<li><p><strong>Cache &amp; Buffer</strong>：查询缓存以及数据页缓冲模块</p>
+</li>
+<li><p><strong>Storage Engine</strong>：存储引擎；存储引擎真正的负责了MySQL中数据的存储和提取，服务器通过API与存储引擎进行通信，不同的存储引擎具有功能不同，MySQL提供了插拔式存储引擎；</p>
+</li>
+<li><p><strong>File System</strong>：文件系统；主要是将数据存储在运行与裸设备的文件系统之上，并完成与存储引擎的交互。</p>
+</li>
+</ul>
+<h2 id="1-2-MySQL执行流程"><a href="#1-2-MySQL执行流程" class="headerlink" title="1.2 MySQL执行流程"></a>1.2 MySQL执行流程</h2><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/MySQL架构/4.png"
+                      style="zoom: 80%;" 
+                >
+
+<p>1）用户发送SQL语句来到MySQL服务端</p>
+<p>2）首先查询缓存，如果缓存有数据直接响应，如果没有进行下一步</p>
+<p>3）解析器进行解析SQL语句、预处理、经过优化器优化SQL语句等一系列操作，调用存储引擎</p>
+<p>4）存储引擎去磁盘上读取数据，最终将数据以MySQL的方式（即行和表的方式）响应给客户端，<strong>并且存入查询缓存一份</strong>。</p>
+<h3 id="1-2-1-解析器"><a href="#1-2-1-解析器" class="headerlink" title="1.2.1 解析器"></a>1.2.1 解析器</h3><p>一条SQL来到MySQL服务端如果没有命中缓存则接下来要被解析器（parser）进行语法的解析，首先将一段完整的SQL语句拆分成若干的词语（关键字、表名、列名、查询条件等），之后根据语法中的关键字进行关键字提取，生成一颗SQL解析树，之后进行SQL语句的预处理，例如检查列名是否存在，表是否存在，语法是否正确等；</p>
+<img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/MySQL架构/001.png"
+                      style="zoom: 67%;" 
+                >
+
+<h3 id="1-2-2-优化器"><a href="#1-2-2-优化器" class="headerlink" title="1.2.2 优化器"></a>1.2.2 优化器</h3><p>SQL语句在经过解析器得到语法树之后，MySQL内部提供有优化器对SQL语句进行优化处理，优化器会根据一系列成本计算规则来最终得出一个最优方案的SQL语句，例如自动选择小表驱动大表、max()、min()、count()等函数的优化、索引列的选择、覆盖索引优化等优化；</p>
+<p>在我们执行SQL语句时并不是我写什么SQL语句MySQL就真正执行什么SQL语句，因为MySQL内部有优化器对其进行优化，可能最终执行的不是我们原来的SQL语句，但不管怎么优化，SQL语句最终查询的结果肯定是一致的；</p>
+<h3 id="1-2-3-执行计划"><a href="#1-2-3-执行计划" class="headerlink" title="1.2.3 执行计划"></a>1.2.3 执行计划</h3><p>优化器对SQL语句优化之后，会产生一个”优化清单”，这个”优化清单”就是执行计划，执行计划中可以反映SQL语句是如何进行优化的，如：表的执行顺序、表的查询情况（子查询还是关联查询还是union等等..）、命中表分区情况、是否命中索引、使用了什么索引、扫描的行数、过滤的比例、是否全表扫描、是否覆盖索引、是否索引下推等等。</p>
+<p>有了这份”优化清单”（执行计划），我们就可以根据执行计划反馈的信息来针对性的优化SQL语句，执行计划是我们SQL调优的一个重要参考信息；</p>
+<h1 id="二、MySQL缓存"><a href="#二、MySQL缓存" class="headerlink" title="二、MySQL缓存"></a>二、MySQL缓存</h1><p>MySQL缓存机制就是缓存SQL文本及缓存结果，用KV形式保存在服务器内存中，如果运行相同的sql,服务器直接从缓存中去获取结果，不需要在再去解析、优化、执行sql。 <strong>如果这个表修改了（有修改的数据），那么使用这个表中的所有缓存将不再有效，查询缓存值得相关条目将被清空</strong>。表中得任何改变是指表中任何数据或者是结构的改变，包括<code>insert</code>、<code>update</code>、<code>delete</code>、<code>truncate</code>、<code>alter table</code>、<code>drop table</code>或者是<code>drop database</code> 包括那些映射到改变了的表的使用merge表的查询，显然，对于频繁更新的表，查询缓存不合适，对于一些不变的数据且有大量相同sql查询的表，查询缓存会节省很大的性能。</p>
+<h2 id="2-1-命中条件"><a href="#2-1-命中条件" class="headerlink" title="2.1 命中条件"></a>2.1 命中条件</h2><ul>
+<li>缓存是有命中条件的，并不是所有的SQL语句都会进入缓存查找。</li>
+</ul>
+<p>缓存存在一个hash表中，通过查询SQL，查询数据库，客户端协议等作为key，在判断命中前，mysql不会解析SQL，而是使用SQL去查询缓存，SQL上的任何字符的不同，如空格，注释，都会导致缓存不命中。如果查询有不确定的数据current_date()，那么查询完成后结果者不会被缓存，包含不确定的数的是不会放置到缓存中。</p>
+<h2 id="2-2-工作流程"><a href="#2-2-工作流程" class="headerlink" title="2.2 工作流程"></a>2.2 工作流程</h2><p>1）服务器接收SQL，以SQL和一些其他条件为key查找缓存。</p>
+<p>2）如果找到了缓存，则直接返回缓存。</p>
+<p>3）如果没有找到缓存，则执行SQL查询，包括原来的SQL解析，优化等。</p>
+<p>4）执行完SQL查询结果以后，将SQL查询结果放入查询缓存。</p>
+<h2 id="2-3-3-缓存说明"><a href="#2-3-3-缓存说明" class="headerlink" title="2.3.3 缓存说明"></a>2.3.3 缓存说明</h2><h3 id="2-3-1-开启查询缓存"><a href="#2-3-1-开启查询缓存" class="headerlink" title="2.3.1 开启查询缓存"></a>2.3.1 开启查询缓存</h3><p>MySQL默认是将查询缓存关闭的，我们需要在配置文件中打开。</p>
+<p>查询当前数据库缓存是否开启：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql<span class="operator">&gt;</span> <span class="keyword">select</span> @<span class="variable">@query_cache_type</span>;</span><br><span class="line"><span class="operator">+</span><span class="comment">--------------------+</span></span><br><span class="line"><span class="operator">|</span> @<span class="variable">@query_cache_type</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">--------------------+</span></span><br><span class="line"><span class="operator">|</span> OFF                <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">--------------------+</span></span><br><span class="line"><span class="number">1</span> <span class="type">row</span> <span class="keyword">in</span> <span class="keyword">set</span>, <span class="number">1</span> warning (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure></div>
+
+<p>修改配置文件：linux的是<code>/etc/my.conf</code>，Windows的是<code>C:\ProgramData\MySQL\MySQL Server 5.7\my.ini</code></p>
+<p>在mysqld组下面增加：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">query_cache_type<span class="operator">=</span><span class="number">1</span></span><br></pre></td></tr></table></figure></div>
+
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/MySQL%E6%9E%B6%E6%9E%84/120.png"
+                     
+                ></p>
+<p>重启MySQL服务：</p>
+<div class="highlight-container" data-rel="Shell"><figure class="iseeu highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl restart mysqld</span><br></pre></td></tr></table></figure></div>
+
+<p>再次查看：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql<span class="operator">&gt;</span> <span class="keyword">select</span> @<span class="variable">@query_cache_type</span>;</span><br><span class="line"><span class="operator">+</span><span class="comment">--------------------+</span></span><br><span class="line"><span class="operator">|</span> @<span class="variable">@query_cache_type</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">--------------------+</span></span><br><span class="line"><span class="operator">|</span> <span class="keyword">on</span>                 <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">--------------------+</span></span><br><span class="line"><span class="number">1</span> <span class="type">row</span> <span class="keyword">in</span> <span class="keyword">set</span>, <span class="number">1</span> warning (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure></div>
+
+<h3 id="2-3-2-缓存参数"><a href="#2-3-2-缓存参数" class="headerlink" title="2.3.2 缓存参数"></a>2.3.2 缓存参数</h3><p>输入如下命令查询缓存相关参数</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">show</span> variables <span class="keyword">like</span> &quot;%query_cache%&quot;;</span><br></pre></td></tr></table></figure></div>
+
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/MySQL%E6%9E%B6%E6%9E%84/2.png"
+                     
+                ></p>
+<ul>
+<li><p><strong>have_query_cache</strong>：当前数据库版本是否支持缓存  NO：不支持	YES：支持</p>
+</li>
+<li><p><strong>query_cache_limit</strong>：查询缓存能缓存单个SQL语句的最大容量，单位：B</p>
+</li>
+<li><p><strong>query_cache_size</strong>：缓存使用的总内存空间大小，单位是字节，这个值必须是1024的整数倍，否则MySQL实际分配可能跟这个数值不同</p>
+</li>
+<li><p><strong>query_cache_min_res_unit</strong>：分配内存块时的最小单位大小</p>
+<ul>
+<li>MySQL并不是一下子分配<code>query_cache_size</code>大小的内存作为缓存，而且将整个查询缓存的大小分成了若干个内存块，<code>query_cache_min_res_unit</code>正是决定这些块的大小，需要注意的是，即使缓存的数据没有达到一个缓存块大小也需要占用一个缓存块大小的空间。如果超出单个缓存块，那么需要申请多个缓存块，当查询完发现有缓存块内存多余，则会将多余的缓存块内存释放，造成缓存碎片。</li>
+</ul>
+</li>
+<li><p><strong>query_cache_type</strong>：是否打开缓存</p>
+<ul>
+<li>OFF(0)：关闭缓存（默认值）</li>
+<li>ON(1)：开启缓存（任意的select语句的结果集都会被缓存）</li>
+<li>DEMAND：只有明确写了SQL_CACHE的查询才会写入缓存</li>
+</ul>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> SQL_CACHE <span class="operator">*</span> <span class="keyword">from</span> t_goods;			<span class="comment">-- 将查询结果放入缓存（前提缓存是开启的）			</span></span><br><span class="line"><span class="keyword">select</span> SQL_NO_CACHE <span class="operator">*</span> <span class="keyword">from</span> t_goods;			<span class="comment">-- 不缓存查询结果</span></span><br></pre></td></tr></table></figure></div>
+</li>
+<li><p><strong>query_cache_wlock_invalidate</strong>：如果某个数据表被锁住，是否仍然从缓存中返回数据，默认是OFF，表示仍然可以返回。</p>
+</li>
+</ul>
+<h3 id="2-3-3-全局缓存状态"><a href="#2-3-3-全局缓存状态" class="headerlink" title="2.3.3 全局缓存状态"></a>2.3.3 全局缓存状态</h3><p>输入如下命令查询全局缓存状态：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">show</span> <span class="keyword">global</span> status <span class="keyword">like</span> <span class="string">&#x27;%Qcache%&#x27;</span>;</span><br></pre></td></tr></table></figure></div>
+
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/MySQL%E6%9E%B6%E6%9E%84/3.png"
+                     
+                ></p>
+<ul>
+<li><strong>Qcache_free_blocks</strong>：缓存池中空闲块的个数</li>
+<li><strong>Qcache_free_memory</strong>：缓存中空闲内存量</li>
+<li>&#x3D;&#x3D;<strong>Qcache_hits：缓存命中次数</strong>&#x3D;&#x3D;</li>
+<li>&#x3D;&#x3D;<strong>Qcache_inserts：缓存写入次数</strong>&#x3D;&#x3D;</li>
+<li><strong>Qcache_lowmen_prunes</strong>：因内存不足删除缓存次数</li>
+<li><strong>Qcache_not_cached</strong>：查询未被缓存次数，例如查询结果超出缓存块大小，查询中包含可变函数等，或者未查询到数据的行、或者SQL语句中使用了<code>SQL_NO_CACHE</code>等。</li>
+<li>&#x3D;&#x3D;<strong>Qcache_queries_in_cache：当前缓存中缓存的SQL数量</strong>&#x3D;&#x3D;</li>
+<li><strong>Qcache_total_blocks</strong>：缓存总block数</li>
+</ul>
+<h2 id="2-4-缓存的弊端"><a href="#2-4-缓存的弊端" class="headerlink" title="2.4 缓存的弊端"></a>2.4 缓存的弊端</h2><ul>
+<li><p>1）查询缓存的失效非常频繁，只要有对一个表的更新，这个表上的所有的查询缓存都会被清空。因此很可能你费劲地把结果存起来，还没使用呢，就被一个更新全清空了。对于更新压力大的数据库来说，查询缓存的命中率会非常低。<strong>因此读写非常频繁的业务场景，缓存开启还不如关闭效率高。</strong>除非你的业务有一张静态表，很长时间更新一次，比如系统配置表，那么这张表的查询才适合做查询缓存。</p>
+</li>
+<li><p>2）缓存和数据耦合在了一起，我们在开发中，缓存和数据应该是独立分开的，这样的话有利于单独进行扩容；比如缓存的配置需要更好的，数据库服务器的配置一般就行了；</p>
+</li>
+<li><p>3）不支持持久化、不支持可视化等；</p>
+</li>
+<li><p>4）<strong>大多数情况下，我们都是采用市面上比较成熟的软件来进行缓存，如redis、memcache等，这些软件不管是性能、功能、操作上都比MySQL缓存要强大的多，而且利于我们进行性能扩容（如搭建缓存集群）。</strong></p>
+</li>
+</ul>
+<blockquote>
+<p>MySQL官网上已经说明，在MySQL8.0及以上版本，MySQL的缓存功能已经被删除了</p>
+</blockquote>
+<h1 id="三、存储引擎"><a href="#三、存储引擎" class="headerlink" title="三、存储引擎"></a>三、存储引擎</h1><p>数据库存储引擎是数据库底层软件组织，数据库管理系统（DBMS）使用数据引擎进行创建、查询、更新和删除数据。不同的存储引擎提供不同的存储机制、索引技巧、锁定水平等功能，使用不同的存储引擎，还可以获得特定的功能。现在许多不同的数据库管理系统都支持多种不同的数据引擎。MySQL的核心就是插件式存储引擎。</p>
+<p>Oracle，SQL Server等数据库只有一种存储引擎。MySQL提供了插件式的存储引擎架构。所以MySQL存在多种存储引擎，可以根据需要使用相应引擎，或者编写存储引擎；</p>
+<h2 id="3-1-查看存储引擎"><a href="#3-1-查看存储引擎" class="headerlink" title="3.1 查看存储引擎"></a>3.1 查看存储引擎</h2><div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">show</span> engines;</span><br></pre></td></tr></table></figure></div>
+
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/MySQL%E7%B4%A2%E5%BC%95/7.png"
+                     
+                ></p>
+<p>查看当前数据库默认使用什么存储引擎：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">show</span> variables <span class="keyword">like</span> <span class="string">&#x27;%storage_engine%&#x27;</span>;</span><br></pre></td></tr></table></figure></div>
+
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/MySQL%E7%B4%A2%E5%BC%95/8.png"
+                     
+                ></p>
+<h2 id="3-2-修改默认存储引擎"><a href="#3-2-修改默认存储引擎" class="headerlink" title="3.2 修改默认存储引擎"></a>3.2 修改默认存储引擎</h2><p>可以看到MySQL默认使用的存储引擎是InnoDB，如果想要修改MySQL的存储引擎可以有如下操作</p>
+<p>1）创建表的时候指定存储引擎</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> `demo1` (</span><br><span class="line">	`id` <span class="type">int</span>(<span class="number">11</span>) <span class="keyword">NOT</span> <span class="keyword">NULL</span> AUTO_INCREMENT,</span><br><span class="line">	`name` <span class="type">varchar</span>(<span class="number">20</span>) <span class="keyword">DEFAULT</span> <span class="keyword">NULL</span>,</span><br><span class="line">	<span class="keyword">PRIMARY</span> KEY (`id`)</span><br><span class="line">) ENGINE<span class="operator">=</span>MyISAM <span class="keyword">default</span> CHARSET<span class="operator">=</span>utf8;			<span class="comment">-- 使用Myisam存储引擎</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> `demo2` (</span><br><span class="line">	`id` <span class="type">int</span>(<span class="number">11</span>) <span class="keyword">NOT</span> <span class="keyword">NULL</span> AUTO_INCREMENT,</span><br><span class="line">	`name` <span class="type">varchar</span>(<span class="number">20</span>) <span class="keyword">DEFAULT</span> <span class="keyword">NULL</span>,</span><br><span class="line">	<span class="keyword">PRIMARY</span> KEY (`id`)</span><br><span class="line">) ENGINE<span class="operator">=</span>InnoDB AUTO_INCREMENT<span class="operator">=</span><span class="number">5</span> <span class="keyword">DEFAULT</span> CHARSET<span class="operator">=</span>utf8;		<span class="comment">-- 使用InnoDB</span></span><br></pre></td></tr></table></figure></div>
+
+<p>2）基于已经创建好的表修改存储引擎</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">mysql<span class="operator">&gt;</span> <span class="keyword">alter</span> <span class="keyword">table</span> demo2 engine<span class="operator">=</span>myisam;</span><br><span class="line">Query OK, <span class="number">0</span> <span class="keyword">rows</span> affected (<span class="number">0.01</span> sec)</span><br><span class="line">Records: <span class="number">0</span>  Duplicates: <span class="number">0</span>  Warnings: <span class="number">0</span></span><br><span class="line"></span><br><span class="line">mysql<span class="operator">&gt;</span></span><br></pre></td></tr></table></figure></div>
+
+<h2 id="3-3-常见存储引擎"><a href="#3-3-常见存储引擎" class="headerlink" title="3.3 常见存储引擎"></a>3.3 常见存储引擎</h2><table>
+<thead>
+<tr>
+<th>特点</th>
+<th>InnoDB</th>
+<th>MyISAM</th>
+<th>MEMORY</th>
+<th>MERGE</th>
+<th>NDB</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>存储限制</td>
+<td>64TB</td>
+<td>有</td>
+<td>有</td>
+<td>没有</td>
+<td>有</td>
+</tr>
+<tr>
+<td>事务安全</td>
+<td>支持</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>锁机制</td>
+<td>行锁、表锁</td>
+<td>表锁</td>
+<td>表锁</td>
+<td>表锁</td>
+<td>行锁</td>
+</tr>
+<tr>
+<td>B树索引</td>
+<td>支持</td>
+<td>支持</td>
+<td>支持</td>
+<td>支持</td>
+<td>支持</td>
+</tr>
+<tr>
+<td>哈希索引</td>
+<td></td>
+<td></td>
+<td>支持</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>全文索引</td>
+<td>支持(5.6版本之后)</td>
+<td>支持</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>集群索引</td>
+<td>支持</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>数据索引</td>
+<td>支持</td>
+<td></td>
+<td>支持</td>
+<td></td>
+<td>支持</td>
+</tr>
+<tr>
+<td>索引缓存</td>
+<td>支持</td>
+<td>支持</td>
+<td>支持</td>
+<td>支持</td>
+<td>支持</td>
+</tr>
+<tr>
+<td>数据可压缩</td>
+<td></td>
+<td>支持</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>空间使用</td>
+<td>高</td>
+<td>低</td>
+<td>N&#x2F;A</td>
+<td>低</td>
+<td>低</td>
+</tr>
+<tr>
+<td>内存使用</td>
+<td>高</td>
+<td>低</td>
+<td>中等</td>
+<td>低</td>
+<td>高</td>
+</tr>
+<tr>
+<td>批量插入速度</td>
+<td>低</td>
+<td>高</td>
+<td>高</td>
+<td>高</td>
+<td>高</td>
+</tr>
+<tr>
+<td>支持外键</td>
+<td>支持</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody></table>
+<p><strong>在各种常用存储引擎中，只有InnoDB支持事务与外键。</strong></p>
+<h2 id="3-4-存储引擎的特点"><a href="#3-4-存储引擎的特点" class="headerlink" title="3.4 存储引擎的特点"></a>3.4 存储引擎的特点</h2><h3 id="3-4-1-InnoDB-存储引擎"><a href="#3-4-1-InnoDB-存储引擎" class="headerlink" title="3.4.1 InnoDB 存储引擎"></a>3.4.1 InnoDB 存储引擎</h3><p>InnoDB存储引擎是MySQL的默认存储引擎。InnoDB存储引擎提供了具有提交、回滚、崩溃恢复能力的事务安全。而且InnoDB对事务处理的能力，也是其他存储引擎不能比拟的。并且会占用更多的磁盘空间以保留数据和索引。</p>
+<ul>
+<li>InnoDB 存储引擎特点<ul>
+<li>事务：支持事务的ACID</li>
+<li>外键：支持外键</li>
+<li>锁粒度：行锁、表锁</li>
+<li>存储形式为：**.frm   表定义文件   .ibd   数据文件和索引文件**</li>
+</ul>
+</li>
+</ul>
+<h3 id="3-4-2-MyISAM-存储引擎"><a href="#3-4-2-MyISAM-存储引擎" class="headerlink" title="3.4.2 MyISAM 存储引擎"></a>3.4.2 MyISAM 存储引擎</h3><p>在MySQL5.1及之前的版本，MySIAM是默认的存储引擎。MyISAM是基于ISAM引擎发展起来的，增加了许多有用的扩展。MyISAM的优势在于占用空间小，处理速度快。缺点是不支持事务的&#x3D;&#x3D;<strong>完整性和修改并发</strong>&#x3D;&#x3D;。</p>
+<h4 id="3-4-2-1-MyISAM与InnoDB对比"><a href="#3-4-2-1-MyISAM与InnoDB对比" class="headerlink" title="3.4.2.1 MyISAM与InnoDB对比"></a>3.4.2.1 MyISAM与InnoDB对比</h4><table>
+<thead>
+<tr>
+<th></th>
+<th><strong>Innodb</strong></th>
+<th><strong>Myisam</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>存储文件</strong></td>
+<td>.frm   表定义文件   .ibd   数据索引文件</td>
+<td>.frm   表定义文件   .myd   数据文件   .myi   索引文件</td>
+</tr>
+<tr>
+<td><strong>锁</strong></td>
+<td>行锁、表锁</td>
+<td>表锁</td>
+</tr>
+<tr>
+<td><strong>事务</strong></td>
+<td>支持</td>
+<td>不支持</td>
+</tr>
+<tr>
+<td><strong>CRDU</strong></td>
+<td>读、写</td>
+<td>读多</td>
+</tr>
+<tr>
+<td><strong>count</strong></td>
+<td>扫表</td>
+<td>专门存储的地方</td>
+</tr>
+<tr>
+<td><strong>索引结构</strong></td>
+<td>B+Tree</td>
+<td>B+Tree</td>
+</tr>
+<tr>
+<td><strong>应用场景</strong></td>
+<td>事务</td>
+<td>读取性能</td>
+</tr>
+<tr>
+<td><strong>外键</strong></td>
+<td>支持</td>
+<td>不支持</td>
+</tr>
+</tbody></table>
+<ul>
+<li><p><strong>存储文件</strong></p>
+<ul>
+<li>Innodb：.frm   表定义文件   .ibd   数据文件</li>
+<li>MyIsam：.frm   表定义文件   .myd   数据文件   .myi   索引文件</li>
+</ul>
+</li>
+<li><p><strong>锁</strong></p>
+<ul>
+<li>Innodb：锁粒度为行级锁，操作某一条数据时，只锁某一行，对其他行没有影响</li>
+<li>MyIsam：锁粒度为表级锁，操作某一条数据时，锁整一张表</li>
+</ul>
+</li>
+<li><p>事务支持：</p>
+<ul>
+<li>Innodb：支持</li>
+<li>MyIsam：不支持</li>
+</ul>
+</li>
+<li><p>外键支持：</p>
+<ul>
+<li>Innodb：支持</li>
+<li>MyIsam：不支持</li>
+</ul>
+</li>
+<li><p><strong>应用场景</strong></p>
+<ul>
+<li>Innodb：关注事务要求性高的应用场景，适用于高并发<strong>修改</strong>场景</li>
+<li>MyIsam：更关注读取的性能，不适用于高并发下<strong>频繁的修改</strong>数据</li>
+</ul>
+</li>
+<li><p>查看mysql数据的存储路径：</p>
+</li>
+</ul>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">show</span> variables <span class="keyword">like</span> <span class="string">&#x27;%dir%&#x27;</span>;</span><br></pre></td></tr></table></figure></div>
+
+<ul>
+<li><strong>Linux下的：</strong></li>
+</ul>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/MySQL%E7%B4%A2%E5%BC%95/9.png"
+                     
+                ></p>
+<p><strong>其中datadir就是MySQL存放数据的目录</strong></p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/MySQL%E7%B4%A2%E5%BC%95/11.png"
+                     
+                ></p>
+<ul>
+<li><strong>再查看我在Winodws本机的：</strong></li>
+</ul>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/MySQL%E7%B4%A2%E5%BC%95/10.png"
+                     
+                ></p>
+<p><strong>MyISAM不支持事务、也不支持外键，但其访问速度快，对事务完整性没有要求。</strong> </p>
+<p>MySIAM表支持三种不同存储格式：</p>
+<p><strong>1）静态表</strong> </p>
+<p>静态表是默认的存储格式，静态表中的字段都是非变长的字段（char），优点是：存储非常迅速，容易缓存，出现故障容易恢复；缺点是：占用的空间通常比动态表多。</p>
+<p><strong>2）动态表</strong></p>
+<p>动态表的字段是变长的（varchar），优点是：占用的空间相对较少，但是频繁地更新删除记录会产生碎片，需要定期改善性能，并且出现故障的时候恢复相对比较困难。 </p>
+<p><strong>3）压缩表</strong></p>
+<p>MyISAM可以使用myisampack工具压缩表数据，压缩表占用磁盘空间小，每个记录是被单独压缩的，所以只有非常小的访问开支。 </p>
+<h4 id="3-4-2-2-批量插入性能测试"><a href="#3-4-2-2-批量插入性能测试" class="headerlink" title="3.4.2.2 批量插入性能测试"></a>3.4.2.2 批量插入性能测试</h4><div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> `user_myisam`  (</span><br><span class="line">  `id` <span class="type">int</span>(<span class="number">10</span>) <span class="keyword">NOT</span> <span class="keyword">NULL</span> AUTO_INCREMENT,</span><br><span class="line">  `username` <span class="type">varchar</span>(<span class="number">50</span>) <span class="type">CHARACTER</span> <span class="keyword">SET</span> utf8mb4 <span class="keyword">COLLATE</span> utf8mb4_general_ci <span class="keyword">NULL</span> <span class="keyword">DEFAULT</span> <span class="keyword">NULL</span>,</span><br><span class="line">  <span class="keyword">PRIMARY</span> KEY (`id`) <span class="keyword">USING</span> BTREE</span><br><span class="line">) ENGINE <span class="operator">=</span> MyISAM AUTO_INCREMENT <span class="operator">=</span> <span class="number">1</span> <span class="type">CHARACTER</span> <span class="keyword">SET</span> <span class="operator">=</span> utf8mb4 <span class="keyword">COLLATE</span> <span class="operator">=</span> utf8mb4_general_ci ROW_FORMAT <span class="operator">=</span> <span class="keyword">Dynamic</span>;			<span class="comment">-- 存储引擎为myisam</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> `user_innodb`  (</span><br><span class="line">  `id` <span class="type">int</span>(<span class="number">10</span>) <span class="keyword">NOT</span> <span class="keyword">NULL</span> AUTO_INCREMENT,</span><br><span class="line">  `username` <span class="type">varchar</span>(<span class="number">50</span>) <span class="type">CHARACTER</span> <span class="keyword">SET</span> utf8mb4 <span class="keyword">COLLATE</span> utf8mb4_general_ci <span class="keyword">NULL</span> <span class="keyword">DEFAULT</span> <span class="keyword">NULL</span>,</span><br><span class="line">  <span class="keyword">PRIMARY</span> KEY (`id`) <span class="keyword">USING</span> BTREE</span><br><span class="line">) ENGINE <span class="operator">=</span> InnoDB AUTO_INCREMENT <span class="operator">=</span> <span class="number">1</span> <span class="type">CHARACTER</span> <span class="keyword">SET</span> <span class="operator">=</span> utf8mb4 <span class="keyword">COLLATE</span> <span class="operator">=</span> utf8mb4_general_ci ROW_FORMAT <span class="operator">=</span> <span class="keyword">Dynamic</span>;			<span class="comment">-- 存储引擎为innodb</span></span><br><span class="line"></span><br><span class="line"><span class="comment">--  创建存储过程批量插入数据</span></span><br><span class="line"><span class="keyword">create</span> <span class="keyword">procedure</span> innodb_insert(count <span class="type">int</span>)</span><br><span class="line"><span class="keyword">begin</span></span><br><span class="line">		<span class="keyword">declare</span> i <span class="type">int</span> <span class="keyword">default</span> <span class="number">1</span>;</span><br><span class="line">		while i<span class="operator">&lt;=</span>count do </span><br><span class="line">			<span class="keyword">INSERT</span> <span class="keyword">INTO</span> user_innodb <span class="keyword">values</span>(i,uuid());</span><br><span class="line">			<span class="keyword">set</span> i<span class="operator">=</span>i<span class="operator">+</span><span class="number">1</span>;</span><br><span class="line">		<span class="keyword">end</span> while;</span><br><span class="line"><span class="keyword">end</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 创建存储过程批量插入数据</span></span><br><span class="line"><span class="keyword">create</span> <span class="keyword">procedure</span> myisam_insert(count <span class="type">int</span>)</span><br><span class="line"><span class="keyword">begin</span></span><br><span class="line">		<span class="keyword">declare</span> i <span class="type">int</span> <span class="keyword">default</span> <span class="number">1</span>;</span><br><span class="line">		while i<span class="operator">&lt;=</span>count do </span><br><span class="line">			<span class="keyword">INSERT</span> <span class="keyword">INTO</span> user_myisam <span class="keyword">values</span>(i,uuid());</span><br><span class="line">			<span class="keyword">set</span> i<span class="operator">=</span>i<span class="operator">+</span><span class="number">1</span>;</span><br><span class="line">		<span class="keyword">end</span> while;</span><br><span class="line"><span class="keyword">end</span>;</span><br></pre></td></tr></table></figure></div>
+
+<ul>
+<li>执行innodb批量插入5W条记录查看其性能如下：</li>
+</ul>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">call</span> innodb_insert(<span class="number">50000</span>);</span><br></pre></td></tr></table></figure></div>
+
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/MySQL%E7%B4%A2%E5%BC%95/12.png"
+                     
+                ></p>
+<ul>
+<li>执行MyISAM批量插入5W条记录查看其性能如下：</li>
+</ul>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">call</span> myisam_insert(<span class="number">50000</span>);</span><br></pre></td></tr></table></figure></div>
+
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/MySQL%E7%B4%A2%E5%BC%95/13.png"
+                     
+                ></p>
+<p>对比发现innodb存储引擎插入5W条记录需要花费7.32s，而MyISAM存储引擎只需要0.73s。</p>
+<h4 id="3-4-2-3-MyISAM压缩表"><a href="#3-4-2-3-MyISAM压缩表" class="headerlink" title="3.4.2.3 MyISAM压缩表"></a>3.4.2.3 MyISAM压缩表</h4><p>我们知道MyISAM存储引擎中，数据的存储文件为.frm（表结构文件）、.myd（数据文件）、.myi（索引文件），而在Myisam引擎中，是可以对表数据文件进行压缩的。</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/MySQL%E7%B4%A2%E5%BC%95/14.png"
+                     
+                ></p>
+<p>使用myisampack压缩命令压缩数据文件</p>
+<div class="highlight-container" data-rel="Shell"><figure class="iseeu highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">myisampack user_myisam			# 不用加后缀</span><br></pre></td></tr></table></figure></div>
+
+<p>再次查看数据文件大小：</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/MySQL%E7%B4%A2%E5%BC%95/15.png"
+                     
+                ></p>
+<p><strong>MySIAM存储引擎的业务场景：</strong></p>
+<ul>
+<li><p>不需要事务支持的业务（例如转账就不行）。</p>
+</li>
+<li><p>一般为读数据比较多的应用，读写都频繁场景不适合（锁机制问题）</p>
+</li>
+<li><p>以读为主的业务，例如：数据库系统表、日志、图片信息数据库</p>
+</li>
+<li><p>使用读写分离的MySQL读库可以使用MyISAM。</p>
+</li>
+</ul>
+<h3 id="3-4-3-Merge-存储引擎"><a href="#3-4-3-Merge-存储引擎" class="headerlink" title="3.4.3 Merge 存储引擎"></a>3.4.3 Merge 存储引擎</h3><p>Merge 用于将一系列等同的MyISAM表以逻辑方式组合在一起，并作为一个对象引用它。这些MyISAM表必须结构完全相同。Merge 表本身没有数据，对Merge 类型的表进行查询、更新、删除的操作，就是对内部的MyISAM表进行的，Merge 表的优点在于可以突破对单个MyISAM表大小的限制，通过将不同的表分布在多个磁盘上，可以有效的改善Merge 表的访问效率。 </p>
+<p>Merge 数据表的定义里可以包括一个INSERT_METHOD选项，这个选项的可取值是NO、FIRST、LAST，他们的含义依次是禁止插入、插入到第一个子表、插入到最后一个子表。</p>
+<p>创建三张表：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> user_01(</span><br><span class="line">	id <span class="type">int</span>,</span><br><span class="line">	username <span class="type">varchar</span>(<span class="number">10</span>)</span><br><span class="line">) engine <span class="operator">=</span> myisam <span class="keyword">default</span> charset<span class="operator">=</span>utf8;</span><br><span class="line"></span><br><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> user_02(</span><br><span class="line">	id <span class="type">int</span>,</span><br><span class="line">	username <span class="type">varchar</span>(<span class="number">10</span>)</span><br><span class="line">) engine <span class="operator">=</span> myisam <span class="keyword">default</span> charset<span class="operator">=</span>utf8;</span><br><span class="line"></span><br><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> user_all(</span><br><span class="line">	id <span class="type">int</span>,</span><br><span class="line">	username <span class="type">varchar</span>(<span class="number">10</span>)</span><br><span class="line">) engine<span class="operator">=</span><span class="keyword">merge</span> <span class="keyword">union</span> <span class="operator">=</span> (user_01,user_02) INSERT_METHOD<span class="operator">=</span><span class="keyword">LAST</span> <span class="keyword">default</span> charset<span class="operator">=</span>utf8;</span><br></pre></td></tr></table></figure></div>
+
+<p>2）在表中插入数据</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> user_01 <span class="keyword">values</span>(<span class="number">1</span>,<span class="string">&#x27;张三&#x27;</span>);</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> user_01 <span class="keyword">values</span>(<span class="number">2</span>,<span class="string">&#x27;李四&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> user_02 <span class="keyword">values</span>(<span class="number">10</span>,<span class="string">&#x27;王五&#x27;</span>);</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> user_02 <span class="keyword">values</span>(<span class="number">11</span>,<span class="string">&#x27;赵六&#x27;</span>);</span><br></pre></td></tr></table></figure></div>
+
+<p>3）查看表中的数据</p>
+<p>user_01表中数据：</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/MySQL%E7%B4%A2%E5%BC%95/16.png"
+                     
+                ></p>
+<p>user_02表中数据：</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/MySQL%E7%B4%A2%E5%BC%95/17.png"
+                     
+                ></p>
+<p>user_all表中数据：</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/MySQL%E7%B4%A2%E5%BC%95/18.png"
+                     
+                ></p>
+<p>4）在user_all表中插入一条数据：</p>
+<p>因为在创建Merge表时，INSERT_METHOD设置的是LAST，因此插入到最后面的表中。</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> user_all <span class="keyword">values</span>(<span class="number">100</span>,<span class="string">&#x27;钱七&#x27;</span>);</span><br></pre></td></tr></table></figure></div>
+
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/MySQL%E7%B4%A2%E5%BC%95/19.png"
+                     
+                ></p>
+<p>Merge表除了在创建的时候选择合并的表，还可以在创建之后再添加其他的表（表结构必须一致）</p>
+<p>1）创建一张新的表：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> user_03(</span><br><span class="line">	id <span class="type">int</span>,</span><br><span class="line">	username <span class="type">varchar</span>(<span class="number">10</span>)</span><br><span class="line">) engine <span class="operator">=</span> myisam <span class="keyword">default</span> charset<span class="operator">=</span>utf8;</span><br></pre></td></tr></table></figure></div>
+
+<p>2）插入数据：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> user_03 <span class="keyword">values</span>(<span class="number">1</span>,<span class="string">&#x27;小龙&#x27;</span>);</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> user_03 <span class="keyword">values</span>(<span class="number">2</span>,<span class="string">&#x27;小明&#x27;</span>);</span><br></pre></td></tr></table></figure></div>
+
+<p>3）修改user_all表</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">alter</span> <span class="keyword">table</span> user_all <span class="keyword">union</span> <span class="operator">=</span> (user_01,user_02,user_03);</span><br></pre></td></tr></table></figure></div>
+
+<p>4）查询user_all表：</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/MySQL%E7%B4%A2%E5%BC%95/20.png"
+                     
+                ></p>
+<p>5）在user_all插入一条新的数据，注意，此时的LAST表为user_03了；</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> user_all <span class="keyword">values</span>(<span class="number">1</span>,<span class="string">&#x27;小刚&#x27;</span>);</span><br></pre></td></tr></table></figure></div>
+
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/MySQL%E7%B4%A2%E5%BC%95/21.png"
+                     
+                ></p>
+<h3 id="3-4-4-Memory-存储引擎"><a href="#3-4-4-Memory-存储引擎" class="headerlink" title="3.4.4 Memory 存储引擎"></a>3.4.4 Memory 存储引擎</h3><p>Memory 存储引擎将表的数据存放在内存中。每个Memory表实际对应一个磁盘文件，格式是.frm ，该文件中只<br>存储表的结构，而其数据文件，都是存储在内存中，这样有利于数据的快速处理，提高整个表的效率。Memory<br>类型的表访问非常地快，因为他的数据是存放在内存中的，并且默认使用HASH索引 ，但是服务一旦关闭，表中的数据就会丢失。它对表的大小有要求，不能建立太大的表。所以，这类数据库只使用在相对较小的数据库表。</p>
+<ul>
+<li>创建一张Memory存储引擎的表</li>
+</ul>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> `user_memory`  (</span><br><span class="line">  `id` <span class="type">int</span>(<span class="number">10</span>) <span class="keyword">NOT</span> <span class="keyword">NULL</span> AUTO_INCREMENT,</span><br><span class="line">  `username` <span class="type">varchar</span>(<span class="number">50</span>) <span class="type">CHARACTER</span> <span class="keyword">SET</span> utf8mb4 <span class="keyword">COLLATE</span> utf8mb4_general_ci <span class="keyword">NULL</span> <span class="keyword">DEFAULT</span> <span class="keyword">NULL</span>,</span><br><span class="line">  <span class="keyword">PRIMARY</span> KEY (`id`) 				<span class="comment">-- memory表的索引默认是hash类型</span></span><br><span class="line">) ENGINE <span class="operator">=</span> memory AUTO_INCREMENT <span class="operator">=</span> <span class="number">1</span> <span class="type">CHARACTER</span> <span class="keyword">SET</span> <span class="operator">=</span> utf8mb4 ;</span><br><span class="line"></span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> user_memory <span class="keyword">values</span>(<span class="number">1</span>,<span class="string">&#x27;zs&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> user_memory <span class="keyword">values</span>(<span class="number">2</span>,<span class="string">&#x27;ls&#x27;</span>);</span><br></pre></td></tr></table></figure></div>
+
+<p>查看磁盘存储文件<code>/var/lib/mysql/test</code></p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/MySQL%E7%B4%A2%E5%BC%95/001.png"
+                     
+                ></p>
+<blockquote>
+<p>发现只有表定义文件（.frm），memory的表数据是存储在内存中的。</p>
+</blockquote>
+<ul>
+<li>我们编写一个存储过程，批量插入300W数据</li>
+</ul>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">create</span> <span class="keyword">procedure</span> memory_insert(count <span class="type">int</span>)</span><br><span class="line"><span class="keyword">begin</span></span><br><span class="line">		<span class="keyword">declare</span> i <span class="type">int</span> <span class="keyword">default</span> <span class="number">1</span>;</span><br><span class="line">		while i<span class="operator">&lt;=</span>count do </span><br><span class="line">			<span class="keyword">INSERT</span> <span class="keyword">INTO</span> user_memory <span class="keyword">values</span>(i,uuid(),<span class="built_in">CEILING</span>(RAND()<span class="operator">*</span><span class="number">90</span><span class="operator">+</span><span class="number">10</span>));</span><br><span class="line">			<span class="keyword">set</span> i<span class="operator">=</span>i<span class="operator">+</span><span class="number">1</span>;</span><br><span class="line">		<span class="keyword">end</span> while;</span><br><span class="line"><span class="keyword">end</span>;</span><br></pre></td></tr></table></figure></div>
+
+<ul>
+<li>执行存储过程</li>
+</ul>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">call</span> memory_insert(<span class="number">3000000</span>);</span><br></pre></td></tr></table></figure></div>
+
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/MySQL%E7%B4%A2%E5%BC%95/002.png"
+                     
+                ></p>
+<blockquote>
+<p>出现：ERROR 1114 (HY000): The table ‘user_memory’ is full错误</p>
+</blockquote>
+<p>在MySQL中，有两个参数影响着memory表的使用：</p>
+<ul>
+<li><code>max_heap_table_size</code>：memory表能使用的最大内存大小</li>
+<li><code>tmp_table_size</code>：memory表超过此参数值将转化为磁盘表（即使转换为磁盘表，服务器重启后，数据仍会丢失）。</li>
+</ul>
+<p>出现上面错误的原因是MySQL给Memory表分配的默认内存大小是16MB，300W的数据远远超过了16MB的存储空间，我们可以通过修改<code>max_heap_table_size</code>变量，来提升Memory表的存储大小限制。</p>
+<ul>
+<li>查看<code>max_heap_table_size</code>大小。</li>
+</ul>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> @<span class="variable">@max_heap_table_size</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">select</span> @<span class="variable">@tmp_table_size</span>;</span><br></pre></td></tr></table></figure></div>
+
+<img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/MySQL索引/003.png"
+                      style="zoom:80%;" 
+                >
+
+<blockquote>
+<p>16777216B &#x2F; 1024K &#x2F; 1024M &#x3D;16‬M</p>
+</blockquote>
+<p>修改mysql配置文件（<code>/etc/my.cnf</code>），添加如下配置：</p>
+<div class="highlight-container" data-rel="Shell"><figure class="iseeu highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">max_heap_table_size=800M</span><br><span class="line">tmp_table_size=800M</span><br></pre></td></tr></table></figure></div>
+
+<p>重启mysql服务器：</p>
+<div class="highlight-container" data-rel="Shell"><figure class="iseeu highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl restart mysqld</span><br></pre></td></tr></table></figure></div>
+
+<p>再次插入300W数据：</p>
+<img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/MySQL索引/004.png"
+                      style="zoom:67%;" 
+                >
+
+<blockquote>
+<p>要注意的是，在mysql服务器重启之后，memory存储引擎的表中的数据都会被清空。</p>
+</blockquote>
+<p>使用Memory存储引擎需要注意如下几点：</p>
+<ul>
+<li>Memory不支持BLOB或TEXT列。</li>
+<li>Memory表在所有客户端之间共享</li>
+<li>Memory表内容被存在内存中，默认大小是16MB，通过<code>max_heap_table_size</code>参数维护，当超过此大小则会报错，Memory表中的内容超过<code>tmp_table_size</code>值则会采用磁盘表，此时速度低，重启服务器数据仍会丢失</li>
+<li>当你不再需要Memory表的内容之时，要释放被Memory表使用的内存，你应该执行<code>DELETE FROM</code>或<code>TRUNCATE TABLE</code>，或者整个地删除表（使用<code>DROP TABLE</code>）。</li>
+</ul>
+<p>例如：</p>
+<div class="highlight-container" data-rel="Shell"><figure class="iseeu highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">max_heap_table_size=300M</span><br><span class="line"></span><br><span class="line">tmp_table_size=100M</span><br></pre></td></tr></table></figure></div>
+
+<p>说明：memory表最大能存储300M的数据，其中100M数据存放在内存中，另外200M存放在磁盘中。</p>
+
+        </div>
+
+        
+            <div class="post-copyright-info w-full my-8 px-2 sm:px-6 md:px-8">
+                <div class="article-copyright-info-container">
+    <ul>
+        <li><strong>Title:</strong> MySQL架构</li>
+        <li><strong>Author:</strong> MinGe</li>
+        <li><strong>Created at
+                :</strong> 2023-06-10 09:11:00</li>
+        
+            <li>
+                <strong>Updated at
+                    :</strong> 2024-11-11 14:02:11
+            </li>
+        
+        <li>
+            <strong>Link:</strong> https://redefine.ohevan.com/2023/06/10/MySQL架构/
+        </li>
+        <li>
+            <strong>
+                License:
+            </strong>
+            
+
+            
+                This work is licensed under <a class="license" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0">CC BY-NC-SA 4.0</a>.
+            
+        </li>
+    </ul>
+</div>
+
+            </div>
+        
+
+        
+            <ul class="post-tags-box text-lg mt-1.5 flex-wrap justify-center flex md:hidden">
+                
+                    <li class="tag-item mx-0.5">
+                        <a href="/tags/java/">#java</a>&nbsp;
+                    </li>
+                
+                    <li class="tag-item mx-0.5">
+                        <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/">#数据库</a>&nbsp;
+                    </li>
+                
+            </ul>
+        
+
+        
+
+        
+            <div class="article-nav my-8 flex justify-between items-center px-2 sm:px-6 md:px-8">
+                
+                    <div class="article-prev border-border-color shadow-redefine-flat shadow-shadow-color-2 rounded-medium px-4 py-2 hover:shadow-redefine-flat-hover hover:shadow-shadow-color-2">
+                        <a class="prev"
+                        rel="prev"
+                        href="/2023/06/10/JDBC/"
+                        >
+                            <span class="left arrow-icon flex justify-center items-center">
+                                <i class="fa-solid fa-chevron-left"></i>
+                            </span>
+                            <span class="title flex justify-center items-center">
+                                <span class="post-nav-title-item">JDBC</span>
+                                <span class="post-nav-item">Prev posts</span>
+                            </span>
+                        </a>
+                    </div>
+                
+                
+                    <div class="article-next border-border-color shadow-redefine-flat shadow-shadow-color-2 rounded-medium px-4 py-2 hover:shadow-redefine-flat-hover hover:shadow-shadow-color-2">
+                        <a class="next"
+                        rel="next"
+                        href="/2023/06/10/MySQL%E4%BA%8B%E5%8A%A1/"
+                        >
+                            <span class="title flex justify-center items-center">
+                                <span class="post-nav-title-item">MySQL事务</span>
+                                <span class="post-nav-item">Next posts</span>
+                            </span>
+                            <span class="right arrow-icon flex justify-center items-center">
+                                <i class="fa-solid fa-chevron-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                
+            </div>
+        
+
+
+        
+    </div>
+
+    
+        <div class="toc-content-container">
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <div class="toc-title">On this page</div>
+        <div class="page-title">MySQL架构</div>
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81MySQL%E6%9E%B6%E6%9E%84%E4%B8%8E%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B"><span class="nav-text">一、MySQL架构与执行流程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-MySQL%E6%9E%B6%E6%9E%84%E7%BB%84%E4%BB%B6"><span class="nav-text">1.1 MySQL架构组件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-2-MySQL%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B"><span class="nav-text">1.2 MySQL执行流程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-1-%E8%A7%A3%E6%9E%90%E5%99%A8"><span class="nav-text">1.2.1 解析器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-2-%E4%BC%98%E5%8C%96%E5%99%A8"><span class="nav-text">1.2.2 优化器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-3-%E6%89%A7%E8%A1%8C%E8%AE%A1%E5%88%92"><span class="nav-text">1.2.3 执行计划</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81MySQL%E7%BC%93%E5%AD%98"><span class="nav-text">二、MySQL缓存</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-%E5%91%BD%E4%B8%AD%E6%9D%A1%E4%BB%B6"><span class="nav-text">2.1 命中条件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B"><span class="nav-text">2.2 工作流程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-3-3-%E7%BC%93%E5%AD%98%E8%AF%B4%E6%98%8E"><span class="nav-text">2.3.3 缓存说明</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-1-%E5%BC%80%E5%90%AF%E6%9F%A5%E8%AF%A2%E7%BC%93%E5%AD%98"><span class="nav-text">2.3.1 开启查询缓存</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-2-%E7%BC%93%E5%AD%98%E5%8F%82%E6%95%B0"><span class="nav-text">2.3.2 缓存参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-3-%E5%85%A8%E5%B1%80%E7%BC%93%E5%AD%98%E7%8A%B6%E6%80%81"><span class="nav-text">2.3.3 全局缓存状态</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-4-%E7%BC%93%E5%AD%98%E7%9A%84%E5%BC%8A%E7%AB%AF"><span class="nav-text">2.4 缓存的弊端</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E"><span class="nav-text">三、存储引擎</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-%E6%9F%A5%E7%9C%8B%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E"><span class="nav-text">3.1 查看存储引擎</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-%E4%BF%AE%E6%94%B9%E9%BB%98%E8%AE%A4%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E"><span class="nav-text">3.2 修改默认存储引擎</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-3-%E5%B8%B8%E8%A7%81%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E"><span class="nav-text">3.3 常见存储引擎</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-4-%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E7%9A%84%E7%89%B9%E7%82%B9"><span class="nav-text">3.4 存储引擎的特点</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-4-1-InnoDB-%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E"><span class="nav-text">3.4.1 InnoDB 存储引擎</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-4-2-MyISAM-%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E"><span class="nav-text">3.4.2 MyISAM 存储引擎</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-4-3-Merge-%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E"><span class="nav-text">3.4.3 Merge 存储引擎</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-4-4-Memory-%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E"><span class="nav-text">3.4.4 Memory 存储引擎</span></a></li></ol></li></ol></li></ol>
+
+    </div>
+</div>
+        </div>
+    
+</div>
+
+
+
+                
+
+            </div>
+
+            
+
+        </div>
+
+        <div class="main-content-footer">
+            <footer class="footer mt-5 py-5 h-auto text-base text-third-text-color relative border-t-2 border-t-border-color">
+    <div class="info-container py-3 text-center">
+        
+        <div class="text-center">
+            &copy;
+            
+              <span>2022</span>
+              -
+            
+            2024&nbsp;&nbsp;<i class="fa-solid fa-heart fa-beat" style="--fa-animation-duration: 0.5s; color: #f54545"></i>&nbsp;&nbsp;<a href="/">MinGe</a>
+            
+                
+                <p class="post-count space-x-0.5">
+                    <span>
+                        19 posts in total
+                    </span>
+                    
+                </p>
+            
+        </div>
+        
+        <div class="relative text-center lg:absolute lg:left-[20px] lg:top-1/2 lg:-translate-y-1/2 lg:text-left">
+            <span class="lg:block text-sm">POWERED BY <?xml version="1.0" encoding="utf-8"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg class="relative top-[2px] inline-block align-baseline" version="1.1" id="圖層_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="1rem" height="1rem" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve"><path fill="#0E83CD" d="M256.4,25.8l-200,115.5L56,371.5l199.6,114.7l200-115.5l0.4-230.2L256.4,25.8z M349,354.6l-18.4,10.7l-18.6-11V275H200v79.6l-18.4,10.7l-18.6-11v-197l18.5-10.6l18.5,10.8V237h112v-79.6l18.5-10.6l18.5,10.8V354.6z"/></svg><a target="_blank" class="text-base" href="https://hexo.io">Hexo</a></span>
+            <span class="text-sm lg:block">THEME&nbsp;<a class="text-base" target="_blank" href="https://github.com/EvanNotFound/hexo-theme-redefine">Redefine v2.7.1</a></span>
+        </div>
+        
+        
+            <div>
+                Blog up for <span class="odometer" id="runtime_days" ></span> days <span class="odometer" id="runtime_hours"></span> hrs <span class="odometer" id="runtime_minutes"></span> Min <span class="odometer" id="runtime_seconds"></span> Sec
+            </div>
+        
+        
+            <script data-swup-reload-script>
+                try {
+                    function odometer_init() {
+                    const elements = document.querySelectorAll('.odometer');
+                    elements.forEach(el => {
+                        new Odometer({
+                            el,
+                            format: '( ddd).dd',
+                            duration: 200
+                        });
+                    });
+                    }
+                    odometer_init();
+                } catch (error) {}
+            </script>
+        
+        
+        
+    </div>  
+</footer>
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="article-tools-list">
+        <!-- TOC aside toggle -->
+        
+            <li class="right-bottom-tools page-aside-toggle">
+                <i class="fa-regular fa-outdent"></i>
+            </li>
+        
+
+        <!-- go comment -->
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-side-tools-container">
+        <div class="side-tools-container">
+    <ul class="hidden-tools-list">
+        <li class="right-bottom-tools tool-font-adjust-plus flex justify-center items-center">
+            <i class="fa-regular fa-magnifying-glass-plus"></i>
+        </li>
+
+        <li class="right-bottom-tools tool-font-adjust-minus flex justify-center items-center">
+            <i class="fa-regular fa-magnifying-glass-minus"></i>
+        </li>
+
+        <li class="right-bottom-tools tool-dark-light-toggle flex justify-center items-center">
+            <i class="fa-regular fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+
+        <li class="right-bottom-tools tool-scroll-to-bottom flex justify-center items-center">
+            <i class="fa-regular fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="visible-tools-list">
+        <li class="right-bottom-tools toggle-tools-list flex justify-center items-center">
+            <i class="fa-regular fa-cog fa-spin"></i>
+        </li>
+        
+            <li class="right-bottom-tools tool-scroll-to-top flex justify-center items-center">
+                <i class="arrow-up fas fa-arrow-up"></i>
+                <span class="percent"></span>
+            </li>
+        
+        
+    </ul>
+</div>
+
+    </div>
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+
+</main>
+
+
+    
+<script src="/js/libs/Swup.min.js"></script>
+
+<script src="/js/libs/SwupSlideTheme.min.js"></script>
+
+<script src="/js/libs/SwupScriptsPlugin.min.js"></script>
+
+<script src="/js/libs/SwupProgressPlugin.min.js"></script>
+
+<script src="/js/libs/SwupScrollPlugin.min.js"></script>
+
+<script src="/js/libs/SwupPreloadPlugin.min.js"></script>
+
+<script>
+    const swup = new Swup({
+        plugins: [
+            new SwupScriptsPlugin({
+                optin: true,
+            }),
+            new SwupProgressPlugin(),
+            new SwupScrollPlugin({
+                offset: 80,
+            }),
+            new SwupSlideTheme({
+                mainElement: ".main-content-body",
+            }),
+            new SwupPreloadPlugin(),
+        ],
+        containers: ["#swup"],
+    });
+</script>
+
+
+
+
+
+
+
+<script src="/js/tools/imageViewer.js" type="module"></script>
+
+<script src="/js/utils.js" type="module"></script>
+
+<script src="/js/main.js" type="module"></script>
+
+<script src="/js/layouts/navbarShrink.js" type="module"></script>
+
+<script src="/js/tools/scrollTopBottom.js" type="module"></script>
+
+<script src="/js/tools/lightDarkSwitch.js" type="module"></script>
+
+<script src="/js/layouts/categoryList.js" type="module"></script>
+
+
+
+
+
+    
+<script src="/js/tools/codeBlock.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/layouts/lazyload.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/tools/runtime.js"></script>
+
+    
+<script src="/js/libs/odometer.min.js"></script>
+
+    
+<link rel="stylesheet" href="/assets/odometer-theme-minimal.css">
+
+
+
+
+  
+<script src="/js/libs/Typed.min.js"></script>
+
+  
+<script src="/js/plugins/typed.js" type="module"></script>
+
+
+
+
+
+
+
+
+    
+<script src="/js/libs/anime.min.js"></script>
+
+
+
+<div class="post-scripts" data-swup-reload-script>
+    
+        
+<script src="/js/tools/tocToggle.js" type="module"></script>
+
+<script src="/js/layouts/toc.js" type="module"></script>
+
+<script src="/js/plugins/tabs.js" type="module"></script>
+
+    
+</div>
+
+
+</body>
+</html>

@@ -1,0 +1,2125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="keywords" content="Hexo Theme Redefine">
+    
+    <meta name="author" content="MinGe">
+    <!-- preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    
+    <!--- Seo Part-->
+    
+    <link rel="canonical" href="http://example.com/2023/06/10/mysql事务/"/>
+    <meta name="robots" content="index,follow">
+    <meta name="googlebot" content="index,follow">
+    <meta name="revisit-after" content="1 days">
+    
+        <meta name="description" content="一、MySQL锁机制锁是计算机协调多个进程或线程并发访问某一资源的机制。在数据库中，除传统的计算资源（如CPU、RAM、I&#x2F;O等）的争用以外，数据也是一种供许多用户共享的资源。如何保证数据并发访问的一致性、有效性是所有数据库必须解决的一 个问题，锁冲突也是影响数据库并发访问性能的一个重要因素。从这个角度来说，锁对数据库而言显得尤其重要。 MySQL用到了很多这种锁机制，比如行锁，表锁等，">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MySQL事务">
+<meta property="og:url" content="http://example.com/2023/06/10/MySQL%E4%BA%8B%E5%8A%A1/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="一、MySQL锁机制锁是计算机协调多个进程或线程并发访问某一资源的机制。在数据库中，除传统的计算资源（如CPU、RAM、I&#x2F;O等）的争用以外，数据也是一种供许多用户共享的资源。如何保证数据并发访问的一致性、有效性是所有数据库必须解决的一 个问题，锁冲突也是影响数据库并发访问性能的一个重要因素。从这个角度来说，锁对数据库而言显得尤其重要。 MySQL用到了很多这种锁机制，比如行锁，表锁等，">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/images/MySQL%E4%BA%8B%E5%8A%A1/59.png">
+<meta property="og:image" content="http://example.com/images/MySQL%E4%BA%8B%E5%8A%A1/201.png">
+<meta property="og:image" content="http://example.com/images/MySQL%E4%BA%8B%E5%8A%A1/300.png">
+<meta property="og:image" content="http://example.com/images/MySQL%E4%BA%8B%E5%8A%A1/301.png">
+<meta property="og:image" content="http://example.com/images/MySQL%E4%BA%8B%E5%8A%A1/183.png">
+<meta property="og:image" content="http://example.com/images/MySQL%E4%BA%8B%E5%8A%A1/182.png">
+<meta property="og:image" content="http://example.com/images/MySQL%E4%BA%8B%E5%8A%A1/181.png">
+<meta property="og:image" content="http://example.com/images/MySQL%E4%BA%8B%E5%8A%A1/180.png">
+<meta property="og:image" content="http://example.com/images/MySQL%E4%BA%8B%E5%8A%A1/178.png">
+<meta property="og:image" content="http://example.com/images/MySQL%E4%BA%8B%E5%8A%A1/179.png">
+<meta property="og:image" content="http://example.com/images/MySQL%E4%BA%8B%E5%8A%A1/302.png">
+<meta property="og:image" content="http://example.com/images/MySQL%E4%BA%8B%E5%8A%A1/204.png">
+<meta property="og:image" content="http://example.com/images/MySQL%E4%BA%8B%E5%8A%A1/205.png">
+<meta property="og:image" content="http://example.com/images/MySQL%E4%BA%8B%E5%8A%A1/303.png">
+<meta property="og:image" content="http://example.com/images/MySQL%E4%BA%8B%E5%8A%A1/175.png">
+<meta property="og:image" content="http://example.com/images/MySQL%E4%BA%8B%E5%8A%A1/174.png">
+<meta property="og:image" content="http://example.com/images/MySQL%E4%BA%8B%E5%8A%A1/173.png">
+<meta property="og:image" content="http://example.com/images/MySQL%E4%BA%8B%E5%8A%A1/172.png">
+<meta property="og:image" content="http://example.com/images/MySQL%E4%BA%8B%E5%8A%A1/171.png">
+<meta property="og:image" content="http://example.com/images/MySQL%E4%BA%8B%E5%8A%A1/170.png">
+<meta property="og:image" content="http://example.com/images/MySQL%E4%BA%8B%E5%8A%A1/168.png">
+<meta property="og:image" content="http://example.com/images/MySQL%E4%BA%8B%E5%8A%A1/169.png">
+<meta property="og:image" content="http://example.com/images/MySQL%E4%BA%8B%E5%8A%A1/162.png">
+<meta property="og:image" content="http://example.com/images/MySQL%E4%BA%8B%E5%8A%A1/157.png">
+<meta property="og:image" content="http://example.com/images/MySQL%E4%BA%8B%E5%8A%A1/159.png">
+<meta property="og:image" content="http://example.com/images/MySQL%E4%BA%8B%E5%8A%A1/206.png">
+<meta property="og:image" content="http://example.com/images/MySQL%E4%BA%8B%E5%8A%A1/163.png">
+<meta property="og:image" content="http://example.com/images/MySQL%E4%BA%8B%E5%8A%A1/167.png">
+<meta property="og:image" content="http://example.com/images/MySQL%E4%BA%8B%E5%8A%A1/166.png">
+<meta property="og:image" content="http://example.com/images/MySQL%E4%BA%8B%E5%8A%A1/165.png">
+<meta property="og:image" content="http://example.com/images/MySQL%E4%BA%8B%E5%8A%A1/203.png">
+<meta property="article:published_time" content="2023-06-10T01:11:00.000Z">
+<meta property="article:modified_time" content="2024-11-11T07:42:42.915Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="数据库">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/images/MySQL%E4%BA%8B%E5%8A%A1/59.png">
+    
+    
+    <!--- Icon Part-->
+    <link rel="icon" type="image/png" href="/images/redefine-favicon.svg" sizes="192x192">
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/redefine-favicon.svg">
+    <meta name="theme-color" content="#A31F34">
+    <link rel="shortcut icon" href="/images/redefine-favicon.svg">
+    <!--- Page Info-->
+    
+    <title>
+        
+            MySQL事务 -
+        
+        MinGe 博客
+    </title>
+
+    
+<link rel="stylesheet" href="/fonts/Chillax/chillax.css">
+
+
+    <!--- Inject Part-->
+    
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+    
+        
+<link rel="stylesheet" href="/assets/build/styles.css">
+
+    
+
+    
+<link rel="stylesheet" href="/fonts/GeistMono/geist-mono.css">
+
+    
+<link rel="stylesheet" href="/fonts/Geist/geist.css">
+
+    <!--- Font Part-->
+    
+    
+    
+    
+    
+    
+
+    <script id="hexo-configurations">
+    window.config = {"hostname":"example.com","root":"/","language":"en"};
+    window.theme = {"articles":{"style":{"font_size":"16px","line_height":1.5,"image_border_radius":"14px","image_alignment":"center","image_caption":false,"link_icon":true,"title_alignment":"left","headings_top_spacing":{"h1":"3.2rem","h2":"2.4rem","h3":"1.9rem","h4":"1.6rem","h5":"1.4rem","h6":"1.3rem"}},"word_count":{"enable":true,"count":true,"min2read":true},"author_label":{"enable":true,"auto":false,"list":[]},"code_block":{"copy":true,"style":"mac","highlight_theme":{"light":"github","dark":"vs2015"},"font":{"enable":false,"family":null,"url":null}},"toc":{"enable":true,"max_depth":3,"number":false,"expand":true,"init_open":true},"copyright":{"enable":true,"default":"cc_by_nc_sa"},"lazyload":true,"recommendation":{"enable":false,"title":"推荐阅读","limit":3,"mobile_limit":2,"placeholder":"/images/wallhaven-wqery6-light.webp","skip_dirs":[]}},"colors":{"primary":"#A31F34","secondary":null,"default_mode":"dark"},"global":{"fonts":{"chinese":{"enable":false,"family":null,"url":null},"english":{"enable":false,"family":null,"url":null},"title":{"enable":false,"family":null,"url":null}},"content_max_width":"1000px","sidebar_width":"210px","hover":{"shadow":true,"scale":false},"scroll_progress":{"bar":false,"percentage":true},"website_counter":{"url":"https://cn.vercount.one/js","enable":false,"site_pv":true,"site_uv":true,"post_pv":true},"single_page":true,"preloader":{"enable":false,"custom_message":null},"open_graph":true,"google_analytics":{"enable":false,"id":null}},"home_banner":{"enable":true,"style":"fixed","image":{"light":"/images/wallhaven-wqery6-light.webp","dark":"/images/wallhaven-wqery6-dark.webp"},"title":"MinGe 博客","subtitle":{"text":[],"hitokoto":{"enable":false,"show_author":false,"api":"https://v1.hitokoto.cn"},"typing_speed":100,"backing_speed":80,"starting_delay":500,"backing_delay":1500,"loop":true,"smart_backspace":true},"text_color":{"light":"#fff","dark":"#d1d1b6"},"text_style":{"title_size":"2.8rem","subtitle_size":"1.5rem","line_height":1.2},"custom_font":{"enable":false,"family":null,"url":null},"social_links":{"enable":false,"style":"default","links":{"github":null,"instagram":null,"zhihu":null,"twitter":null,"email":null},"qrs":{"weixin":null}}},"plugins":{"feed":{"enable":false},"aplayer":{"enable":false,"type":"fixed","audios":[{"name":null,"artist":null,"url":null,"cover":null,"lrc":null}]},"mermaid":{"enable":false,"version":"9.3.0"}},"version":"2.7.1","navbar":{"auto_hide":false,"color":{"left":"#f78736","right":"#367df7","transparency":35},"width":{"home":"1200px","pages":"1000px"},"links":{"Home":{"path":"/","icon":"fa-regular fa-house"},"resume":{"path":"/2024/10/01/minge/","icon":"fa-regular"}},"search":{"enable":false,"preload":true}},"page_templates":{"friends_column":2,"tags_style":"blur"},"home":{"sidebar":{"enable":true,"position":"left","first_item":"menu","announcement":null,"show_on_mobile":true,"links":{"Archives":{"path":"/archives","icon":"fa-regular fa-archive"},"Tags":{"path":"/tags","icon":"fa-regular fa-tags"},"Categories":{"path":"/categories","icon":"fa-regular fa-folder"}}},"article_date_format":"auto","excerpt_length":200,"categories":{"enable":true,"limit":3},"tags":{"enable":true,"limit":3}},"footerStart":"2022/09/25 08:00:00"};
+    window.lang_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"};
+    window.data = {"masonry":false};
+  </script>
+    
+    <!--- Fontawesome Part-->
+    
+<link rel="stylesheet" href="/fontawesome/fontawesome.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/brands.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/solid.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/regular.min.css">
+
+    
+    
+    
+    
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+
+    
+        <span class="pjax-progress-bar"></span>
+<!--        <span class="swup-progress-icon">-->
+<!--            <i class="fa-solid fa-circle-notch fa-spin"></i>-->
+<!--        </span>-->
+    
+</div>
+
+
+
+<main class="page-container" id="swup">
+
+    
+
+    <div class="main-content-container">
+
+
+        <div class="main-content-header">
+            <header class="navbar-container px-6 md:px-12">
+
+    <div class="navbar-content ">
+        <div class="left">
+            
+            <a class="logo-title" href="/">
+                
+                MinGe 博客
+                
+            </a>
+        </div>
+
+        <div class="right">
+            <!-- PC -->
+            <div class="desktop">
+                <ul class="navbar-list">
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/"
+                                        >
+                                    <i class="fa-regular fa-house fa-fw"></i>
+                                    HOME
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/2024/10/01/minge/"
+                                        >
+                                    <i class="fa-regular fa-fw"></i>
+                                    RESUME
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                    
+                </ul>
+            </div>
+            <!-- Mobile -->
+            <div class="mobile">
+                
+                <div class="icon-item navbar-bar">
+                    <div class="navbar-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile sheet -->
+    <div class="navbar-drawer h-screen w-full absolute top-0 left-0 bg-background-color flex flex-col justify-between">
+        <ul class="drawer-navbar-list flex flex-col px-4 justify-center items-start">
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/"
+                        >
+                            <span>
+                                HOME
+                            </span>
+                            
+                                <i class="fa-regular fa-house fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/2024/10/01/minge/"
+                        >
+                            <span>
+                                RESUME
+                            </span>
+                            
+                                <i class="fa-regular fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+
+            
+            
+                
+                    
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full active"
+                           href="/archives"
+                        >
+                            <span>Archives</span>
+                            <i class="fa-regular fa-archive fa-sm fa-fw"></i>
+                        </a>
+                    </li>
+                
+                    
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full active"
+                           href="/tags"
+                        >
+                            <span>Tags</span>
+                            <i class="fa-regular fa-tags fa-sm fa-fw"></i>
+                        </a>
+                    </li>
+                
+                    
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full active"
+                           href="/categories"
+                        >
+                            <span>Categories</span>
+                            <i class="fa-regular fa-folder fa-sm fa-fw"></i>
+                        </a>
+                    </li>
+                
+            
+        </ul>
+
+        <div class="statistics flex justify-around my-2.5">
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/tags">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">3</div>
+        <div class="label text-third-text-color text-sm">Tags</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/categories">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">2</div>
+        <div class="label text-third-text-color text-sm">Categories</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">19</div>
+        <div class="label text-third-text-color text-sm">Posts</div>
+    </a>
+</div>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="main-content-body">
+
+            
+
+            <div class="main-content">
+
+                
+                    <div class="post-page-container flex relative justify-between box-border w-full h-full">
+    <div class="article-content-container">
+
+        <div class="article-title relative w-full">
+            
+                <div class="w-full flex items-center pt-6 justify-start">
+                    <h1 class="article-title-regular text-second-text-color tracking-tight text-4xl md:text-6xl font-semibold px-2 sm:px-6 md:px-8 py-3">MySQL事务</h1>
+                </div>
+            
+            </div>
+
+        
+            <div class="article-header flex flex-row gap-2 items-center px-2 sm:px-6 md:px-8">
+                <div class="avatar w-[46px] h-[46px] flex-shrink-0 rounded-medium border border-border-color p-[1px]">
+                    <img src="/images/redefine-avatar.svg">
+                </div>
+                <div class="info flex flex-col justify-between">
+                    <div class="author flex items-center">
+                        <span class="name text-default-text-color text-lg font-semibold">MinGe</span>
+                        
+                            <span class="author-label ml-1.5 text-xs px-2 py-0.5 rounded-small text-third-text-color border border-shadow-color-1">Lv3</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fa-regular fa-pen-fancy"></i>&nbsp;
+        <span class="desktop">2023-06-10 09:11</span>
+        <span class="mobile">2023-06-10 09:11</span>
+        <span class="hover-info">Created</span>
+    </span>
+    
+        <span class="article-date article-meta-item">
+            <i class="fa-regular fa-wrench"></i>&nbsp;
+            <span class="desktop">2024-11-11 15:42:42</span>
+            <span class="mobile">2024-11-11 15:42:42</span>
+            <span class="hover-info">Updated</span>
+        </span>
+    
+
+    
+        <span class="article-categories article-meta-item">
+            <i class="fa-regular fa-folders"></i>&nbsp;
+            <ul>
+                
+                
+                    
+                        
+                        <li>
+                            <a href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>&nbsp;
+                        </li>
+                    
+                    
+                
+            </ul>
+        </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fa-regular fa-tags"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+    
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        
+
+
+        <div class="article-content markdown-body px-2 sm:px-6 md:px-8 pb-8">
+            <h1 id="一、MySQL锁机制"><a href="#一、MySQL锁机制" class="headerlink" title="一、MySQL锁机制"></a>一、MySQL锁机制</h1><p><strong>锁是计算机协调多个进程或线程并发访问某一资源的机制。</strong>在数据库中，除传统的计算资源（如CPU、RAM、I&#x2F;O等）的争用以外，数据也是一种供许多用户共享的资源。如何保证数据并发访问的一致性、有效性是所有数据库必须解决的一 个问题，锁冲突也是影响数据库并发访问性能的一个重要因素。从这个角度来说，锁对数据库而言显得尤其重要。</p>
+<p>MySQL用到了很多这种锁机制，比如行锁，表锁等，读锁，写锁等，都是在做操作之前先上锁。这些锁统称为<strong>悲观锁(Pessimistic Lock)。</strong></p>
+<p>MySQL中的锁其最显著的特点是<strong>不同的存储引擎支持不同的锁机制</strong>。比如，MyISAM存储引擎采用的是<strong>表级锁</strong>（table-level locking）；InnoDB存储引擎既支持行级锁（row-level locking），也支持表级锁，但默认情况下是采用行级锁。 </p>
+<p><strong>表级锁：</strong>开销小，加锁快；不会出现死锁；锁定粒度大，发生锁冲突的概率最高，并发度最低。 </p>
+<p><strong>行级锁：</strong>开销大，加锁慢；会出现死锁；锁定粒度最小，发生锁冲突的概率最低，并发度也最高。 </p>
+<p><strong>页面锁：</strong>开销和加锁时间界于表锁和行锁之间；会出现死锁；锁定粒度界于表锁和行锁之间，并发度一般 </p>
+<h2 id="1-1-锁的分类"><a href="#1-1-锁的分类" class="headerlink" title="1.1 锁的分类"></a>1.1 锁的分类</h2><h3 id="1-1-1-按操作分"><a href="#1-1-1-按操作分" class="headerlink" title="1.1.1 按操作分"></a>1.1.1 按操作分</h3><ul>
+<li>读锁(共享锁)：Shared Locks（S）</li>
+<li>写锁(排它锁)：Exclusive Locks（X）</li>
+<li>意向共享锁：Intention Shared Locks（IS）</li>
+<li>意向排他锁：Intention Exclusive Locks（IX）</li>
+<li>自增锁：（AUTO-INC Locks）</li>
+</ul>
+<h3 id="1-1-2-按粒度分"><a href="#1-1-2-按粒度分" class="headerlink" title="1.1.2 按粒度分"></a>1.1.2 按粒度分</h3><ul>
+<li>表锁：Table Locks</li>
+<li>行锁：Row Locks</li>
+<li>页锁：Page Locks</li>
+</ul>
+<h3 id="1-1-3-按算法划分"><a href="#1-1-3-按算法划分" class="headerlink" title="1.1.3 按算法划分"></a>1.1.3 按算法划分</h3><ul>
+<li>记录锁：Record Locks</li>
+<li>间隙锁：Gap Locks</li>
+<li>临键锁：Next-key Locks</li>
+</ul>
+<h2 id="1-2-InnoDB-引擎锁"><a href="#1-2-InnoDB-引擎锁" class="headerlink" title="1.2 InnoDB 引擎锁"></a>1.2 InnoDB 引擎锁</h2><p>InnoDB与MyISAM的最大不同有两点：</p>
+<p>一是支持事务、外键；</p>
+<p>二是采用了行级锁。行级锁与表级锁本来就有许多不同之处，另外，事务的引入也带来了一些新问题。</p>
+<p>数据库的事务隔离越严格，并发副作用越小，但付出的代价也就越大，因为事务隔离实质上就是使事务在一定程度上 “串行化”进行，这显然与“并发”是矛盾的。同时，不同的应用对读一致性和事务隔离程度的要求也是不同的，比如许多应用对“不可重复读”和“幻读”并不敏 感，可能更关心数据并发访问的能力。</p>
+<ul>
+<li><strong>共享锁（S）：又称读锁。</strong>允许一个事务去读一行，阻止其他事务获取该行的排它锁</li>
+<li><strong>排他锁（Ｘ）：又称写锁。</strong>允许获取排他锁的事务更新数据，阻止其他事务获取排它锁、共享锁</li>
+</ul>
+<p>InnoDB引擎加锁：</p>
+<ul>
+<li>共享锁（S）：<code>SELECT * FROM table_name WHERE ... LOCK IN SHARE MODE</code></li>
+<li>排他锁（X）：<code>SELECT * FROM table_name WHERE ... FOR UPDATE</code></li>
+</ul>
+<h3 id="1-2-1-InnoDB行锁实现方式"><a href="#1-2-1-InnoDB行锁实现方式" class="headerlink" title="1.2.1 InnoDB行锁实现方式"></a>1.2.1 InnoDB行锁实现方式</h3><h4 id="如何锁一行的数据"><a href="#如何锁一行的数据" class="headerlink" title="如何锁一行的数据"></a>如何锁一行的数据</h4><p>如何在操作时锁定一行操作</p>
+<ul>
+<li>在查询之后添加<code>for update</code>，其它操作会被阻塞，直到锁定的行提交commit;</li>
+</ul>
+<p>查看行锁的使用信息：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">show</span> status <span class="keyword">like</span> <span class="string">&#x27;innodb_row_lock%&#x27;</span>;</span><br></pre></td></tr></table></figure></div>
+
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/MySQL%E4%BA%8B%E5%8A%A1/59.png"
+                     
+                ></p>
+<ul>
+<li><p><strong><code>Innodb_row_lock_current_waits</code>：当前有多少线程正在等待行锁</strong></p>
+</li>
+<li><p><strong><code>Innodb_row_lock_time</code>：行锁等待时间</strong></p>
+</li>
+<li><p><strong><code>Innodb_row_lock_time_avg</code>：行锁平均等待时间</strong></p>
+</li>
+<li><p><strong><code>Innodb_row_lock_time_max</code>：行锁最大等待时间</strong></p>
+</li>
+<li><p><strong><code>Innodb_row_lock_waits</code>：总的行锁等待数</strong></p>
+</li>
+</ul>
+<h3 id="1-2-2-InnoDB写锁"><a href="#1-2-2-InnoDB写锁" class="headerlink" title="1.2.2 InnoDB写锁"></a>1.2.2 InnoDB写锁</h3><p>在InnoDB中，排它锁允许当前排它锁事务更新数据，<strong>阻止其他事务获取排它锁、共享锁</strong>，获取排它锁可以在查询语句后面显示的加上<code>for update</code>，来获取排它锁，触发任何修改（update&#x2F;delete&#x2F;insert）操作也会获取该行的排它锁</p>
+<p>InnoDB行锁是通过给索引上的索引项加锁来实现的，只有通过索引条件检索数据，InnoDB才使用行级锁，<strong>否则，InnoDB将使用表锁！</strong><br>在实际应用中，要特别注意InnoDB行锁的这一特性，不然的话，可能导致大量的锁冲突，从而影响并发性能。</p>
+<p>（1）在不通过索引条件查询的时候，InnoDB确实使用的是表锁，而不是行锁。</p>
+<p>修改自动提交为0（手动提交）</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">set</span> autocommit<span class="operator">=</span><span class="number">0</span>;		<span class="comment">-- 设置本次自动提交为false(重启后不生效)</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">set</span> <span class="keyword">global</span> autocommit<span class="operator">=</span><span class="number">0</span>;	<span class="comment">-- 设置全局的自动提交为false(关闭自动提交,需要重启客户端)</span></span><br></pre></td></tr></table></figure></div>
+
+<p>查询提交状态，0为OFF（手动提交）,1为NO（自动提交，默认值）</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">show</span> variables <span class="keyword">like</span> &quot;autocommit&quot;;</span><br></pre></td></tr></table></figure></div>
+
+<p>获取排它锁，测试表锁</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> t_orders <span class="keyword">for</span> <span class="keyword">update</span>; </span><br></pre></td></tr></table></figure></div>
+
+<p>在另一个事务中，查询某条数据，获取单条数据的排它锁，发现不能获取，<strong>InnoDB如果没有用到唯一索引则默认使用表锁</strong></p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> t_orders <span class="keyword">where</span> id<span class="operator">=</span><span class="number">1</span> <span class="keyword">for</span> <span class="keyword">update</span>;</span><br></pre></td></tr></table></figure></div>
+
+<h4 id="测试排它锁机制–阻止其他事务获取排它锁"><a href="#测试排它锁机制–阻止其他事务获取排它锁" class="headerlink" title="测试排它锁机制–阻止其他事务获取排它锁"></a>测试排它锁机制–阻止其他事务获取排它锁</h4><p>在InnoDB引擎中，获取到排它锁的事务将会阻止其他事务获取排它锁、共享锁</p>
+<p>1、在事务中获取某条记录的排它锁</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> t_orders <span class="keyword">where</span> id<span class="operator">=</span><span class="number">1</span> <span class="keyword">for</span> <span class="keyword">update</span>;</span><br></pre></td></tr></table></figure></div>
+
+<p>2、在其他事务中再次获取排它锁，发现出现等待现象，必须要第一事务进行提交</p>
+<h4 id="测试排它锁机制–阻止其他事务获取共享锁"><a href="#测试排它锁机制–阻止其他事务获取共享锁" class="headerlink" title="测试排它锁机制–阻止其他事务获取共享锁"></a>测试排它锁机制–阻止其他事务获取共享锁</h4><p>1、在事务中获取某条记录的排它锁</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> t_orders <span class="keyword">where</span> id<span class="operator">=</span><span class="number">1</span> <span class="keyword">for</span> <span class="keyword">update</span>;</span><br></pre></td></tr></table></figure></div>
+
+<p>2、在其他事务中获取共享锁，发现还是出现等待现象，必须要第一个事务进行提交</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> t_orders <span class="keyword">where</span> id<span class="operator">=</span><span class="number">1</span> lock <span class="keyword">in</span> share mode;</span><br></pre></td></tr></table></figure></div>
+
+<p><strong><font title='不能！'>思考：当某一行已经被排它锁锁上时，其他事务能否修改该条数据？？</font></strong></p>
+<h3 id="1-2-3-InnoDB读锁"><a href="#1-2-3-InnoDB读锁" class="headerlink" title="1.2.3 InnoDB读锁"></a>1.2.3 InnoDB读锁</h3><p>在InnoDB引擎中，某个事务获取共享锁之后，会阻止其他事务获取排它锁，但是其他事务可以获取共享锁，值得注意的是，在InnoDB引擎中，进行普通的查询操作是不会触发共享锁的，必须显示的加上<code>lock in share mode</code>，才会加上共享锁。</p>
+<p>1、给某一行数据加上排它锁</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> t_orders <span class="keyword">where</span> id<span class="operator">=</span><span class="number">1</span> <span class="keyword">for</span> <span class="keyword">update</span>;</span><br></pre></td></tr></table></figure></div>
+
+<p>2、在其他事务中读取</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> t_orders <span class="keyword">where</span> id<span class="operator">=</span><span class="number">1</span>;</span><br></pre></td></tr></table></figure></div>
+
+<h4 id="测试共享锁机制–允许其他事务读取"><a href="#测试共享锁机制–允许其他事务读取" class="headerlink" title="测试共享锁机制–允许其他事务读取"></a>测试共享锁机制–允许其他事务读取</h4><p>1、先给某一行加上共享锁</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> t_orders <span class="keyword">where</span> id<span class="operator">=</span><span class="number">1</span> lock <span class="keyword">in</span> share mode;</span><br></pre></td></tr></table></figure></div>
+
+<p>2、在其他事务中读取该行数据，可正常读取</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> t_orders <span class="keyword">where</span> id<span class="operator">=</span><span class="number">1</span> lock <span class="keyword">in</span> share mode;</span><br></pre></td></tr></table></figure></div>
+
+<h4 id="测试共享锁机制–阻止其他事务获取排它锁"><a href="#测试共享锁机制–阻止其他事务获取排它锁" class="headerlink" title="测试共享锁机制–阻止其他事务获取排它锁"></a>测试共享锁机制–阻止其他事务获取排它锁</h4><p>1、先给某一行加上共享锁</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> t_orders <span class="keyword">where</span> id<span class="operator">=</span><span class="number">1</span> lock <span class="keyword">in</span> share mode;</span><br></pre></td></tr></table></figure></div>
+
+<p>2、在其他事务中进行排它锁操作（update&#x2F;insert&#x2F;delete&#x2F;for update），发现处于等待现象</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> t_orders <span class="keyword">where</span> id<span class="operator">=</span><span class="number">1</span> <span class="keyword">for</span> <span class="keyword">update</span>;</span><br></pre></td></tr></table></figure></div>
+
+<h3 id="1-2-4-InnoDB死锁"><a href="#1-2-4-InnoDB死锁" class="headerlink" title="1.2.4 InnoDB死锁"></a>1.2.4 InnoDB死锁</h3><p>如果一个事务中请求了某表的读锁，另一个事务请求了某表的写锁，势必会被阻塞，于此同时在第一个事务中（请求读锁的事务）再次请求写锁，那么这样一来两个客户端都在等待对方的锁释放，造成死锁；</p>
+<table>
+<thead>
+<tr>
+<th>Client-01</th>
+<th>Client-02</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>begin;    – 开启事务</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>begin    – 开启事务</td>
+</tr>
+<tr>
+<td>select * from t_orders where id&#x3D;1 lock in share mode; – 共享锁</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>select * from t_orders where id&#x3D;1 lock in share mode;</td>
+</tr>
+<tr>
+<td>select * from t_orders where id&#x3D;1 for update;  – 排它锁</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>select * from t_orders where id&#x3D;1 for update;</td>
+</tr>
+</tbody></table>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/MySQL%E4%BA%8B%E5%8A%A1/201.png"
+                     
+                ></p>
+<blockquote>
+<p>InnoDB死锁：死锁的一方将所有的锁都释放；</p>
+</blockquote>
+<h2 id="1-3-锁小结"><a href="#1-3-锁小结" class="headerlink" title="1.3 锁小结"></a>1.3 锁小结</h2><h3 id="1-3-1-MySIAM引擎"><a href="#1-3-1-MySIAM引擎" class="headerlink" title="1.3.1 MySIAM引擎"></a>1.3.1 MySIAM引擎</h3><p>1）共享读锁（S）之间是兼容的，但共享读锁（S）与排他写锁（X）之间，以及排他写锁（X）之间是互斥的，也就是说读和写是串行的。 </p>
+<p>2）在一定条件下，MyISAM允许查询和插入并发执行，我们可以利用这一点来解决应用对同一表查询和插入的锁争用问题。</p>
+<p>3）MyISAM默认的锁调度机制是写优先，这并不一定适合所有应用，用户可以通过设置<code>LOW_PRIORITY_UPDATES</code>参数，或在INSERT、UPDATE、DELETE语句中指定<code>LOW_PRIORITY</code>选项来调节读写锁的争用。 </p>
+<p>4）由于表锁的锁定粒度大，读写之间又是串行的，因此，如果更新操作较多，MyISAM表可能会出现严重的锁等待，可以考虑采用InnoDB表来减少锁冲突。</p>
+<h3 id="1-3-2-InnoDB-引擎"><a href="#1-3-2-InnoDB-引擎" class="headerlink" title="1.3.2 InnoDB 引擎"></a>1.3.2 InnoDB 引擎</h3><p>（1）&#x3D;&#x3D;<strong>InnoDB的行锁是基于索引实现的</strong>&#x3D;&#x3D;，如果不通过索引访问数据，InnoDB会<strong>默认使用表锁</strong>。 </p>
+<p>（2）在不同的隔离级别下，InnoDB的锁机制和一致性读策略不同。</p>
+<p>在了解InnoDB锁特性后，用户可以通过设计和SQL调整等措施减少锁冲突和死锁，包括：</p>
+<ul>
+<li>尽量使用较低的隔离级别； 精心设计索引，并尽量使用索引访问数据，使加锁更精确，从而减少锁冲突的机会；</li>
+<li>给记录集显式加锁时，最好一次性请求足够级别的锁。比如要修改数据的话，<strong>最好直接申请排他锁，而不是先申请共享锁，修改时再请求排他锁，这样容易产生死锁；</strong></li>
+</ul>
+<h2 id="1-4-意向锁"><a href="#1-4-意向锁" class="headerlink" title="1.4 意向锁"></a>1.4 意向锁</h2><p><strong>意向锁的存在是为了协调行锁和表锁的关系，支持多粒度（表锁与行锁）的锁并存</strong>。意向锁是由InnoDB在操作数据之前自动加的，不需要用户干预；</p>
+<ul>
+<li>意向共享锁（IS锁）：事务在请求S锁前，要先获得IS锁</li>
+<li>意向排他锁（IX锁）：事务在请求X锁前，要先获得IX锁</li>
+</ul>
+<p>场景举例（假设此时没有意向锁）：假设事务A锁住了表中的<strong>一行</strong>记录，之后，事务B申请<strong>整个表</strong>的写锁。数据库需要避免这种冲突，需要让B的申请被阻塞，直到A释放了行锁。数据库要怎么判断这个冲突呢？</p>
+<ul>
+<li>1）判断表中的每一行是否已被行锁锁住（效率非常低）</li>
+<li>2）判断表是否已被其他事务用表锁锁表</li>
+</ul>
+<p>意向锁就是在这个时候发挥作用的，有了意向锁。在意向锁存在的情况下，事务A必须先申请<strong>表的意向共享锁（表级锁）</strong>，成功后再申请一行的行锁。下次事务B去申请某行的排它锁时，发现有意向共享锁，说明表中肯定有某些行被锁住了，事务B将会阻塞；</p>
+<h3 id="1-4-1-意向锁是表锁还是行锁？"><a href="#1-4-1-意向锁是表锁还是行锁？" class="headerlink" title="1.4.1 意向锁是表锁还是行锁？"></a>1.4.1 意向锁是表锁还是行锁？</h3><p>&#x3D;&#x3D;<strong>答：意向锁是表级别锁</strong>&#x3D;&#x3D;</p>
+<p>当我们需要加一个排他锁时，需要根据意向锁去判断表中有没有数据行被锁定；</p>
+<p>（1）如果意向锁是行锁，则需要遍历每一行数据去确认；</p>
+<p>（2）如果意向锁是表锁，则只需要判断一次即可知道有没数据行被锁定，提升性能。</p>
+<blockquote>
+<p>&#x3D;&#x3D;<strong>意向锁的主要功能就是：避免为了判断表是否存在行锁而去扫描全表的系统消耗</strong>。&#x3D;&#x3D;</p>
+</blockquote>
+<h3 id="1-4-2-S锁、X锁、IX、IS锁之间的关系"><a href="#1-4-2-S锁、X锁、IX、IS锁之间的关系" class="headerlink" title="1.4.2 S锁、X锁、IX、IS锁之间的关系"></a>1.4.2 S锁、X锁、IX、IS锁之间的关系</h3><p>我们之前说过，事务A在锁定一行记录时，会先加上意向锁（表级别），之后事务B申请整个表的排它锁时，先加上意向排它锁，发现该表已经被加上意向锁了，申请锁失败，被阻塞；</p>
+<p>按照这个逻辑来说，如果此时事务B申请的是行锁呢（而且并不是事务A锁定的那一条记录）？根据意向锁是表锁的原则，那么此时事务B也会申请意向排它锁（表级别），这样下来不是会造成事务B阻塞吗？但事实并不是这样；<strong>因为意向共享锁和意向排它锁之间是兼容的！</strong></p>
+<p>关系如下：</p>
+<table>
+<thead>
+<tr>
+<th align="left"></th>
+<th align="left"><code>X</code></th>
+<th align="left"><code>IX</code></th>
+<th align="left"><code>S</code></th>
+<th align="left"><code>IS</code></th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><code>X</code>（表级）</td>
+<td align="left">Conflict</td>
+<td align="left">Conflict</td>
+<td align="left">Conflict</td>
+<td align="left">Conflict</td>
+</tr>
+<tr>
+<td align="left"><code>IX</code></td>
+<td align="left">Conflict</td>
+<td align="left"><strong>Compatible</strong></td>
+<td align="left">Conflict</td>
+<td align="left"><strong>Compatible</strong></td>
+</tr>
+<tr>
+<td align="left"><code>S</code>（表级）</td>
+<td align="left">Conflict</td>
+<td align="left">Conflict</td>
+<td align="left">Compatible</td>
+<td align="left">Compatible</td>
+</tr>
+<tr>
+<td align="left"><code>IS</code></td>
+<td align="left">Conflict</td>
+<td align="left"><strong>Compatible</strong></td>
+<td align="left">Compatible</td>
+<td align="left"><strong>Compatible</strong></td>
+</tr>
+</tbody></table>
+<blockquote>
+<p><strong>注意：这里的排他 &#x2F; 共享锁指的都是表锁！意向锁不会与行级的共享 &#x2F; 排他锁互斥</strong></p>
+</blockquote>
+<p><strong>上了行级X锁后，行级X锁不会因为有别的事务上了IX而堵塞，一个mysql是允许多个行级X锁同时存在的，只要他们不是针对相同的数据行。</strong></p>
+<h3 id="1-4-3-意向锁执行过程"><a href="#1-4-3-意向锁执行过程" class="headerlink" title="1.4.3 意向锁执行过程"></a>1.4.3 意向锁执行过程</h3><h4 id="1）案例一"><a href="#1）案例一" class="headerlink" title="1）案例一"></a>1）案例一</h4><p>测试IS和IX之间是共享的，意向锁（共享和排他）和表级别的S&#x2F;X锁是冲突的；</p>
+<ul>
+<li>测试数据：</li>
+</ul>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">drop</span> <span class="keyword">table</span> if <span class="keyword">exists</span> test4;</span><br><span class="line"></span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> `test4`  (</span><br><span class="line">  `id` <span class="type">int</span>(<span class="number">11</span>) <span class="keyword">NOT</span> <span class="keyword">NULL</span> AUTO_INCREMENT,</span><br><span class="line">  `name` <span class="type">varchar</span>(<span class="number">255</span>) ,</span><br><span class="line">  <span class="keyword">PRIMARY</span> KEY (`id`) <span class="keyword">USING</span> BTREE</span><br><span class="line">) ENGINE <span class="operator">=</span> innodb ;</span><br><span class="line"></span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> test4 <span class="keyword">VALUES</span>(<span class="number">1</span>,<span class="string">&#x27;aa&#x27;</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> test4 <span class="keyword">VALUES</span>(<span class="number">2</span>,<span class="string">&#x27;bb&#x27;</span>);</span><br></pre></td></tr></table></figure></div>
+
+<table>
+<thead>
+<tr>
+<th>session-01</th>
+<th>session-02</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>begin;</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>begin;</td>
+</tr>
+<tr>
+<td>select * from test4 where id&#x3D;1 lock in share mode; – 申请这行的共享锁</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>select * from  test4 for update;   – 申请整表的排它锁（阻塞）</td>
+</tr>
+</tbody></table>
+<p>示意图：</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/MySQL%E4%BA%8B%E5%8A%A1/300.png"
+                     
+                ></p>
+<blockquote>
+<p>Tips：有了意向锁，在事务B申请表的排它锁时，MySQL就可以很轻松判断这个表中是否记录被锁住了；</p>
+</blockquote>
+<h4 id="2）案例二"><a href="#2）案例二" class="headerlink" title="2）案例二"></a>2）案例二</h4><p>测试意向锁和行级S&#x2F;X锁是兼容的；</p>
+<ul>
+<li>测试案例：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>session-01</th>
+<th>session-02</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>begin;</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>begin;</td>
+</tr>
+<tr>
+<td>select * from test3 where id&#x3D;1 lock in share mode;   – 申请这行的共享锁</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>select * from test3 where id&#x3D;2 for update;  – 申请这行的排它锁</td>
+</tr>
+</tbody></table>
+<p>示意图：</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/MySQL%E4%BA%8B%E5%8A%A1/301.png"
+                     
+                ></p>
+<blockquote>
+<p>Tips：意向锁与行级的S&#x2F;X锁之间的兼容的</p>
+</blockquote>
+<h2 id="1-5-自增锁"><a href="#1-5-自增锁" class="headerlink" title="1.5 自增锁"></a>1.5 自增锁</h2><p>MySQL的自增锁是针对于自增列增长的一个特殊的<strong>表级别锁</strong></p>
+<p>和自增锁相关的一个参数为（5.1.22版本之后加入）innodb_autoinc_lock_mode：可以设定3个值，0，1，2</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">show</span> variables <span class="keyword">like</span> <span class="string">&#x27;innodb_autoinc_lock_mode&#x27;</span>;</span><br></pre></td></tr></table></figure></div>
+
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/MySQL%E4%BA%8B%E5%8A%A1/183.png"
+                     
+                ></p>
+<ul>
+<li>0：traditional （每次都会产生表锁）</li>
+<li>1：consecutive （会产生一个轻量锁，insert会获得批量的锁，保证连续插入），事务未提交ID永久丢失，<strong>默认值</strong></li>
+<li>2：interleaved （不会锁表，来一个处理一个，并发最高）对于同一个语句来说它所得到的auto_increment值可能不是连续的。</li>
+</ul>
+<blockquote>
+<p>tips：参数只控制InnoDB引擎的设置，所有Myisam均为traditional ，每次均会进行表锁。只有Innodb会视参数不同而产生不通的锁。</p>
+</blockquote>
+<p>创建测试表：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> `t1`  (</span><br><span class="line">  `id` <span class="type">int</span>(<span class="number">11</span>) <span class="keyword">NOT</span> <span class="keyword">NULL</span> AUTO_INCREMENT,</span><br><span class="line">  `age` <span class="type">int</span>(<span class="number">11</span>) <span class="keyword">NULL</span> <span class="keyword">DEFAULT</span> <span class="keyword">NULL</span>,</span><br><span class="line">  <span class="keyword">PRIMARY</span> KEY (`id`) <span class="keyword">USING</span> BTREE</span><br><span class="line">) ENGINE <span class="operator">=</span> InnoDB AUTO_INCREMENT<span class="operator">=</span><span class="number">1</span>;</span><br></pre></td></tr></table></figure></div>
+
+<p>一般我们在创建表的时候id起始值为1，通过AUTO_INCREMENT可以设置其值；</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 在创建表后也可以通过SQL语句修改auto_increment</span></span><br><span class="line"><span class="keyword">alter</span> <span class="keyword">table</span> t1 auto_increment<span class="operator">=</span><span class="number">20</span>;</span><br></pre></td></tr></table></figure></div>
+
+<p>自增幅度由以下两个参数进行控制：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 自增的步长</span></span><br><span class="line"><span class="keyword">set</span> auto_increment_increment<span class="operator">=</span><span class="number">2</span>;			<span class="comment">-- 默认1</span></span><br><span class="line"></span><br><span class="line"><span class="comment">-- 起始的自增值</span></span><br><span class="line"><span class="keyword">set</span> auto_increment_offset<span class="operator">=</span><span class="number">2</span>;			<span class="comment">-- 默认1</span></span><br></pre></td></tr></table></figure></div>
+
+<p>可以通过函数获取最后一个插入的id：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> last_insert_id();</span><br></pre></td></tr></table></figure></div>
+
+<p>测试：</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/MySQL%E4%BA%8B%E5%8A%A1/182.png"
+                     
+                ></p>
+<h2 id="1-6-锁的算法"><a href="#1-6-锁的算法" class="headerlink" title="1.6 锁的算法"></a>1.6 锁的算法</h2><h3 id="1-6-1-Record-Lock"><a href="#1-6-1-Record-Lock" class="headerlink" title="1.6.1 Record Lock"></a>1.6.1 Record Lock</h3><p>Record Lock：行锁，也叫记录锁，总是会去锁住索引记录，&#x3D;&#x3D;在使用主键或唯一索引精准匹配行时，临键锁将会退化成行锁；&#x3D;&#x3D;</p>
+<h3 id="1-6-2-Gap-Lock"><a href="#1-6-2-Gap-Lock" class="headerlink" title="1.6.2 Gap Lock"></a>1.6.2 Gap Lock</h3><p>Gap Lock：间隙锁，当我们用范围条件而不是相等条件检索数据，并请求共享或排他锁时，InnoDB会给符合条件的已有数据记录的索引项加锁；对于键值在条件范围的记录，叫做“间隙（GAP)”，InnoDB也会对这个“间隙”加锁，这种锁机制就是所谓的间隙锁 （Next-Key锁）。 </p>
+<p>间隙锁（Gap Lock）是Innodb在<strong>可重复读</strong>提交下为了解决幻读问题时引入的锁机制</p>
+<ul>
+<li>创建测试表，添加数据</li>
+</ul>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> `t2`  (</span><br><span class="line">  `id` <span class="type">int</span>(<span class="number">11</span>) <span class="keyword">NOT</span> <span class="keyword">NULL</span> AUTO_INCREMENT,</span><br><span class="line">  `age` <span class="type">int</span>(<span class="number">11</span>) <span class="keyword">NULL</span> <span class="keyword">DEFAULT</span> <span class="keyword">NULL</span>,</span><br><span class="line">  <span class="keyword">PRIMARY</span> KEY (`id`) <span class="keyword">USING</span> BTREE</span><br><span class="line">) ENGINE <span class="operator">=</span> InnoDB AUTO_INCREMENT<span class="operator">=</span><span class="number">1</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> t2 <span class="keyword">values</span>(<span class="number">1</span>,<span class="number">10</span>);</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> t2 <span class="keyword">values</span>(<span class="number">2</span>,<span class="number">20</span>);</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> t2 <span class="keyword">values</span>(<span class="number">3</span>,<span class="number">30</span>);</span><br></pre></td></tr></table></figure></div>
+
+<p>查询范围数据，触发间隙锁</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> t2 <span class="keyword">where</span> id<span class="operator">&gt;</span><span class="number">2</span> <span class="keyword">for</span> <span class="keyword">update</span>;</span><br></pre></td></tr></table></figure></div>
+
+<p>在另一事务中插入间隙数据触发锁，发现处于等待现象</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> t2 <span class="keyword">values</span>(<span class="number">4</span>,<span class="number">40</span>);</span><br></pre></td></tr></table></figure></div>
+
+<ul>
+<li>思考</li>
+</ul>
+<p>1、执行如下sql语句（表中并没有id为100的数据）</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> t2 <span class="keyword">where</span> id<span class="operator">=</span><span class="number">100</span> <span class="keyword">for</span> <span class="keyword">update</span>;</span><br></pre></td></tr></table></figure></div>
+
+<p>2、执行如下sql语句</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> t2 <span class="keyword">values</span>(<span class="number">100</span>,<span class="number">100</span>);</span><br></pre></td></tr></table></figure></div>
+
+<p><strong><font title='会'>思考：会不会造成锁阻塞？</font></strong></p>
+<p>注意：&#x3D;&#x3D;<strong>间隙锁主要是阻塞插入 insert</strong>&#x3D;&#x3D;</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/MySQL%E4%BA%8B%E5%8A%A1/181.png"
+                     
+                ></p>
+<ul>
+<li>案例：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>session-01</th>
+<th>session-02</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>select * from t1 where id&gt;2 for update;</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td><code>select * from t1 where id=30 for update;</code>  – 不阻塞</td>
+</tr>
+<tr>
+<td></td>
+<td><code>update t1 set age=30 where id=20;</code>  – 不阻塞</td>
+</tr>
+<tr>
+<td></td>
+<td><code>delete from t1 where id=10;</code> – 不阻塞</td>
+</tr>
+<tr>
+<td></td>
+<td><code>insert into t1 values(5,20);</code> – 阻塞(间隙锁阻塞的就是insert语句)</td>
+</tr>
+<tr>
+<td></td>
+<td><code>update t1 set age=30 where id=3;</code></td>
+</tr>
+<tr>
+<td></td>
+<td><code>delete from t1 where id=3;</code></td>
+</tr>
+<tr>
+<td></td>
+<td><code>select * from t1 where id=2 for update;</code></td>
+</tr>
+</tbody></table>
+<p>InnoDB使用间隙锁的目的，一方面是为了防止幻读，以满足相关隔离级别的要求，对于上面的例子，要是不使用间隙锁，如果其他事务插入了id大于2的任何记录，那么本事务如果再次执行上述语句，就可能会发生幻读（某些情况通过MVCC快照已经解决）；</p>
+<p>很显然，在使用范围条件检索并锁定记录时，InnoDB这种加锁机制会阻塞符合条件范围内键值的并发插入，这往往会造成严重的锁等待<strong>。因此，在实际应用开发中，尤其是并发插入比较多的应用，我们要尽量优化业务逻辑，尽量使用相等条件来访问更新数据，避免使用范围条件。</strong></p>
+<h3 id="1-6-5-Next-Key-Lock"><a href="#1-6-5-Next-Key-Lock" class="headerlink" title="1.6.5 Next-Key Lock"></a>1.6.5 Next-Key Lock</h3><p>Next-Key Lock：临键锁，即<code>Gap Lock+Record Lock</code>，当SQL语句按照索引进行数据的检索时，<strong>锁定一个范围</strong>，并且锁定记录本身；它是InnoDB默认隔离级别的锁算法，其设计的目的是为了解决Phantom Problem(幻读)，临键锁锁住索引的<strong>记录+区间（左开右闭）</strong></p>
+<p>&#x3D;&#x3D;<strong>左开右闭：左边的可以获取到锁，右边的不行</strong>&#x3D;&#x3D;</p>
+<p>测试表：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> `t2`  (</span><br><span class="line">  `id` <span class="type">int</span>(<span class="number">11</span>) <span class="keyword">NOT</span> <span class="keyword">NULL</span> AUTO_INCREMENT,</span><br><span class="line">  `num` <span class="type">int</span>(<span class="number">11</span>) ,</span><br><span class="line">  <span class="keyword">PRIMARY</span> KEY (`id`) <span class="keyword">USING</span> BTREE</span><br><span class="line">) ENGINE <span class="operator">=</span> InnoDB ;</span><br><span class="line"></span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> `t2`(`id`, `num`) <span class="keyword">VALUES</span> (<span class="number">5</span>, <span class="number">5</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> `t2`(`id`, `num`) <span class="keyword">VALUES</span> (<span class="number">10</span>, <span class="number">10</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> `t2`(`id`, `num`) <span class="keyword">VALUES</span> (<span class="number">15</span>, <span class="number">15</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> `t2`(`id`, `num`) <span class="keyword">VALUES</span> (<span class="number">20</span>, <span class="number">20</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 创建普通索引</span></span><br><span class="line"><span class="keyword">create</span> index idx_num <span class="keyword">on</span> t2(num);</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 创建唯一索引</span></span><br><span class="line"><span class="keyword">create</span> <span class="keyword">unique</span> index idx_num <span class="keyword">on</span> t2(num);</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 删除索引</span></span><br><span class="line"><span class="keyword">drop</span> index idx_num <span class="keyword">on</span> t2;</span><br></pre></td></tr></table></figure></div>
+
+<ul>
+<li>区间示意图：</li>
+</ul>
+<img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/MySQL事务/180.png"
+                      style="zoom: 67%;" 
+                >
+
+<h4 id="1-6-5-1-临键锁体验：-10-20"><a href="#1-6-5-1-临键锁体验：-10-20" class="headerlink" title="1.6.5.1 临键锁体验：(10,20]"></a>1.6.5.1 临键锁体验：(10,20]</h4><table>
+<thead>
+<tr>
+<th align="left">session1</th>
+<th>session2</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">begin;</td>
+<td></td>
+</tr>
+<tr>
+<td align="left"></td>
+<td>begin;</td>
+</tr>
+<tr>
+<td align="left">select * from t2 where id&gt;11 and id&lt;16 for update;</td>
+<td></td>
+</tr>
+<tr>
+<td align="left"></td>
+<td>insert into t2 values(10,10);     – 不阻塞</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td>insert into t2 values(11,11);     – 阻塞</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td>insert into t2 values(15,15);     – 阻塞</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td>insert into t2 values(16,16);     – 阻塞</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td>insert into t2 values(18,18);     – 阻塞</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td>insert into t2 values(20,20);     – 阻塞</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td>insert into t2 values(21,21);     – 不阻塞</td>
+</tr>
+<tr>
+<td align="left">rollback;</td>
+<td></td>
+</tr>
+<tr>
+<td align="left"></td>
+<td>rollback;</td>
+</tr>
+</tbody></table>
+<p>临键锁的触发不仅把条件区间（11-16）的数据行锁住了，还把临键的数据行统统锁住了；锁住的区间为：<code>(10,15]、(15,20]</code></p>
+<p>&#x3D;&#x3D;<strong>锁住的id范围：10（不含）~20（含）</strong>&#x3D;&#x3D;</p>
+<h4 id="1-6-5-2-临键锁触发时机"><a href="#1-6-5-2-临键锁触发时机" class="headerlink" title="1.6.5.2 临键锁触发时机"></a>1.6.5.2 临键锁触发时机</h4><p>我们刚刚测试的是以主键索引进行测试，如果采用不同的列（主键索引、普通索引、普通列等）锁住的区间大不相同；</p>
+<ul>
+<li><p>临键锁触发时机：</p>
+<p>&#x3D;&#x3D;<strong>1）如果是主键索引或者唯一索引，那么临键锁会降级为行级锁（前提是刚好在临键值，如果不在临建值则和二级索引一致）</strong>&#x3D;&#x3D;</p>
+<p>&#x3D;&#x3D;<strong>2）如果是二级索引则触发临键锁</strong>&#x3D;&#x3D;</p>
+<p>&#x3D;&#x3D;<strong>3）如果是普通列，则触发表级锁</strong>&#x3D;&#x3D;</p>
+</li>
+</ul>
+<h5 id="1）普通列"><a href="#1）普通列" class="headerlink" title="1）普通列"></a>1）普通列</h5><p>以<code>num</code>列触发排他锁测试：(10,15]</p>
+<table>
+<thead>
+<tr>
+<th>session1</th>
+<th>session2</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>begin;</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>begin;</td>
+</tr>
+<tr>
+<td>select * from t2 where num&#x3D;11 for update;</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>insert into t2 values(null,3);       – 阻塞</td>
+</tr>
+<tr>
+<td></td>
+<td>insert into t2 values(null,5);       – 阻塞</td>
+</tr>
+<tr>
+<td></td>
+<td>insert into t2 values(null,10);     – 阻塞</td>
+</tr>
+<tr>
+<td></td>
+<td>insert into t2 values(null,15);     – 阻塞</td>
+</tr>
+<tr>
+<td></td>
+<td>insert into t2 values(null,20);     – 阻塞</td>
+</tr>
+<tr>
+<td></td>
+<td>insert into t2 values(null,21);     – 阻塞</td>
+</tr>
+<tr>
+<td>rollback;</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>rollback;</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p><strong>Tips：innodb查询如果没有使用到索引默认触发表级锁；</strong></p>
+</blockquote>
+<h5 id="2）二级索引列"><a href="#2）二级索引列" class="headerlink" title="2）二级索引列"></a>2）二级索引列</h5><div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 创建普通索引</span></span><br><span class="line"><span class="keyword">create</span> index idx_num <span class="keyword">on</span> t2(num);</span><br></pre></td></tr></table></figure></div>
+
+<p>测试临键锁：</p>
+<table>
+<thead>
+<tr>
+<th>session1</th>
+<th>session2</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>begin;</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>begin;</td>
+</tr>
+<tr>
+<td>select * from t2 where num&#x3D;17 for update;</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>insert into t2 values(null,15);       – 阻塞</td>
+</tr>
+<tr>
+<td></td>
+<td>insert into t2 values(null,18);       – 阻塞</td>
+</tr>
+<tr>
+<td></td>
+<td>insert into t2 values(null,20);       – 不阻塞</td>
+</tr>
+<tr>
+<td>rollback;</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>rollback;</td>
+</tr>
+</tbody></table>
+<p>num&#x3D;17这条记录不是会锁定<code>(15,20]</code>区间吗？为什么15被阻塞了，20反而没被阻塞呢？</p>
+<p>这里需要牵扯到另一个问题了，在InnoDB中，<strong>相同的&#x3D;&#x3D;普通索引&#x3D;&#x3D;的叶子节点是以主键的顺序进行排列的</strong>（聚集索引的特性），我们来模拟一下刚刚插入的数据在B+Tree上的变化：</p>
+<img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/MySQL事务/178.png"
+                      style="zoom: 50%;" 
+                >
+
+<p>只考虑叶子节点的变化，可以看到在上图在演变的过程中产生了分裂情况（假设每个叶子节点都只存储两个元素），如果普通索引的重复值太多势必会造成大量的分裂情况，减低插入效率，因此索引列不宜选择重复率太大的列；</p>
+<p>再看下图数据库表中实际存储的列的样子我们就会明白为什么num&#x3D;20不阻塞，num&#x3D;15阻塞了</p>
+<ul>
+<li>num索引列排列情况：</li>
+</ul>
+<img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/MySQL事务/179.png"
+                      style="zoom: 80%;" 
+                >
+
+<p>查询示意图：</p>
+<img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/MySQL事务/302.png"
+                      style="zoom: 80%;" 
+                >
+
+<table>
+<thead>
+<tr>
+<th align="left">session1</th>
+<th>session2</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">begin;</td>
+<td></td>
+</tr>
+<tr>
+<td align="left"></td>
+<td>begin;</td>
+</tr>
+<tr>
+<td align="left">select * from t2 where num&#x3D;15 for update;</td>
+<td></td>
+</tr>
+<tr>
+<td align="left"></td>
+<td>insert into t2 values(null,8);        – 不阻塞</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td>insert into t2 values(null,10);      – 阻塞</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td>insert into t2 values(null,11);      – 阻塞</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td>insert into t2 values(null,15);      – 阻塞</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td>insert into t2 values(null,18);      – 阻塞</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td>insert into t2 values(null,20);      – 不阻塞</td>
+</tr>
+<tr>
+<td align="left">rollback;</td>
+<td></td>
+</tr>
+<tr>
+<td align="left"></td>
+<td>rollback;</td>
+</tr>
+</tbody></table>
+<ul>
+<li>索引底层构建过程：</li>
+</ul>
+<img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/MySQL事务/204.png"
+                      style="zoom: 80%;" 
+                >
+
+<ul>
+<li>临键锁区间：</li>
+</ul>
+<img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/MySQL事务/205.png"
+                      style="zoom: 80%;" 
+                >
+
+<blockquote>
+<p>&#x3D;&#x3D;<strong>15处于<code>(10,15]</code>和<code>(15,20]</code>两个临键区间，因此在两个区间内的数据行都被锁住了</strong>&#x3D;&#x3D;</p>
+</blockquote>
+<p>至于20没被阻塞和10被阻塞的原因和上面一致</p>
+<h5 id="3）主键和唯一索引"><a href="#3）主键和唯一索引" class="headerlink" title="3）主键和唯一索引"></a>3）主键和唯一索引</h5><p>创建唯一索引：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 删除索引</span></span><br><span class="line"><span class="keyword">drop</span> index idx_num <span class="keyword">on</span> t2;</span><br><span class="line"><span class="comment">-- 创建唯一索引</span></span><br><span class="line"><span class="keyword">create</span> <span class="keyword">unique</span> index idx_num <span class="keyword">on</span> t2(num);</span><br></pre></td></tr></table></figure></div>
+
+<ul>
+<li>测试唯一索引临键锁（在临界值上）：</li>
+</ul>
+<p>测试临键锁：</p>
+<table>
+<thead>
+<tr>
+<th align="left">session1</th>
+<th>session2</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">begin;</td>
+<td></td>
+</tr>
+<tr>
+<td align="left"></td>
+<td>begin;</td>
+</tr>
+<tr>
+<td align="left">select * from t2 where num&#x3D;15 for update;</td>
+<td></td>
+</tr>
+<tr>
+<td align="left"></td>
+<td>insert into t2 values(null,4);       – 不阻塞</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td>insert into t2 values(null,8);       – 不阻塞</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td>insert into t2 values(null,11);     – 不阻塞</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td>insert into t2 values(null,18);     – 不阻塞</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td>insert into t2 values(null,20);     – 不阻塞</td>
+</tr>
+<tr>
+<td align="left">rollback;</td>
+<td></td>
+</tr>
+<tr>
+<td align="left"></td>
+<td>rollback;</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>分析：&#x3D;&#x3D;在session1中首先会num&#x3D;15加X锁，<strong>由于num是唯一键，并且在临界点上</strong>，<strong>因此锁定的只有15这个值</strong>，而不是(10,15]、(15,20]这两个区间；在session2中插入值18，是可以成功插入的，即锁定由Next-Key Lock算法降级为了Record Lock，从而提高应用的并发性。&#x3D;&#x3D;</p>
+</blockquote>
+<ul>
+<li>测试唯一索引临键锁（非临界值上）</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>session-01</th>
+<th>session-02</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>begin;</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>begin;</td>
+</tr>
+<tr>
+<td>select * from t2 where num&#x3D;17 for update;</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>insert into t2 values(null,11); – 不阻塞</td>
+</tr>
+<tr>
+<td></td>
+<td>insert into t2 values(null,15); – 不阻塞</td>
+</tr>
+<tr>
+<td></td>
+<td>insert into t2 values(null,16);   – 阻塞</td>
+</tr>
+<tr>
+<td></td>
+<td>insert into t2 values(null,18);  – 阻塞</td>
+</tr>
+<tr>
+<td></td>
+<td>insert into t2 values(null,20);  – 不阻塞</td>
+</tr>
+<tr>
+<td></td>
+<td>insert into t2 values(null,21);   – 不阻塞</td>
+</tr>
+</tbody></table>
+<p>num&#x3D;17锁住的区间应该是(15,20]，num&#x3D;16、18这两条数据都正常，但是num&#x3D;20这条记录不应该是被阻塞吗？为什么又没有被阻塞呢？</p>
+<ul>
+<li>num列索引的B+Tree底层构建情况：</li>
+</ul>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/MySQL%E4%BA%8B%E5%8A%A1/303.png"
+                     
+                ></p>
+<h5 id="4）临键锁总结"><a href="#4）临键锁总结" class="headerlink" title="4）临键锁总结"></a>4）临键锁总结</h5><p><strong>临键锁</strong>，是<strong>记录锁（行锁）与间隙锁的组合，他跟间隙锁一样，主要是阻塞插入 insert</strong>；</p>
+<blockquote>
+<p>Tips：<strong>临键锁的主要目的，也是为了避免幻读(Phantom Read)。如果把事务的隔离级别降级为RC，临键锁则也会失效。</strong></p>
+</blockquote>
+<h2 id="1-7-悲观锁，乐观锁"><a href="#1-7-悲观锁，乐观锁" class="headerlink" title="1.7 悲观锁，乐观锁"></a>1.7 悲观锁，乐观锁</h2><h3 id="1-7-1-悲观锁乐观锁概念"><a href="#1-7-1-悲观锁乐观锁概念" class="headerlink" title="1.7.1 悲观锁乐观锁概念"></a>1.7.1 悲观锁乐观锁概念</h3><ul>
+<li><strong>悲观锁</strong><ul>
+<li>就是很悲观，它对于数据被外界修改持保守态度，认为数据随时会修改。</li>
+<li>整个数据处理中需要将数据加锁。悲观锁一般都是依靠关系数据库提供的锁机制</li>
+<li>事实上关系数据库中的行锁，表锁不论是读写锁都是悲观锁</li>
+</ul>
+</li>
+<li><strong>乐观锁</strong><ul>
+<li>顾名思义，就是很乐观，每次自己操作数据的时候认为没有人会来修改它，所以不去加锁。</li>
+<li>但是在更新的时候会去判断在此期间数据有没有被修改</li>
+<li>需要用户自己去实现，不会发生并发抢占资源，只有在提交操作的时候检查是否违反数据完整性</li>
+</ul>
+</li>
+<li><strong>悲观锁，乐观锁使用前提</strong><ul>
+<li>对于读操作远多于写操作的时候，这时候一个更新操作加锁会阻塞所有读取，降低了吞吐量。最后还要释放锁，锁是需要一些开销的，这时候可以选择乐观锁</li>
+<li>如果是读写比例差距不是非常大或者你的系统没有响应不及时，吞吐量瓶颈问题，那就不要去使用乐观锁，它增加了复杂度，也带来了业务额外的风险。</li>
+</ul>
+</li>
+</ul>
+<h3 id="1-7-2-乐观锁的实现方式"><a href="#1-7-2-乐观锁的实现方式" class="headerlink" title="1.7.2 乐观锁的实现方式"></a>1.7.2 乐观锁的实现方式</h3><h4 id="1）版本号"><a href="#1）版本号" class="headerlink" title="1）版本号"></a>1）版本号</h4><p>就是给数据增加一个版本标识，在数据库上就是表中增加一个version字段，每次更新把这个字段加1，读取数据的时候把version读出来，更新的时候比较version如果还是开始读取的version就可以更新了如果现在的version比老的version大，说明有其他事务更新了该数据，并增加了版本号，这时候得到一个无法更新的通知，用户自行根据这个通知来决定怎么处理，比如重新开始一遍。</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 要修改数据之前，先查该数据上一次修改的时间戳</span></span><br><span class="line"><span class="keyword">select</span> version <span class="keyword">from</span> t_goods <span class="keyword">where</span> id<span class="operator">=</span><span class="number">1</span>; </span><br><span class="line"></span><br><span class="line"><span class="comment">-- 修改数据时，更新时间戳</span></span><br><span class="line"><span class="keyword">update</span> t_goods <span class="keyword">set</span> goods_name<span class="operator">=</span><span class="string">&#x27;小苹果&#x27;</span>, version<span class="operator">=</span>version<span class="operator">+</span><span class="number">1</span> <span class="keyword">where</span> version<span class="operator">=</span>$&#123;version&#125;;</span><br></pre></td></tr></table></figure></div>
+
+
+
+<h4 id="2）时间戳"><a href="#2）时间戳" class="headerlink" title="2）时间戳"></a>2）时间戳</h4><p>和版本号基本一样，只是通过时间戳来判断而已，注意时间戳要使用数据库服务器的时间戳不能是业务系统的时间同样是在需要乐观锁控制的table中增加一个字段，名称无所谓，字段类型使用时间（timestamp）和上面的version类似，也是在更新提交的时候检查当前数据库中数据的时间戳和自己更新前取到的时间戳进行对比如果一致则OK，否则就是版本冲突。</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 要修改数据之前，先查该数据上一次修改的时间戳</span></span><br><span class="line"><span class="keyword">select</span> lock_time <span class="keyword">from</span> t_goods <span class="keyword">where</span> id<span class="operator">=</span><span class="number">1</span>;		</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 修改数据时，更新时间戳</span></span><br><span class="line"><span class="keyword">update</span> t_goods <span class="keyword">set</span> goods_name<span class="operator">=</span><span class="string">&#x27;小苹果&#x27;</span>, lock_time<span class="operator">=</span>unix_timestamp(<span class="built_in">CURRENT_TIMESTAMP</span>) <span class="keyword">where</span> lock_time<span class="operator">=</span>$&#123;lock_time&#125;;</span><br></pre></td></tr></table></figure></div>
+
+<h1 id="二、事务"><a href="#二、事务" class="headerlink" title="二、事务"></a>二、事务</h1><h2 id="2-1-事务隔离级别"><a href="#2-1-事务隔离级别" class="headerlink" title="2.1 事务隔离级别"></a>2.1 事务隔离级别</h2><p>事务的四大特性：</p>
+<table>
+<thead>
+<tr>
+<th>事务特性</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>原子性（Atomicity）</td>
+<td>事务是工作的最小单元，整个工作单元要么全部执行成功，要么全部执行失败</td>
+</tr>
+<tr>
+<td>一致性（Consistency）</td>
+<td>事务执行前与执行后，数据库中数据应该保持相同的状态。如：转账前总金额与转账后总金额相同。</td>
+</tr>
+<tr>
+<td>隔离性（Isolation）</td>
+<td>事务与事务之间不能互相影响，必须保持隔离性。</td>
+</tr>
+<tr>
+<td>持久性（Durability）</td>
+<td>如果事务执行成功，对数据库的操作是持久的。</td>
+</tr>
+</tbody></table>
+<h3 id="2-1-1-隔离级别说明"><a href="#2-1-1-隔离级别说明" class="headerlink" title="2.1.1 隔离级别说明"></a>2.1.1 隔离级别说明</h3><p>MySQL中可以有两种方式进行事务的操作：</p>
+<ul>
+<li>1）手动提交事务</li>
+<li>2）自动提交事务（MySQL默认）</li>
+</ul>
+<p>查看当前MySQL是否是自动提交事务：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">show</span> variables <span class="keyword">like</span> <span class="string">&#x27;autocommit&#x27;</span>;</span><br></pre></td></tr></table></figure></div>
+
+<img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/MySQL事务/175.png"
+                      style="zoom: 80%;" 
+                >
+
+<blockquote>
+<p>No（1）：开启自动提交事务（默认值）<br>OFF（0）：关闭自动提交事务</p>
+</blockquote>
+<ul>
+<li>设置手动提交事务（关闭自动提交事务）：</li>
+</ul>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">set</span> autocommit<span class="operator">=</span><span class="number">0</span>;				<span class="comment">-- 本次会话有效</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">set</span> <span class="keyword">global</span> autocommit<span class="operator">=</span><span class="number">0</span>;		<span class="comment">-- 服务器只要不关闭一直有效(需要重启会话)</span></span><br></pre></td></tr></table></figure></div>
+
+<img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/MySQL事务/174.png"
+                      style="zoom:80%;" 
+                >
+
+<p><strong>并发访问下事务产生的问题：</strong></p>
+<p>当同时有多个用户在访问同一张表中的记录，每个用户在访问的时候都是一个单独的事务。</p>
+<p>事务在操作时的理想状态是：事务之间不应该相互影响，实际应用的时候会<strong>引发下面三种问题</strong>。应该尽量避免这些问题的发生。通过数据库本身的功能去避免，设置不同的隔离级别。</p>
+<ul>
+<li><strong>脏读</strong>： 一个事务（用户）读取到了另一个事务没有提交的数据</li>
+<li><strong>不可重复读</strong>：一个事务多次读取同一条记录，出现读取数据不一致的情况。一般因为另一个事务更新了这条记录而引发的。</li>
+<li><strong>幻读</strong>：在一次事务中，多次读取到的条数不一致</li>
+</ul>
+<p><strong>四种隔离级别：</strong></p>
+<table>
+<thead>
+<tr>
+<th>级别</th>
+<th>名字</th>
+<th>隔离级别</th>
+<th>脏读</th>
+<th>不可重复读</th>
+<th>幻读</th>
+<th>数据库默认隔离级别</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>读未提交</td>
+<td>read uncommitted</td>
+<td>是</td>
+<td>是</td>
+<td>是</td>
+<td></td>
+</tr>
+<tr>
+<td>2</td>
+<td>读已提交</td>
+<td>read committed</td>
+<td>否</td>
+<td>是</td>
+<td>是</td>
+<td>Oracle和SQL Server</td>
+</tr>
+<tr>
+<td>3</td>
+<td>可重复读</td>
+<td>repeatable read</td>
+<td>否</td>
+<td>否</td>
+<td>是</td>
+<td>MySQL</td>
+</tr>
+<tr>
+<td>4</td>
+<td>串行化</td>
+<td>serializable</td>
+<td>否</td>
+<td>否</td>
+<td>否</td>
+<td></td>
+</tr>
+</tbody></table>
+<p><strong>四种隔离级别起的作用：</strong></p>
+<ol>
+<li><code>Serializable</code> (串行化)： 可以避免所有事务产生的并发访问的问题 效率及其低下</li>
+<li><code>Repeatable read</code> (可重复读)：简称RR，会引发幻读的问题（InnoDB某些情况下已经解决）</li>
+<li><code>Read committed</code> (读已提交)：简称RC，会引发不可重复读和幻读的问题</li>
+<li><code>Read uncommitted</code> (读未提交)：简称RU，所有事务中的并发访问问题都会发生</li>
+</ol>
+<ul>
+<li><strong>查询全局事务隔离级别</strong></li>
+</ul>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">mysql<span class="operator">&gt;</span> <span class="keyword">select</span> @<span class="variable">@tx_isolation</span>;</span><br><span class="line"><span class="operator">+</span><span class="comment">-----------------+</span></span><br><span class="line"><span class="operator">|</span> @<span class="variable">@tx_isolation</span>  <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-----------------+</span></span><br><span class="line"><span class="operator">|</span> REPEATABLE<span class="operator">-</span>READ <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-----------------+</span></span><br><span class="line"><span class="number">1</span> <span class="type">row</span> <span class="keyword">in</span> <span class="keyword">set</span>, <span class="number">1</span> warning (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line">mysql<span class="operator">&gt;</span> </span><br></pre></td></tr></table></figure></div>
+
+<p>修改隔离级别：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">set</span> transaction isolation level read uncommitted;			<span class="comment">-- 本次会话有效</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">set</span> <span class="keyword">global</span> transaction isolation level read uncommitted;	<span class="comment">-- 服务器只要不关闭一直有效</span></span><br></pre></td></tr></table></figure></div>
+
+<blockquote>
+<p><strong>修改隔离级别后需要重启会话</strong></p>
+</blockquote>
+<h3 id="2-1-2-脏读"><a href="#2-1-2-脏读" class="headerlink" title="2.1.2 脏读"></a>2.1.2 脏读</h3><p>在并发情况下，一个事务读取到另一个事务没有提交的数据，<strong>这个数据称之为脏数据，此次读取也称为脏读。</strong></p>
+<p>我们知道，只有<code>read uncommitted</code>（读未提交）的隔离级别才会引发脏读。</p>
+<ul>
+<li>将MySQL的事务隔离级别设置为<code>read committed</code>（读已提交）：</li>
+</ul>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mysql<span class="operator">&gt;</span> <span class="keyword">set</span> transaction isolation level read uncommitted;</span><br><span class="line">Query OK, <span class="number">0</span> <span class="keyword">rows</span> affected (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure></div>
+
+<p>测试表：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> `<span class="keyword">user</span>`  (</span><br><span class="line">  `id` <span class="type">int</span>(<span class="number">11</span>) <span class="keyword">NOT</span> <span class="keyword">NULL</span> AUTO_INCREMENT,</span><br><span class="line">  `name` <span class="type">varchar</span>(<span class="number">255</span>) <span class="type">CHARACTER</span> <span class="keyword">SET</span> utf8mb4 <span class="keyword">COLLATE</span> utf8mb4_general_ci <span class="keyword">NOT</span> <span class="keyword">NULL</span>,</span><br><span class="line">  `age` <span class="type">int</span>(<span class="number">11</span>) <span class="keyword">NOT</span> <span class="keyword">NULL</span>,</span><br><span class="line">  <span class="keyword">PRIMARY</span> KEY (`id`) <span class="keyword">USING</span> BTREE</span><br><span class="line">) ENGINE <span class="operator">=</span> InnoDB ;</span><br><span class="line"></span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> `<span class="keyword">user</span>`(`id`, `name`, `age`) <span class="keyword">VALUES</span> (<span class="number">1</span>, <span class="string">&#x27;zs&#x27;</span>, <span class="number">20</span>);</span><br></pre></td></tr></table></figure></div>
+
+<img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/MySQL事务/173.png"
+                      style="zoom: 67%;" 
+                >
+
+<blockquote>
+<p>解决脏读的方法就是将隔离级别设置高级一点（<code>read committed</code>）</p>
+</blockquote>
+<h3 id="2-1-3-不可重复读"><a href="#2-1-3-不可重复读" class="headerlink" title="2.1.3 不可重复读"></a>2.1.3 不可重复读</h3><p>在一次事务中，多次读取到数据信息不一致；</p>
+<img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/MySQL事务/172.png"
+                      style="zoom:67%;" 
+                >
+
+<p>在上面案例中，session-01窗口两次查询id&#x3D;1的数据都不一致</p>
+<blockquote>
+<p>解决不可重复读的方法就是将隔离级别再设置高级一点（<code>repeatable read</code>）</p>
+</blockquote>
+<h3 id="2-1-4-幻读"><a href="#2-1-4-幻读" class="headerlink" title="2.1.4 幻读"></a>2.1.4 幻读</h3><p>在一次事务中，多次读取到的条数不一致，但是在InnoDB中，幻读问题已经被解决了</p>
+<p>我们来看看幻读的现象：</p>
+<img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/MySQL事务/171.png"
+                      style="zoom:67%;" 
+                >
+
+<p>在InnoDB中，RR隔离级别可以解决幻读的问题：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">session<span class="number">-01</span>:</span><br><span class="line"></span><br><span class="line"><span class="keyword">begin</span>;											<span class="comment">-- 1</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> <span class="keyword">user</span> <span class="keyword">where</span> age<span class="operator">&gt;</span><span class="number">15</span>;				<span class="comment">-- 3	</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> <span class="keyword">user</span> <span class="keyword">where</span> age<span class="operator">&gt;</span><span class="number">15</span>;				<span class="comment">-- 6</span></span><br><span class="line"></span><br><span class="line"><span class="comment">----------------------------------</span></span><br><span class="line"></span><br><span class="line">session<span class="number">-02</span>:</span><br><span class="line">	</span><br><span class="line"><span class="keyword">begin</span>;											<span class="comment">-- 2</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> <span class="keyword">user</span> <span class="keyword">values</span>(<span class="number">2</span>,<span class="string">&#x27;李四&#x27;</span>,<span class="number">18</span>);			   <span class="comment">-- 4</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">commit</span>;											<span class="comment">-- 5</span></span><br></pre></td></tr></table></figure></div>
+
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/MySQL%E4%BA%8B%E5%8A%A1/170.png"
+                     
+                ></p>
+<h3 id="2-1-5-SQL92标准"><a href="#2-1-5-SQL92标准" class="headerlink" title="2.1.5 SQL92标准"></a>2.1.5 SQL92标准</h3><p>数据并发情况下存在很多的问题，为了解决这些问题，数据库专家联合制定了一个标准，也就是说建议数据库厂商都按照这个标准，提供一定的事务隔离级别，来解决事务并发的问题，这个就是 SQL92 标准。</p>
+<blockquote>
+<p>SQL92标准官网：<a class="link"   target="_blank" rel="noopener" href="http://www.contrib.andrew.cmu.edu/~shadow/sql/sql1992.txt" >http://www.contrib.andrew.cmu.edu/~shadow/sql/sql1992.txt <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+</blockquote>
+<p>关于隔离级别处理的问题：</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/MySQL%E4%BA%8B%E5%8A%A1/168.png"
+                     
+                ></p>
+<blockquote>
+<p>在SQL92标准中，RR隔离级别是会引发幻读问题的；</p>
+</blockquote>
+<p>搜索<code>isolation</code>关键字，找到关于幻读的定义</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/MySQL%E4%BA%8B%E5%8A%A1/169.png"
+                     
+                ></p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">幻读: 事务T1读取满足搜索条件的N行数据,事务T2执行SQL语句生成一条或多条SQL语句满足事务T1的搜索条件,如果事务T1使用相同搜索条件的SQL语句读取,那么他会返回一个不同行的集合</span><br></pre></td></tr></table></figure></div>
+
+<p><strong>注意：SQL92只是一个标准，他提出了事务并发引起的问题有哪几种方案（隔离级别）可以解决，不同的事务隔离级别应该处理哪些问题，但是具体实现落实在了不同的数据库厂商，比如在Oracle中的事务默认隔离级别就是RC（Read Committed），并且Oracle只支持三种事务隔离级别（读已提交、串行化、只读），但MySQL支持四种隔离级别，而且MySQL默认的存储引擎（InnoDB）在RR隔离级别下不会引发幻读；</strong></p>
+<h1 id="三、事务日志"><a href="#三、事务日志" class="headerlink" title="三、事务日志"></a>三、事务日志</h1><p><strong>事务的隔离性是通过锁实现，而事务的原子性、和持久性则是通过事务日志实现</strong>，在MySQL中，事务日志分为两类，一个是<code>Redo log</code>，也叫重做日志，另一个是<code>Undo log</code>，也叫回滚日志；<strong>其中Redo Log保证事务的持久性，UndoLog保证的是事务的原子性；</strong></p>
+<h2 id="3-1-Redo-log"><a href="#3-1-Redo-log" class="headerlink" title="3.1 Redo log"></a>3.1 Redo log</h2><p>Redo log也叫重做日志；事务开启时，<strong>事务中的操作都会先写入存储引擎的日志缓冲（Buffer Pool）中</strong>，默认情况下事务每次提交的时候都会将事务日志刷到磁盘中（多种策略），这就是经常说的”<strong>日志先行</strong>“（Write-Ahead Logging）。</p>
+<blockquote>
+<p><strong>注意：日志永远比实际数据先到磁盘；换句话说日志没有刷新成功数据不可能提交到表中；</strong></p>
+</blockquote>
+<p>如果在事务提交时，此时数据库崩溃或者宕机，那么当系统重启进行恢复时，就可以根据Redo log中记录的日志，把数据库恢复到崩溃前的一个状态。</p>
+<h3 id="3-1-1-Redo工作原理："><a href="#3-1-1-Redo工作原理：" class="headerlink" title="3.1.1 Redo工作原理："></a>3.1.1 Redo工作原理：</h3><p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/MySQL%E4%BA%8B%E5%8A%A1/162.png"
+                     
+                ></p>
+<p>首先在操作表时，会将表数据从磁盘（.idb）加载到内存中（Buffer），对表所有的操作都会记录一份到Redo日志中，在事务最终要提交时，如果数据库突然宕机，那么当数据库重启时，就可以根据Redo日志中的记录进行数据的恢复；</p>
+<blockquote>
+<p><strong>Tips：Redo log主要保障的是事务的持久性；</strong></p>
+</blockquote>
+<h3 id="3-1-2-Redo脏页的概念"><a href="#3-1-2-Redo脏页的概念" class="headerlink" title="3.1.2 Redo脏页的概念"></a>3.1.2 Redo脏页的概念</h3><p>内存中（buffer pool）未刷到磁盘的数据称为脏数据（dirty data）。由于数据和日志都以页的形式存在，所以脏页表示脏数据和脏日志。</p>
+<h3 id="3-1-3-Redo的刷新策略："><a href="#3-1-3-Redo的刷新策略：" class="headerlink" title="3.1.3 Redo的刷新策略："></a>3.1.3 Redo的刷新策略：</h3><p><strong>1、事务提交时默认将Buffer内容刷新到Disk中；</strong></p>
+<p><strong>2、每秒将Buffer内容刷新到Disk中（和条件1并存）</strong></p>
+<p><strong>3、Buffer中已经使用的内存超过一半以上时；</strong></p>
+<p><strong>4、Checkpoint策略刷盘（当数据库宕机时，数据库不需要重做所有的日志，只需要执行上次刷入点之后的日志。这个点就叫做Checkpoint）</strong></p>
+<blockquote>
+<p>MySQL官方对于Checkpoint的介绍：<a class="link"   target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/innodb-checkpoints.html" >https://dev.mysql.com/doc/refman/5.7/en/innodb-checkpoints.html <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+</blockquote>
+<h3 id="3-1-4-Redo相关系统参数"><a href="#3-1-4-Redo相关系统参数" class="headerlink" title="3.1.4 Redo相关系统参数"></a>3.1.4 Redo相关系统参数</h3><ul>
+<li><p><code>innodb_flush_log_at_trx_commit</code>：Redo日志的持久化策略，取值有0、1、2；默认为1</p>
+<ul>
+<li>0：代表每秒将<code>Redo Buffer</code>中的数据刷到<code>OS buffer</code>然后立即从<code>OS buffer</code>刷到磁盘中。</li>
+<li>1：代表每次提交事务都将<code>Redo Buffer</code>同步到<code>OS Buffer</code>然后立即从<code>OS Buffer</code>刷到磁盘<strong>（默认值）</strong>。</li>
+<li>2：代表每次提交都将<code>Redo Buffer</code>中的数据刷到<code>OS Buffer</code>，然后再隔一秒从<code>OS Buffer</code>刷到磁盘。</li>
+</ul>
+<img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/MySQL事务/157.png"
+                      style="zoom: 67%;" 
+                >
+</li>
+<li><p><code>innodb_log_buffer_size</code>：<code>Redo Buffer</code>的大小，默认16M</p>
+</li>
+<li><p><code>innodb_log_file_size</code>：单个<code>Redo log</code>事务日志文件的最大大小，默认48M</p>
+</li>
+<li><p><code>innodb_log_files_group</code>：<code>Redo log</code>日志文件的个数，默认2个</p>
+</li>
+<li><p><code>innodb_log_group_home_dir</code>：<code>Redo log</code>的存放路径；默认值为<code>./</code>代表当前MySQL的数据目录（Linux默认是<code>/var/lib/mysql</code></p>
+</li>
+<li><p><code>innodb_log_checksums</code>：启用或禁用<code>Relo log</code>数据页的校验，默认开启。</p>
+</li>
+<li><p><code>innodb_log_compressed_pages</code>：指定是否将重新压缩的页写入<code>Redo log</code>，默认是开启状态</p>
+</li>
+</ul>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">show</span> variables <span class="keyword">like</span> <span class="string">&#x27;%innodb_log%&#x27;</span>;</span><br></pre></td></tr></table></figure></div>
+
+<img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/MySQL事务/159.png"
+                      style="zoom:67%;" 
+                >
+
+<ul>
+<li>测试不同的redo刷盘策略对性能的影响：</li>
+</ul>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">mysql<span class="operator">&gt;</span> <span class="keyword">truncate</span> userinfo;</span><br><span class="line">Query OK, <span class="number">0</span> <span class="keyword">rows</span> affected (<span class="number">0.01</span> sec)</span><br><span class="line"></span><br><span class="line">mysql<span class="operator">&gt;</span> <span class="keyword">set</span> <span class="keyword">global</span> innodb_flush_log_at_trx_commit<span class="operator">=</span><span class="number">0</span>;</span><br><span class="line">Query OK, <span class="number">0</span> <span class="keyword">rows</span> affected (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line">mysql<span class="operator">&gt;</span> <span class="keyword">call</span> test_insert(<span class="number">10000</span>);</span><br><span class="line">Query OK, <span class="number">1</span> <span class="type">row</span> affected (<span class="number">0.42</span> sec)</span><br><span class="line"></span><br><span class="line">mysql<span class="operator">&gt;</span> <span class="keyword">truncate</span> userinfo;</span><br><span class="line">Query OK, <span class="number">0</span> <span class="keyword">rows</span> affected (<span class="number">0.01</span> sec)</span><br><span class="line"></span><br><span class="line">mysql<span class="operator">&gt;</span> <span class="keyword">set</span> <span class="keyword">global</span> innodb_flush_log_at_trx_commit<span class="operator">=</span><span class="number">1</span>;</span><br><span class="line">Query OK, <span class="number">0</span> <span class="keyword">rows</span> affected (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line">mysql<span class="operator">&gt;</span> <span class="keyword">call</span> test_insert(<span class="number">10000</span>);</span><br><span class="line">Query OK, <span class="number">1</span> <span class="type">row</span> affected (<span class="number">17.36</span> sec)</span><br><span class="line"></span><br><span class="line">mysql<span class="operator">&gt;</span> <span class="keyword">truncate</span> userinfo;</span><br><span class="line">Query OK, <span class="number">0</span> <span class="keyword">rows</span> affected (<span class="number">0.01</span> sec)</span><br><span class="line"></span><br><span class="line">mysql<span class="operator">&gt;</span> <span class="keyword">set</span> <span class="keyword">global</span> innodb_flush_log_at_trx_commit<span class="operator">=</span><span class="number">2</span>;</span><br><span class="line">Query OK, <span class="number">0</span> <span class="keyword">rows</span> affected (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line">mysql<span class="operator">&gt;</span> <span class="keyword">call</span> test_insert(<span class="number">10000</span>);</span><br><span class="line">Query OK, <span class="number">1</span> <span class="type">row</span> affected (<span class="number">0.46</span> sec)</span><br><span class="line"></span><br><span class="line">mysql<span class="operator">&gt;</span></span><br></pre></td></tr></table></figure></div>
+
+<img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/MySQL事务/206.png"
+                      style="zoom: 50%;" 
+                >
+
+<h2 id="3-2-Undo-log"><a href="#3-2-Undo-log" class="headerlink" title="3.2 Undo log"></a>3.2 Undo log</h2><p>Undo log也叫回滚日志；<strong>Undo log记录了数据在每个操作前的状态</strong>，如果事务执行过程中需要回滚，就可以根据Undo log进行回滚操作。单个事务的回滚，只会回滚当前事务做的操作，并不会影响到其他的事务做的操作。</p>
+<blockquote>
+<p>Tips：<strong>Redo log主要保证事务的持久性，Undo log主要保证事务的原子性，提供回滚功能；其次Undo log用于提供MVCC的快照读</strong></p>
+</blockquote>
+<h3 id="3-2-1-Undo工作原理："><a href="#3-2-1-Undo工作原理：" class="headerlink" title="3.2.1 Undo工作原理："></a>3.2.1 Undo工作原理：</h3><p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/MySQL%E4%BA%8B%E5%8A%A1/163.png"
+                     
+                ></p>
+<p>首先在操作表时，会将表数据从磁盘（.idb）加载到内存中（Buffer），<strong>对表的update&#x2F;delete等操作InnoDB都会事先将修改前的数据备份到Undo Buffer中</strong>，这样当事务进行回滚时可以根据Undo Buffer中的内容进行事务的回滚操作，除此之外，<strong>Undo Buffer提供了数据的快照读取</strong>，在事务未提交之前，Undo 日志可以作为并发读写时的读快照，来保证事务的可重复读；因此在每一步操作时都会写入磁盘中的Undo log，如果事务还未提交时系统奔溃，那么InnoDB可以根据Undo log来恢复到事务开始前的状态；</p>
+<p>在一次事务中的delete、update等操作会造成大量的废弃数据，在事务提交时，会将该事务对应的undo log放入到删除列表中，通过purge线程来删除。</p>
+<h3 id="3-2-2-Purge线程"><a href="#3-2-2-Purge线程" class="headerlink" title="3.2.2 Purge线程"></a>3.2.2 Purge线程</h3><p>在事务开启后，不管是update还是delete都只是将记录标记为删除，并不是真正的将记录清除，因为MVCC的存在，要保留之前的版本以供并发读写时，读请求的响应；为了节省磁盘的存储空间，InnoDB内部提供有Purge线程来清理被标记为删除的数据，最终数据的清除是由purge线程来决定的什么时候来真正删除文件的；</p>
+<p>有关于Purge线程的参数：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">mysql<span class="operator">&gt;</span> <span class="keyword">show</span> variables <span class="keyword">like</span> <span class="string">&#x27;%purge%&#x27;</span>;</span><br><span class="line"><span class="operator">+</span><span class="comment">--------------------------------------+-------+</span></span><br><span class="line"><span class="operator">|</span> Variable_name                        <span class="operator">|</span> <span class="keyword">Value</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">--------------------------------------+-------+</span></span><br><span class="line"><span class="operator">|</span> gtid_purged                          <span class="operator">|</span>       <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> innodb_max_purge_lag                 <span class="operator">|</span> <span class="number">0</span>     <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> innodb_max_purge_lag_delay           <span class="operator">|</span> <span class="number">0</span>     <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> innodb_purge_batch_size              <span class="operator">|</span> <span class="number">300</span>   <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> innodb_purge_rseg_truncate_frequency <span class="operator">|</span> <span class="number">128</span>   <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> innodb_purge_threads                 <span class="operator">|</span> <span class="number">4</span>     <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span> relay_log_purge                      <span class="operator">|</span> <span class="keyword">ON</span>    <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">--------------------------------------+-------+</span></span><br><span class="line"><span class="number">7</span> <span class="keyword">rows</span> <span class="keyword">in</span> <span class="keyword">set</span> (<span class="number">0.01</span> sec)</span><br></pre></td></tr></table></figure></div>
+
+<ul>
+<li><code>innodb_max_purge_lag</code>：当InnoDB存储引擎压力非常大时，Purge线程可能并不会工作，此时是否要延缓DML的操作，innodb_max_purge_lag控制undo log的数量，如果数量大于该值，就延缓DML的操作，默认为0，代表不延缓；</li>
+<li><code>innodb_max_purge_lag_delay</code>：表示当上面innodb_max_purge_lag的delay超时时间太大，超过这个参数时，将delay设置为该参数值，防止purge线程操作缓慢导致其他SQL线程长期处于等待状态。默认为0，一般不用修改。</li>
+<li><code>innodb_purge_batch_size</code>：用来设置每次purge操作需要清理的undo log page的数量。</li>
+<li><code>innodb_purge_threads</code>：Purge线程的数量（默认为4，最大为32）</li>
+</ul>
+<h1 id="四、MVCC并发版本控制"><a href="#四、MVCC并发版本控制" class="headerlink" title="四、MVCC并发版本控制"></a>四、MVCC并发版本控制</h1><h2 id="4-1-MVCC与LBCC"><a href="#4-1-MVCC与LBCC" class="headerlink" title="4.1 MVCC与LBCC"></a>4.1 MVCC与LBCC</h2><p>上面我们说到了InnoDB在RR隔离级别下解决了幻读问题，又保证了高并发的读取（避免了读写串行化），那他到底是如何做的呢？</p>
+<p>我们需要解决幻读，即保证前后两次读取的数据条数一致，那么我们就在我们读取的数据的时候加锁，锁定我们需要的数据，不允许其他事务对其修改；这种方案我们叫做基于<strong>锁的并发控制 Lock Based Concurrency Control（LBCC）</strong>。但很显然，InnoDB没有采用这种方案，我们在查询数据的时候并没有锁定行（没有加锁）；</p>
+<p>从我们的直观理解上来看，要实现数据库的并发访问控制，最简单的做法就是LBCC，即读的时候不能写（允许多个线程同时读，即共享锁，S锁），写的时候不能读（一次最多只能有一个线程对同一份数据进行写操作，即排它锁，X锁）。这样的加锁访问，其实并不算是真正的并发，或者说它只能实现并发的读，因为它最终实现的是<strong>读写串行化</strong>，这样就大大降低了数据库的读写性能。是四种隔离级别中级别最高的Serialize隔离级别。为了提出比LBCC更优越的并发性能方法，MVCC便应运而生。</p>
+<p>MVCC（Multi-Version Concurrency Control）：多版本并发控制。并发访问（读或写）数据库时，对正在事务内处理的数据&#x3D;&#x3D;<strong>做多版本的管理</strong>&#x3D;&#x3D;。以达到用来避免写操作的堵塞，从而引发读操作的并发问题。</p>
+<blockquote>
+<p>&#x3D;&#x3D;<strong>MVCC实现了对数据库的读写并发访问，MVCC主要是为了提高数据库读写并发性能，用更好的方式去处理读-写冲突，做到即使有读写冲突时，也能做到不加锁，非阻塞并发读；提高了数据库并发读写能力；</strong>&#x3D;&#x3D;</p>
+</blockquote>
+<h2 id="4-2-MVCC实现原理"><a href="#4-2-MVCC实现原理" class="headerlink" title="4.2 MVCC实现原理"></a>4.2 MVCC实现原理</h2><p>在InnoDB中，所有表中都会有三个隐藏的列，分别为：<code>DB_ROW_ID</code>、<code>DB_TRX_ID</code>、<code>DB_ROLL_PT</code></p>
+<p><code>DB_TRX_ID</code>：<strong>数据行版本号</strong>；当有新的数据修改或插入时的事务ID号，用于记录修改这条记录的事务ID和创建这条记录的事务ID；（记录这条数据是哪个事务修改的，哪个事务创建的）</p>
+<p><code>DB_ROLL_PT</code>：<strong>回滚指针</strong>，也叫<strong>删除行版本号</strong>；指向<code>undo log</code>中这条记录的上一个版本，删除记录，记录当前事务ID；（记录这条数据时哪个事务删除的）</p>
+<p><code>DB_ROW_ID</code>：<strong>聚集索引</strong>；如果数据表没有主键，InnoDB会创建一个<code>DB_ROW_ID</code>作为聚集索引</p>
+<p>&#x3D;&#x3D;<strong>MVCC的目的就是实现数据库的并发读取</strong>&#x3D;&#x3D;，为了解决读写冲突，它的实现原理主要是依赖记录中的<strong>3个隐式字段，undo日志 ，Read View（快照）</strong>来实现的。</p>
+<h3 id="4-2-1-插入流程"><a href="#4-2-1-插入流程" class="headerlink" title="4.2.1 插入流程"></a>4.2.1 插入流程</h3><p>InnoDB在每次开启事务时都会为此次事务分配一个事务ID号，用于标识此次事务</p>
+<img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/MySQL事务/167.png"
+                      style="zoom: 50%;" 
+                >
+
+<p><strong>本次事务插入的所有的数据行的版本号字段都为当前事务的ID；</strong></p>
+<h3 id="4-2-2-删除流程"><a href="#4-2-2-删除流程" class="headerlink" title="4.2.2 删除流程"></a>4.2.2 删除流程</h3><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/MySQL事务/166.png"
+                      style="zoom:67%;" 
+                >
+
+<ul>
+<li>步骤：<ul>
+<li><strong>①：将原来的数据copy一份，将新行的trx_id设置为此次事务id</strong></li>
+<li><strong>②：将新的行的头信息中的delete_flag标记为true，并将新行的roll_id设置为旧行的trx_id（数据行版本号&#x3D;被删除记录的删除行版本号）</strong></li>
+</ul>
+</li>
+</ul>
+<h3 id="4-2-3-修改流程"><a href="#4-2-3-修改流程" class="headerlink" title="4.2.3 修改流程"></a>4.2.3 修改流程</h3><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/MySQL事务/165.png"
+                      style="zoom: 50%;" 
+                >
+
+<ul>
+<li>步骤：<ul>
+<li><strong>①：将原数据copy一份，并将当前行的trx_id设置为此次事务id</strong></li>
+<li><strong>②：将新行的roll_id设置为旧行的trx_id</strong></li>
+</ul>
+</li>
+</ul>
+<h3 id="4-2-4-查询流程"><a href="#4-2-4-查询流程" class="headerlink" title="4.2.4 查询流程"></a>4.2.4 查询流程</h3><p>在MVCC中，<strong>查询时</strong>会拍下一个<strong>一致性快照</strong>（Read-View），该事务快照由查询时生成的所有事务id集合（trx_ids）组成，trx_ids中的事务id的大小范围为：<code>min_id&lt;=事务id&lt;=max_id</code>；</p>
+<ul>
+<li><code>min_id</code>：为当前查询事务开启（拍快照）后的第一个事务id；</li>
+<li><code>max_id</code>：为此次查询事务提交前的最后一个事务id；</li>
+</ul>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/images/MySQL%E4%BA%8B%E5%8A%A1/203.png"
+                     
+                ></p>
+<blockquote>
+<p>Tips：&#x3D;&#x3D;<strong>在InnoDB中，MVCC只在RR和RC两个隔离级别下工作，因为RU隔离级别总是会读取最新的行，而不是符合当前事务版本的数据行。而Serializable则会对所有读取的行都加锁；</strong>&#x3D;&#x3D;</p>
+</blockquote>
+<p>MVCC快照生成流程RC和RR隔离级别几乎一模一样，唯一不同的是生成 ReadView 的时机，<strong>RR 级别只在事务开始之后第一次查询生成一次，之后一直使用该 ReadView。而 RC 级别则在每次 select 时，都会生成一个 ReadView；</strong></p>
+<h4 id="1）RR环境下MVCC查询流程"><a href="#1）RR环境下MVCC查询流程" class="headerlink" title="1）RR环境下MVCC查询流程"></a>1）RR环境下MVCC查询流程</h4><ul>
+<li><p>1、被查询的行记录中的<code>trx_id</code>为当前查询的<code>trx_id</code>，<strong>能够被当前事务访问</strong>（说明自己创建的）；</p>
+</li>
+<li><p>2、被查询的行记录中的<code>trx_id</code>比事务快照中最小的还小，表明该记录为之前提交的，<strong>能够被当前事务访问</strong>（图中绿色部分）；</p>
+</li>
+<li><p>3、被查询的行记录的<code>trx_id</code>大于等于<code>ReadView</code>中的<code>min_id</code>值，表明生成该版本的事务在当前事务生成<code>ReadView</code>后才开启，所以该版本<strong>不可以被当前事务访问</strong>（黄色部分）。</p>
+</li>
+</ul>
+<p>测试表：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> <span class="keyword">user</span>(</span><br><span class="line">	id <span class="type">int</span> <span class="keyword">primary</span> key auto_increment,</span><br><span class="line">    name <span class="type">varchar</span>(<span class="number">30</span>),</span><br><span class="line">    age <span class="type">int</span></span><br><span class="line">);</span><br><span class="line"></span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> <span class="keyword">user</span> <span class="keyword">values</span>(<span class="number">1</span>,<span class="string">&#x27;zhangsan&#x27;</span>,<span class="number">20</span>);</span><br></pre></td></tr></table></figure></div>
+
+<ul>
+<li>案例1（特殊的情况）：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>session-01</th>
+<th>session-02</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>begin;</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>begin;</td>
+</tr>
+<tr>
+<td></td>
+<td>insert into user values(2,”lisi”,20);</td>
+</tr>
+<tr>
+<td></td>
+<td>commit;</td>
+</tr>
+<tr>
+<td>select * from user;    – yes or no?</td>
+<td></td>
+</tr>
+<tr>
+<td>rollback;</td>
+<td></td>
+</tr>
+</tbody></table>
+<p><font title='yes'>答案</font></p>
+<ul>
+<li>案例2：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>session-01</th>
+<th>session-02</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>begin;</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>begin;</td>
+</tr>
+<tr>
+<td>select * from user;   – 拍下ReadView快照</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>insert into user values(2,”lisi”,20);</td>
+</tr>
+<tr>
+<td></td>
+<td>commit;</td>
+</tr>
+<tr>
+<td>select * from user;   – yes or no?</td>
+<td></td>
+</tr>
+<tr>
+<td>rollback;</td>
+<td></td>
+</tr>
+</tbody></table>
+<p><font title='No'>答案</font></p>
+<h4 id="2）RC环境下MVCC查询流程"><a href="#2）RC环境下MVCC查询流程" class="headerlink" title="2）RC环境下MVCC查询流程"></a>2）RC环境下MVCC查询流程</h4><p>我们刚刚了解到，RC的查询流程和RR的是一样的；RC与RR唯一的不同点在于<code>ReadView</code>生成的次数，RR只在事务开始时生成一次，RC则是在每次select语句时都生成一次；也就是说每次select的时候trx_ids都是在变化的（前提是有新的事务开启了）</p>
+<h2 id="4-3-快照读和当前读"><a href="#4-3-快照读和当前读" class="headerlink" title="4.3 快照读和当前读"></a>4.3 快照读和当前读</h2><p>我们根据Undo日志的工作原理可以分析，当一个事务对表的任何的更新操作都会事先记录到Undo日志，当另一个事务查询的上一个事务的操作的那条数据时，返回的是当前事务的快照，也就是Undo日志中的记录；<strong>我们把这种读取也称之为快照读取；</strong></p>
+<p><strong>当前读</strong>：即读的必须是当前最新的数据，当前读在每次读取都加上了锁，例如S锁（lock in share mode）、X锁（for update）等，当前读用于读取的是数据最新的版本，但当前读会对记录加锁，在事务并发访问情况下，如果其他事务对该记录加上了排它锁，那么当前读进入阻塞状态；同样的如果使用当前读读取数据，该数据也不能被其他事务加上排它锁；</p>
+<p><strong>快照读</strong>：在InnoDB事务中默认的读取方式就是快照读，即：<code>select * from user [where xxx];</code>这些操作默认都不会加锁的，这些操作读的都是数据的快照；快照读的出现极大的提升了InnoDB在并发读写能力上的提升；但由于快照读所读取的数据都是快照（旧版本数据），所以说快照读取并不一定是最新版本的数据；</p>
+<p>我们来看一个案例：</p>
+<table>
+<thead>
+<tr>
+<th>session-01</th>
+<th>session-02</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>begin;</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>begin;</td>
+</tr>
+<tr>
+<td>select * from user where id&#x3D;1;    –   age&#x3D;18  (快照读)</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>update user set age&#x3D;20 where id&#x3D;1;</td>
+</tr>
+<tr>
+<td>select * from user where id&#x3D;1;     –  age&#x3D;18（快照读，保证读已提交）</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>commit;</td>
+</tr>
+<tr>
+<td>select * from user where id&#x3D;1;     –  age&#x3D;18（快照读，保证可重复读）</td>
+<td></td>
+</tr>
+<tr>
+<td>select * from user where id&#x3D;1 lock in share mode; – age&#x3D;20（当前读，读的是最新的版本）</td>
+<td></td>
+</tr>
+<tr>
+<td>commit&#x2F;rollback;</td>
+<td></td>
+</tr>
+</tbody></table>
+<p>需要注意的是，当前读读的是最新的数据，但与此同时，id&#x3D;1的这行记录已经被加上S锁了，其他事务要对其update（加X锁）就会被其阻塞，并发能力差；</p>
+<blockquote>
+<p>Tips：<strong>快照读的前提是隔离级别不是串行化级别，串行化级别下的快照读会进化成当前读；</strong></p>
+</blockquote>
+<p><strong>快照读（Snapshot Read）</strong>，这种一致性不加锁的读（Consistent Nonlocking Read），<strong>就是 InnoDB 并发如此之高的核心原因。</strong></p>
+<blockquote>
+<p>Tips：&#x3D;&#x3D;<strong>另外，读未提交和串行化的隔离级别是没有MVCC快照的；</strong>&#x3D;&#x3D;</p>
+</blockquote>
+
+        </div>
+
+        
+            <div class="post-copyright-info w-full my-8 px-2 sm:px-6 md:px-8">
+                <div class="article-copyright-info-container">
+    <ul>
+        <li><strong>Title:</strong> MySQL事务</li>
+        <li><strong>Author:</strong> MinGe</li>
+        <li><strong>Created at
+                :</strong> 2023-06-10 09:11:00</li>
+        
+            <li>
+                <strong>Updated at
+                    :</strong> 2024-11-11 15:42:42
+            </li>
+        
+        <li>
+            <strong>Link:</strong> https://redefine.ohevan.com/2023/06/10/MySQL事务/
+        </li>
+        <li>
+            <strong>
+                License:
+            </strong>
+            
+
+            
+                This work is licensed under <a class="license" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0">CC BY-NC-SA 4.0</a>.
+            
+        </li>
+    </ul>
+</div>
+
+            </div>
+        
+
+        
+            <ul class="post-tags-box text-lg mt-1.5 flex-wrap justify-center flex md:hidden">
+                
+                    <li class="tag-item mx-0.5">
+                        <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/">#数据库</a>&nbsp;
+                    </li>
+                
+            </ul>
+        
+
+        
+
+        
+            <div class="article-nav my-8 flex justify-between items-center px-2 sm:px-6 md:px-8">
+                
+                    <div class="article-prev border-border-color shadow-redefine-flat shadow-shadow-color-2 rounded-medium px-4 py-2 hover:shadow-redefine-flat-hover hover:shadow-shadow-color-2">
+                        <a class="prev"
+                        rel="prev"
+                        href="/2023/06/10/MySQL%E6%9E%B6%E6%9E%84/"
+                        >
+                            <span class="left arrow-icon flex justify-center items-center">
+                                <i class="fa-solid fa-chevron-left"></i>
+                            </span>
+                            <span class="title flex justify-center items-center">
+                                <span class="post-nav-title-item">MySQL架构</span>
+                                <span class="post-nav-item">Prev posts</span>
+                            </span>
+                        </a>
+                    </div>
+                
+                
+                    <div class="article-next border-border-color shadow-redefine-flat shadow-shadow-color-2 rounded-medium px-4 py-2 hover:shadow-redefine-flat-hover hover:shadow-shadow-color-2">
+                        <a class="next"
+                        rel="next"
+                        href="/2023/06/10/MySQL%E7%B4%A2%E5%BC%95/"
+                        >
+                            <span class="title flex justify-center items-center">
+                                <span class="post-nav-title-item">MySQL索引</span>
+                                <span class="post-nav-item">Next posts</span>
+                            </span>
+                            <span class="right arrow-icon flex justify-center items-center">
+                                <i class="fa-solid fa-chevron-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                
+            </div>
+        
+
+
+        
+    </div>
+
+    
+        <div class="toc-content-container">
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <div class="toc-title">On this page</div>
+        <div class="page-title">MySQL事务</div>
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81MySQL%E9%94%81%E6%9C%BA%E5%88%B6"><span class="nav-text">一、MySQL锁机制</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-%E9%94%81%E7%9A%84%E5%88%86%E7%B1%BB"><span class="nav-text">1.1 锁的分类</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-1-%E6%8C%89%E6%93%8D%E4%BD%9C%E5%88%86"><span class="nav-text">1.1.1 按操作分</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-2-%E6%8C%89%E7%B2%92%E5%BA%A6%E5%88%86"><span class="nav-text">1.1.2 按粒度分</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-3-%E6%8C%89%E7%AE%97%E6%B3%95%E5%88%92%E5%88%86"><span class="nav-text">1.1.3 按算法划分</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-2-InnoDB-%E5%BC%95%E6%93%8E%E9%94%81"><span class="nav-text">1.2 InnoDB 引擎锁</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-1-InnoDB%E8%A1%8C%E9%94%81%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F"><span class="nav-text">1.2.1 InnoDB行锁实现方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-2-InnoDB%E5%86%99%E9%94%81"><span class="nav-text">1.2.2 InnoDB写锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-3-InnoDB%E8%AF%BB%E9%94%81"><span class="nav-text">1.2.3 InnoDB读锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-4-InnoDB%E6%AD%BB%E9%94%81"><span class="nav-text">1.2.4 InnoDB死锁</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-3-%E9%94%81%E5%B0%8F%E7%BB%93"><span class="nav-text">1.3 锁小结</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-3-1-MySIAM%E5%BC%95%E6%93%8E"><span class="nav-text">1.3.1 MySIAM引擎</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-3-2-InnoDB-%E5%BC%95%E6%93%8E"><span class="nav-text">1.3.2 InnoDB 引擎</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-4-%E6%84%8F%E5%90%91%E9%94%81"><span class="nav-text">1.4 意向锁</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-4-1-%E6%84%8F%E5%90%91%E9%94%81%E6%98%AF%E8%A1%A8%E9%94%81%E8%BF%98%E6%98%AF%E8%A1%8C%E9%94%81%EF%BC%9F"><span class="nav-text">1.4.1 意向锁是表锁还是行锁？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-4-2-S%E9%94%81%E3%80%81X%E9%94%81%E3%80%81IX%E3%80%81IS%E9%94%81%E4%B9%8B%E9%97%B4%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="nav-text">1.4.2 S锁、X锁、IX、IS锁之间的关系</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-4-3-%E6%84%8F%E5%90%91%E9%94%81%E6%89%A7%E8%A1%8C%E8%BF%87%E7%A8%8B"><span class="nav-text">1.4.3 意向锁执行过程</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-5-%E8%87%AA%E5%A2%9E%E9%94%81"><span class="nav-text">1.5 自增锁</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-6-%E9%94%81%E7%9A%84%E7%AE%97%E6%B3%95"><span class="nav-text">1.6 锁的算法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-6-1-Record-Lock"><span class="nav-text">1.6.1 Record Lock</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-6-2-Gap-Lock"><span class="nav-text">1.6.2 Gap Lock</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-6-5-Next-Key-Lock"><span class="nav-text">1.6.5 Next-Key Lock</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-7-%E6%82%B2%E8%A7%82%E9%94%81%EF%BC%8C%E4%B9%90%E8%A7%82%E9%94%81"><span class="nav-text">1.7 悲观锁，乐观锁</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-7-1-%E6%82%B2%E8%A7%82%E9%94%81%E4%B9%90%E8%A7%82%E9%94%81%E6%A6%82%E5%BF%B5"><span class="nav-text">1.7.1 悲观锁乐观锁概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-7-2-%E4%B9%90%E8%A7%82%E9%94%81%E7%9A%84%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F"><span class="nav-text">1.7.2 乐观锁的实现方式</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E4%BA%8B%E5%8A%A1"><span class="nav-text">二、事务</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB"><span class="nav-text">2.1 事务隔离级别</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-1-%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E8%AF%B4%E6%98%8E"><span class="nav-text">2.1.1 隔离级别说明</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-2-%E8%84%8F%E8%AF%BB"><span class="nav-text">2.1.2 脏读</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-3-%E4%B8%8D%E5%8F%AF%E9%87%8D%E5%A4%8D%E8%AF%BB"><span class="nav-text">2.1.3 不可重复读</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-4-%E5%B9%BB%E8%AF%BB"><span class="nav-text">2.1.4 幻读</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-5-SQL92%E6%A0%87%E5%87%86"><span class="nav-text">2.1.5 SQL92标准</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E4%BA%8B%E5%8A%A1%E6%97%A5%E5%BF%97"><span class="nav-text">三、事务日志</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-Redo-log"><span class="nav-text">3.1 Redo log</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-1-Redo%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86%EF%BC%9A"><span class="nav-text">3.1.1 Redo工作原理：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-2-Redo%E8%84%8F%E9%A1%B5%E7%9A%84%E6%A6%82%E5%BF%B5"><span class="nav-text">3.1.2 Redo脏页的概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-3-Redo%E7%9A%84%E5%88%B7%E6%96%B0%E7%AD%96%E7%95%A5%EF%BC%9A"><span class="nav-text">3.1.3 Redo的刷新策略：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-4-Redo%E7%9B%B8%E5%85%B3%E7%B3%BB%E7%BB%9F%E5%8F%82%E6%95%B0"><span class="nav-text">3.1.4 Redo相关系统参数</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-Undo-log"><span class="nav-text">3.2 Undo log</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-1-Undo%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86%EF%BC%9A"><span class="nav-text">3.2.1 Undo工作原理：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-2-Purge%E7%BA%BF%E7%A8%8B"><span class="nav-text">3.2.2 Purge线程</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B%E3%80%81MVCC%E5%B9%B6%E5%8F%91%E7%89%88%E6%9C%AC%E6%8E%A7%E5%88%B6"><span class="nav-text">四、MVCC并发版本控制</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#4-1-MVCC%E4%B8%8ELBCC"><span class="nav-text">4.1 MVCC与LBCC</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-2-MVCC%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86"><span class="nav-text">4.2 MVCC实现原理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-1-%E6%8F%92%E5%85%A5%E6%B5%81%E7%A8%8B"><span class="nav-text">4.2.1 插入流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-2-%E5%88%A0%E9%99%A4%E6%B5%81%E7%A8%8B"><span class="nav-text">4.2.2 删除流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-3-%E4%BF%AE%E6%94%B9%E6%B5%81%E7%A8%8B"><span class="nav-text">4.2.3 修改流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-4-%E6%9F%A5%E8%AF%A2%E6%B5%81%E7%A8%8B"><span class="nav-text">4.2.4 查询流程</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-3-%E5%BF%AB%E7%85%A7%E8%AF%BB%E5%92%8C%E5%BD%93%E5%89%8D%E8%AF%BB"><span class="nav-text">4.3 快照读和当前读</span></a></li></ol></li></ol>
+
+    </div>
+</div>
+        </div>
+    
+</div>
+
+
+
+                
+
+            </div>
+
+            
+
+        </div>
+
+        <div class="main-content-footer">
+            <footer class="footer mt-5 py-5 h-auto text-base text-third-text-color relative border-t-2 border-t-border-color">
+    <div class="info-container py-3 text-center">
+        
+        <div class="text-center">
+            &copy;
+            
+              <span>2022</span>
+              -
+            
+            2024&nbsp;&nbsp;<i class="fa-solid fa-heart fa-beat" style="--fa-animation-duration: 0.5s; color: #f54545"></i>&nbsp;&nbsp;<a href="/">MinGe</a>
+            
+                
+                <p class="post-count space-x-0.5">
+                    <span>
+                        19 posts in total
+                    </span>
+                    
+                </p>
+            
+        </div>
+        
+        <div class="relative text-center lg:absolute lg:left-[20px] lg:top-1/2 lg:-translate-y-1/2 lg:text-left">
+            <span class="lg:block text-sm">POWERED BY <?xml version="1.0" encoding="utf-8"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg class="relative top-[2px] inline-block align-baseline" version="1.1" id="圖層_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="1rem" height="1rem" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve"><path fill="#0E83CD" d="M256.4,25.8l-200,115.5L56,371.5l199.6,114.7l200-115.5l0.4-230.2L256.4,25.8z M349,354.6l-18.4,10.7l-18.6-11V275H200v79.6l-18.4,10.7l-18.6-11v-197l18.5-10.6l18.5,10.8V237h112v-79.6l18.5-10.6l18.5,10.8V354.6z"/></svg><a target="_blank" class="text-base" href="https://hexo.io">Hexo</a></span>
+            <span class="text-sm lg:block">THEME&nbsp;<a class="text-base" target="_blank" href="https://github.com/EvanNotFound/hexo-theme-redefine">Redefine v2.7.1</a></span>
+        </div>
+        
+        
+            <div>
+                Blog up for <span class="odometer" id="runtime_days" ></span> days <span class="odometer" id="runtime_hours"></span> hrs <span class="odometer" id="runtime_minutes"></span> Min <span class="odometer" id="runtime_seconds"></span> Sec
+            </div>
+        
+        
+            <script data-swup-reload-script>
+                try {
+                    function odometer_init() {
+                    const elements = document.querySelectorAll('.odometer');
+                    elements.forEach(el => {
+                        new Odometer({
+                            el,
+                            format: '( ddd).dd',
+                            duration: 200
+                        });
+                    });
+                    }
+                    odometer_init();
+                } catch (error) {}
+            </script>
+        
+        
+        
+    </div>  
+</footer>
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="article-tools-list">
+        <!-- TOC aside toggle -->
+        
+            <li class="right-bottom-tools page-aside-toggle">
+                <i class="fa-regular fa-outdent"></i>
+            </li>
+        
+
+        <!-- go comment -->
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-side-tools-container">
+        <div class="side-tools-container">
+    <ul class="hidden-tools-list">
+        <li class="right-bottom-tools tool-font-adjust-plus flex justify-center items-center">
+            <i class="fa-regular fa-magnifying-glass-plus"></i>
+        </li>
+
+        <li class="right-bottom-tools tool-font-adjust-minus flex justify-center items-center">
+            <i class="fa-regular fa-magnifying-glass-minus"></i>
+        </li>
+
+        <li class="right-bottom-tools tool-dark-light-toggle flex justify-center items-center">
+            <i class="fa-regular fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+
+        <li class="right-bottom-tools tool-scroll-to-bottom flex justify-center items-center">
+            <i class="fa-regular fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="visible-tools-list">
+        <li class="right-bottom-tools toggle-tools-list flex justify-center items-center">
+            <i class="fa-regular fa-cog fa-spin"></i>
+        </li>
+        
+            <li class="right-bottom-tools tool-scroll-to-top flex justify-center items-center">
+                <i class="arrow-up fas fa-arrow-up"></i>
+                <span class="percent"></span>
+            </li>
+        
+        
+    </ul>
+</div>
+
+    </div>
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+
+</main>
+
+
+    
+<script src="/js/libs/Swup.min.js"></script>
+
+<script src="/js/libs/SwupSlideTheme.min.js"></script>
+
+<script src="/js/libs/SwupScriptsPlugin.min.js"></script>
+
+<script src="/js/libs/SwupProgressPlugin.min.js"></script>
+
+<script src="/js/libs/SwupScrollPlugin.min.js"></script>
+
+<script src="/js/libs/SwupPreloadPlugin.min.js"></script>
+
+<script>
+    const swup = new Swup({
+        plugins: [
+            new SwupScriptsPlugin({
+                optin: true,
+            }),
+            new SwupProgressPlugin(),
+            new SwupScrollPlugin({
+                offset: 80,
+            }),
+            new SwupSlideTheme({
+                mainElement: ".main-content-body",
+            }),
+            new SwupPreloadPlugin(),
+        ],
+        containers: ["#swup"],
+    });
+</script>
+
+
+
+
+
+
+
+<script src="/js/tools/imageViewer.js" type="module"></script>
+
+<script src="/js/utils.js" type="module"></script>
+
+<script src="/js/main.js" type="module"></script>
+
+<script src="/js/layouts/navbarShrink.js" type="module"></script>
+
+<script src="/js/tools/scrollTopBottom.js" type="module"></script>
+
+<script src="/js/tools/lightDarkSwitch.js" type="module"></script>
+
+<script src="/js/layouts/categoryList.js" type="module"></script>
+
+
+
+
+
+    
+<script src="/js/tools/codeBlock.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/layouts/lazyload.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/tools/runtime.js"></script>
+
+    
+<script src="/js/libs/odometer.min.js"></script>
+
+    
+<link rel="stylesheet" href="/assets/odometer-theme-minimal.css">
+
+
+
+
+  
+<script src="/js/libs/Typed.min.js"></script>
+
+  
+<script src="/js/plugins/typed.js" type="module"></script>
+
+
+
+
+
+
+
+
+    
+<script src="/js/libs/anime.min.js"></script>
+
+
+
+<div class="post-scripts" data-swup-reload-script>
+    
+        
+<script src="/js/tools/tocToggle.js" type="module"></script>
+
+<script src="/js/layouts/toc.js" type="module"></script>
+
+<script src="/js/plugins/tabs.js" type="module"></script>
+
+    
+</div>
+
+
+</body>
+</html>
