@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="keywords" content="Hexo Theme Redefine">
+    
+    <meta name="author" content="MinGe">
+    <!-- preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    
+    <!--- Seo Part-->
+    
+    <link rel="canonical" href="http://example.com/2024/10/05/分布式事务/"/>
+    <meta name="robots" content="index,follow">
+    <meta name="googlebot" content="index,follow">
+    <meta name="revisit-after" content="1 days">
+    
+        <meta name="description" content="一、分布式事务概述1.1 什么是分布式事务1.1.1 单服务多数据源 在单个系统中，完成某项业务需要操作多个数据源，并且操作时要么全部成功要么全部失败，由于数据是存储在不同的数据库中，因此都有对应的连接（Connection），不同的连接会开启不同的事务。使用传统的解决方案无法保证两个事务同时ACID。 例如上图的电商系统：电商系统在下订单的时候必须要对应的减少一个库存，不可能订单已经下好了，结果">
+<meta property="og:type" content="article">
+<meta property="og:title" content="分布式事务">
+<meta property="og:url" content="http://example.com/2024/10/05/%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="一、分布式事务概述1.1 什么是分布式事务1.1.1 单服务多数据源 在单个系统中，完成某项业务需要操作多个数据源，并且操作时要么全部成功要么全部失败，由于数据是存储在不同的数据库中，因此都有对应的连接（Connection），不同的连接会开启不同的事务。使用传统的解决方案无法保证两个事务同时ACID。 例如上图的电商系统：电商系统在下订单的时候必须要对应的减少一个库存，不可能订单已经下好了，结果">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/%5Cimages%5C%E5%88%86%E5%B8%83%E5%BC%8F%5C1.png">
+<meta property="og:image" content="http://example.com/%5Cimages%5C%E5%88%86%E5%B8%83%E5%BC%8F%5C2.png">
+<meta property="og:image" content="http://example.com/%5Cimages%5C%E5%88%86%E5%B8%83%E5%BC%8F%5C3.png">
+<meta property="og:image" content="http://example.com/%5Cimages%5C%E5%88%86%E5%B8%83%E5%BC%8F%5C4.png">
+<meta property="og:image" content="http://example.com/%5Cimages%5C%E5%88%86%E5%B8%83%E5%BC%8F%5C5.png">
+<meta property="og:image" content="http://example.com/%5Cimages%5C%E5%88%86%E5%B8%83%E5%BC%8F%5C6.png">
+<meta property="og:image" content="http://example.com/%5Cimages%5C%E5%88%86%E5%B8%83%E5%BC%8F%5C7.png">
+<meta property="og:image" content="http://example.com/%5Cimages%5C%E5%88%86%E5%B8%83%E5%BC%8F%5C8.png">
+<meta property="og:image" content="http://example.com/%5Cimages%5C%E5%88%86%E5%B8%83%E5%BC%8F%5C9.png">
+<meta property="og:image" content="http://example.com/%5Cimages%5C%E5%88%86%E5%B8%83%E5%BC%8F%5C10.png">
+<meta property="og:image" content="http://example.com/%5Cimages%5C%E5%88%86%E5%B8%83%E5%BC%8F%5C12.png">
+<meta property="og:image" content="http://example.com/%5Cimages%5C%E5%88%86%E5%B8%83%E5%BC%8F%5C11.png">
+<meta property="og:image" content="http://example.com/%5Cimages%5C%E5%88%86%E5%B8%83%E5%BC%8F%5C13.png">
+<meta property="article:published_time" content="2024-10-05T02:56:00.000Z">
+<meta property="article:modified_time" content="2024-11-12T08:49:43.082Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="java">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/%5Cimages%5C%E5%88%86%E5%B8%83%E5%BC%8F%5C1.png">
+    
+    
+    <!--- Icon Part-->
+    <link rel="icon" type="image/png" href="/images/redefine-favicon.svg" sizes="192x192">
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/redefine-favicon.svg">
+    <meta name="theme-color" content="#A31F34">
+    <link rel="shortcut icon" href="/images/redefine-favicon.svg">
+    <!--- Page Info-->
+    
+    <title>
+        
+            分布式事务 -
+        
+        MinGe 博客
+    </title>
+
+    
+<link rel="stylesheet" href="/fonts/Chillax/chillax.css">
+
+
+    <!--- Inject Part-->
+    
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+    
+        
+<link rel="stylesheet" href="/assets/build/styles.css">
+
+    
+
+    
+<link rel="stylesheet" href="/fonts/GeistMono/geist-mono.css">
+
+    
+<link rel="stylesheet" href="/fonts/Geist/geist.css">
+
+    <!--- Font Part-->
+    
+    
+    
+    
+    
+    
+
+    <script id="hexo-configurations">
+    window.config = {"hostname":"example.com","root":"/","language":"en"};
+    window.theme = {"articles":{"style":{"font_size":"16px","line_height":1.5,"image_border_radius":"14px","image_alignment":"center","image_caption":false,"link_icon":true,"title_alignment":"left","headings_top_spacing":{"h1":"3.2rem","h2":"2.4rem","h3":"1.9rem","h4":"1.6rem","h5":"1.4rem","h6":"1.3rem"}},"word_count":{"enable":true,"count":true,"min2read":true},"author_label":{"enable":true,"auto":false,"list":[]},"code_block":{"copy":true,"style":"mac","highlight_theme":{"light":"github","dark":"vs2015"},"font":{"enable":false,"family":null,"url":null}},"toc":{"enable":true,"max_depth":3,"number":false,"expand":true,"init_open":true},"copyright":{"enable":true,"default":"cc_by_nc_sa"},"lazyload":true,"recommendation":{"enable":false,"title":"推荐阅读","limit":3,"mobile_limit":2,"placeholder":"/images/wallhaven-wqery6-light.webp","skip_dirs":[]}},"colors":{"primary":"#A31F34","secondary":null,"default_mode":"dark"},"global":{"fonts":{"chinese":{"enable":false,"family":null,"url":null},"english":{"enable":false,"family":null,"url":null},"title":{"enable":false,"family":null,"url":null}},"content_max_width":"1000px","sidebar_width":"210px","hover":{"shadow":true,"scale":false},"scroll_progress":{"bar":false,"percentage":true},"website_counter":{"url":"https://cn.vercount.one/js","enable":false,"site_pv":true,"site_uv":true,"post_pv":true},"single_page":true,"preloader":{"enable":false,"custom_message":null},"open_graph":true,"google_analytics":{"enable":false,"id":null}},"home_banner":{"enable":true,"style":"fixed","image":{"light":"/images/wallhaven-wqery6-light.webp","dark":"/images/wallhaven-wqery6-dark.webp"},"title":"MinGe 博客","subtitle":{"text":[],"hitokoto":{"enable":false,"show_author":false,"api":"https://v1.hitokoto.cn"},"typing_speed":100,"backing_speed":80,"starting_delay":500,"backing_delay":1500,"loop":true,"smart_backspace":true},"text_color":{"light":"#fff","dark":"#d1d1b6"},"text_style":{"title_size":"2.8rem","subtitle_size":"1.5rem","line_height":1.2},"custom_font":{"enable":false,"family":null,"url":null},"social_links":{"enable":false,"style":"default","links":{"github":null,"instagram":null,"zhihu":null,"twitter":null,"email":null},"qrs":{"weixin":null}}},"plugins":{"feed":{"enable":false},"aplayer":{"enable":false,"type":"fixed","audios":[{"name":null,"artist":null,"url":null,"cover":null,"lrc":null}]},"mermaid":{"enable":false,"version":"9.3.0"}},"version":"2.7.1","navbar":{"auto_hide":false,"color":{"left":"#f78736","right":"#367df7","transparency":35},"width":{"home":"1200px","pages":"1000px"},"links":{"Home":{"path":"/","icon":"fa-regular fa-house"},"resume":{"path":"/2024/10/01/minge/","icon":"fa-regular"}},"search":{"enable":false,"preload":true}},"page_templates":{"friends_column":2,"tags_style":"blur"},"home":{"sidebar":{"enable":true,"position":"left","first_item":"menu","announcement":null,"show_on_mobile":true,"links":{"Archives":{"path":"/archives","icon":"fa-regular fa-archive"},"Tags":{"path":"/tags","icon":"fa-regular fa-tags"},"Categories":{"path":"/categories","icon":"fa-regular fa-folder"}}},"article_date_format":"auto","excerpt_length":200,"categories":{"enable":true,"limit":3},"tags":{"enable":true,"limit":3}},"footerStart":"2022/09/25 08:00:00"};
+    window.lang_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"};
+    window.data = {"masonry":false};
+  </script>
+    
+    <!--- Fontawesome Part-->
+    
+<link rel="stylesheet" href="/fontawesome/fontawesome.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/brands.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/solid.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/regular.min.css">
+
+    
+    
+    
+    
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+
+    
+        <span class="pjax-progress-bar"></span>
+<!--        <span class="swup-progress-icon">-->
+<!--            <i class="fa-solid fa-circle-notch fa-spin"></i>-->
+<!--        </span>-->
+    
+</div>
+
+
+
+<main class="page-container" id="swup">
+
+    
+
+    <div class="main-content-container">
+
+
+        <div class="main-content-header">
+            <header class="navbar-container px-6 md:px-12">
+
+    <div class="navbar-content ">
+        <div class="left">
+            
+            <a class="logo-title" href="/">
+                
+                MinGe 博客
+                
+            </a>
+        </div>
+
+        <div class="right">
+            <!-- PC -->
+            <div class="desktop">
+                <ul class="navbar-list">
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/"
+                                        >
+                                    <i class="fa-regular fa-house fa-fw"></i>
+                                    HOME
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/2024/10/01/minge/"
+                                        >
+                                    <i class="fa-regular fa-fw"></i>
+                                    RESUME
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                    
+                </ul>
+            </div>
+            <!-- Mobile -->
+            <div class="mobile">
+                
+                <div class="icon-item navbar-bar">
+                    <div class="navbar-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile sheet -->
+    <div class="navbar-drawer h-screen w-full absolute top-0 left-0 bg-background-color flex flex-col justify-between">
+        <ul class="drawer-navbar-list flex flex-col px-4 justify-center items-start">
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/"
+                        >
+                            <span>
+                                HOME
+                            </span>
+                            
+                                <i class="fa-regular fa-house fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/2024/10/01/minge/"
+                        >
+                            <span>
+                                RESUME
+                            </span>
+                            
+                                <i class="fa-regular fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+
+            
+            
+                
+                    
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full active"
+                           href="/archives"
+                        >
+                            <span>Archives</span>
+                            <i class="fa-regular fa-archive fa-sm fa-fw"></i>
+                        </a>
+                    </li>
+                
+                    
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full active"
+                           href="/tags"
+                        >
+                            <span>Tags</span>
+                            <i class="fa-regular fa-tags fa-sm fa-fw"></i>
+                        </a>
+                    </li>
+                
+                    
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full active"
+                           href="/categories"
+                        >
+                            <span>Categories</span>
+                            <i class="fa-regular fa-folder fa-sm fa-fw"></i>
+                        </a>
+                    </li>
+                
+            
+        </ul>
+
+        <div class="statistics flex justify-around my-2.5">
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/tags">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">3</div>
+        <div class="label text-third-text-color text-sm">Tags</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/categories">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">2</div>
+        <div class="label text-third-text-color text-sm">Categories</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">20</div>
+        <div class="label text-third-text-color text-sm">Posts</div>
+    </a>
+</div>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="main-content-body">
+
+            
+
+            <div class="main-content">
+
+                
+                    <div class="post-page-container flex relative justify-between box-border w-full h-full">
+    <div class="article-content-container">
+
+        <div class="article-title relative w-full">
+            
+                <div class="w-full flex items-center pt-6 justify-start">
+                    <h1 class="article-title-regular text-second-text-color tracking-tight text-4xl md:text-6xl font-semibold px-2 sm:px-6 md:px-8 py-3">分布式事务</h1>
+                </div>
+            
+            </div>
+
+        
+            <div class="article-header flex flex-row gap-2 items-center px-2 sm:px-6 md:px-8">
+                <div class="avatar w-[46px] h-[46px] flex-shrink-0 rounded-medium border border-border-color p-[1px]">
+                    <img src="/images/redefine-avatar.svg">
+                </div>
+                <div class="info flex flex-col justify-between">
+                    <div class="author flex items-center">
+                        <span class="name text-default-text-color text-lg font-semibold">MinGe</span>
+                        
+                            <span class="author-label ml-1.5 text-xs px-2 py-0.5 rounded-small text-third-text-color border border-shadow-color-1">Lv3</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fa-regular fa-pen-fancy"></i>&nbsp;
+        <span class="desktop">2024-10-05 10:56</span>
+        <span class="mobile">2024-10-05 10:56</span>
+        <span class="hover-info">Created</span>
+    </span>
+    
+        <span class="article-date article-meta-item">
+            <i class="fa-regular fa-wrench"></i>&nbsp;
+            <span class="desktop">2024-11-12 16:49:43</span>
+            <span class="mobile">2024-11-12 16:49:43</span>
+            <span class="hover-info">Updated</span>
+        </span>
+    
+
+    
+        <span class="article-categories article-meta-item">
+            <i class="fa-regular fa-folders"></i>&nbsp;
+            <ul>
+                
+                
+                    
+                        
+                        <li>
+                            <a href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>&nbsp;
+                        </li>
+                    
+                    
+                
+            </ul>
+        </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fa-regular fa-tags"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/tags/java/">java</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+    
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        
+
+
+        <div class="article-content markdown-body px-2 sm:px-6 md:px-8 pb-8">
+            <h1 id="一、分布式事务概述"><a href="#一、分布式事务概述" class="headerlink" title="一、分布式事务概述"></a>一、分布式事务概述</h1><h2 id="1-1-什么是分布式事务"><a href="#1-1-什么是分布式事务" class="headerlink" title="1.1 什么是分布式事务"></a>1.1 什么是分布式事务</h2><h3 id="1-1-1-单服务多数据源"><a href="#1-1-1-单服务多数据源" class="headerlink" title="1.1.1 单服务多数据源"></a>1.1.1 单服务多数据源</h3><p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/%5Cimages%5C%E5%88%86%E5%B8%83%E5%BC%8F%5C1.png"
+                     
+                ></p>
+<p>在单个系统中，完成某项业务需要操作多个数据源，并且操作时要么<strong>全部成功</strong>要么<strong>全部失败</strong>，由于数据是存储在不同的数据库中，因此都有对应的连接（Connection），不同的连接会开启不同的事务。使用传统的解决方案无法保证两个事务同时<strong>ACID</strong>。</p>
+<p>例如上图的电商系统：电商系统在下订单的时候必须要对应的减少一个库存，不可能订单已经下好了，结果由于某种原因库存没有减少，或者库存已经减少了，但是订单数却没有加。因此我们需要将**”下订单减库存”**看成是一个整体，要么一起成功，要么一起失败。</p>
+<h3 id="1-1-2-多服务单数据源"><a href="#1-1-2-多服务单数据源" class="headerlink" title="1.1.2 多服务单数据源"></a>1.1.2 多服务单数据源</h3><p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/%5Cimages%5C%E5%88%86%E5%B8%83%E5%BC%8F%5C2.png"
+                     
+                ></p>
+<p>在多个系统（微服务）中，完成某项业务操作同一个数据源，并且操作时要么<strong>全部成功</strong>要么<strong>全部失败</strong>，数据是存储在同一个数据库，但是由于系统不同，下订单微服务下单的时候，会新创建一个连接（Connection），那么此时远程调用库存微服务的时候，也会开启一个新的Connection，不同的Connection都有<strong>各自独立的开启事务、提交&#x2F;回滚事务</strong>等操作，无法保证两个事务同时ACID；</p>
+<p>分析过后发现也会出现下订单减库存失败，或者库存减成功下订单出现异常等。</p>
+<h3 id="1-1-3-多服务多数据源"><a href="#1-1-3-多服务多数据源" class="headerlink" title="1.1.3 多服务多数据源"></a>1.1.3 多服务多数据源</h3><p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/%5Cimages%5C%E5%88%86%E5%B8%83%E5%BC%8F%5C3.png"
+                     
+                ></p>
+<p>在多个系统中，完成某个业务操作多个数据源（主流的分布式架构），并且操作时要么<strong>全部成功</strong>要么<strong>全部失败</strong>，数据存储在不同的数据库，业务也存在不同的系统中，当订单微服务下订单时会有新的Connection，与此同时调用远端的库存微服务减库存时，库存微服务必然会创建一个新的Connection用于减库存操作，因此<strong>无法保证多个事务同时ACID；</strong></p>
+<blockquote>
+<p>tips：以上三种情况都属于分布式事务范畴</p>
+</blockquote>
+<h2 id="1-2-分布式事务理论"><a href="#1-2-分布式事务理论" class="headerlink" title="1.2 分布式事务理论"></a>1.2 分布式事务理论</h2><h3 id="1-2-1-CAP理论"><a href="#1-2-1-CAP理论" class="headerlink" title="1.2.1 CAP理论"></a>1.2.1 CAP理论</h3><p><strong>CAP</strong>：是一致性（<strong>C</strong>onsistency）、可用性（<strong>A</strong>vailability）和分区容错性（<strong>P</strong>artition tolerance）三个单词的缩写，在一个分布式系统中最多只能保证其中三项中的两项，三个特性是不可能同时满足的，这个结论叫CAP理论。</p>
+<p>那什么CAP分别代表的含义是什么呢？</p>
+<h4 id="1-2-1-1-一致性（Consistency）"><a href="#1-2-1-1-一致性（Consistency）" class="headerlink" title="1.2.1.1 一致性（Consistency）"></a>1.2.1.1 一致性（Consistency）</h4><p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/%5Cimages%5C%E5%88%86%E5%B8%83%E5%BC%8F%5C4.png"
+                     
+                ></p>
+<p>一致性指的是数据的<strong>强一致性</strong>，每次读取到的数据都是最新数据，当master数据库进行写入时，有新的请求读取slave数据库都必须是最新的数据，<strong>哪怕需要等待</strong>。如果master写入失败，那么slave读取的则是旧数据。一致性强调的是一致，master和slave的数据必须要保证一致。</p>
+<p><strong>一致性实现方案：</strong></p>
+<p>master写入数据后，向slave同步数据，期间将slave数据锁定，不对外提供任何操作，直至数据库同步完成。<strong>在高并发下性能极其低下。</strong></p>
+<h4 id="1-2-1-2-可用性（Availability）"><a href="#1-2-1-2-可用性（Availability）" class="headerlink" title="1.2.1.2 可用性（Availability）"></a>1.2.1.2 可用性（Availability）</h4><p>可用性强调的是服务的可用性，每个请求都能在合理的时间响应结果，不允许存在超时或者错误的响应。不管数据是否是最新的（大不了过一会再查一次）。</p>
+<p><strong>可用性实现方案：</strong></p>
+<p>处理请求时，立即响应请求的数据，即使数据还没有及时同步过来，可以先返回旧数据，或者默认数据，来保证服务的可用性。</p>
+<h4 id="1-2-1-3-分区容错性（Partition-tolerance）"><a href="#1-2-1-3-分区容错性（Partition-tolerance）" class="headerlink" title="1.2.1.3 分区容错性（Partition tolerance）"></a>1.2.1.3 分区容错性（Partition tolerance）</h4><p>分区容错性是指在网络节点分区时（多台机器），不可避免的会出现网络延迟、故障等情况，此时系统任然可以正常运行，不会因为网络问题各节点通信失败，而停止对外界的服务。<strong>分区容错性是分布式系统的一个基本要求</strong></p>
+<blockquote>
+<p>&#x3D;&#x3D;<strong>数据分布的节点越多，容忍性就越高，如果此时越是保证数据的一致性，那么可用性就势必越低；</strong>&#x3D;&#x3D;</p>
+</blockquote>
+<p><strong>分区容错性实现方案：</strong></p>
+<p>当master与slave同步数据失败后整体仍能对外界提供服务，其中一个节点宕机不影响另一个节点的正常工作，可以搭建数据库集群、数据分片、分区、建立副本等。如果有某台服务器宕机，还有备用服务器来提供服务。</p>
+<h3 id="1-2-2-CAP组合方式"><a href="#1-2-2-CAP组合方式" class="headerlink" title="1.2.2 CAP组合方式"></a>1.2.2 CAP组合方式</h3><h4 id="1-2-2-1-CP："><a href="#1-2-2-1-CP：" class="headerlink" title="1.2.2.1 CP："></a>1.2.2.1 CP：</h4><p>即放弃可用性，<strong>保证一致性和分区容错性</strong>。假设你在支付宝提现，支付宝扣款，然后远程调用银行系统发起加钱操作，期间用户查询支付宝的余额时，必须是最新的数据（扣款后的数据），查询银行余额时也必须是最新的数据（加钱后的数据）。</p>
+<h4 id="1-2-2-2-AP："><a href="#1-2-2-2-AP：" class="headerlink" title="1.2.2.2 AP："></a>1.2.2.2 AP：</h4><p>放弃强一致性，<strong>保证可用性和分区容错性</strong>。假设你在支付宝提现，支付包扣款，银行余额增加，但是不是立即增加，当再次访问银行余额时发现并没有增加，可能需要过几天数据才会增加上来。（保证了最终一致性）</p>
+<h4 id="1-2-2-3-CA："><a href="#1-2-2-3-CA：" class="headerlink" title="1.2.2.3 CA："></a>1.2.2.3 CA：</h4><p>放弃分区容错性，保证一致性和可用性，不进行网络分区，使用单机版可以使用数据的一致性和可用性，但此时的系统已经不是一个标准的分布式系统了，单台MySQL就满足了CA关系。</p>
+<h3 id="1-2-3-BASE理论"><a href="#1-2-3-BASE理论" class="headerlink" title="1.2.3 BASE理论"></a>1.2.3 BASE理论</h3><p>我们刚刚了解过了CAP理论，在一个分布式系统中想要同时满足CAP是不可能的，我们在选择上必定有所舍取，在系统设计时，我们通常采用AP，保证可用性和分区容错性，舍取一致性，但在实际开发中，一致性通常也需要保证，因此我们采用的是<strong>最终一致性</strong>，不是立刻一致，但最终是一致的。就比如我们上面提到的支付宝转账案例，不是立刻查询到，而是过两天查询到，这样就保证了最终一致性，在CAP中的“C”强调的是<strong>强一致性</strong>，在任何时候每个数据节点都需要数据一致。</p>
+<p>BASE 是 Basically Available(基本可用)、Soft state(软状态)和 Eventually consistent (最终一致性)三个短语的缩 写。BASE理论是对CAP中AP的一个扩展。舍去<strong>强一致性</strong>（C），保证可用性和分区容错性。但达到数据的<strong>最终一致性。</strong>这种事务，对于满足BASE理论的事务，我们将其称为<strong>柔性事务。</strong></p>
+<h4 id="1-2-3-1-基本可用："><a href="#1-2-3-1-基本可用：" class="headerlink" title="1.2.3.1 基本可用："></a>1.2.3.1 基本可用：</h4><p>在分布式系统出现故障时，保证核心功能可用，运行损失部分功能，比如电商系统在做促销活动时，在大流量访问时，服务器压力大，为了保证整体的系统可以，会暂时进行流量限流、降级等操作（让一部分用户等待、或者跳转到一个页面让其刷新重试），而不是继续加重我服务器的负载，导致最后的内存泄漏、宕机等。</p>
+<h4 id="1-2-3-2-软状态："><a href="#1-2-3-2-软状态：" class="headerlink" title="1.2.3.2 软状态："></a>1.2.3.2 软状态：</h4><p>BASE理论不强调<strong>强一致性</strong>，<strong>保证最终一致性</strong>。当数据出现改动时，各个节点同步数据时需要靠网络传递，这个过程需要时间，此时这个状态为中间状态，也就是<strong>软状态</strong>。就比如支付宝在提现时，会提示，2天后钱才会转到银行卡。</p>
+<h4 id="1-2-3-3-最终一致："><a href="#1-2-3-3-最终一致：" class="headerlink" title="1.2.3.3 最终一致："></a>1.2.3.3 最终一致：</h4><p>软状态指的是数据的中间状态（正在同步数据），最终一致是指不管怎么样，数据最终是要保持一致性的，即使转账失败，数据也要回滚到初始状态（即你支付宝没有扣款，银行也没有加钱）。</p>
+<h1 id="二、DTP事务处理模型"><a href="#二、DTP事务处理模型" class="headerlink" title="二、DTP事务处理模型"></a>二、DTP事务处理模型</h1><p>X&#x2F;Open DTP(X&#x2F;Open Distributed Transaction Processing Reference Model) 是X&#x2F;Open 这个组织定义的一套分布式事务的标准，也就是了定义了规范和API接口，由厂商进行具体的实现</p>
+<p>我们知道分布式事务其实是将多个独立的事务整合在一起，将多个事务看成一个<strong>整体</strong>，里面的若干个事务看出是某一个操作（如update、delete），保证这多个操作之间达到ACID。</p>
+<p>DTP参考模型中提出了三个角色：</p>
+<ul>
+<li><p><strong>AP（Application Program）：</strong>处理分布式事务的应用程序。</p>
+</li>
+<li><p><strong>RM（Resource Manager）：</strong>资源管理器，由于分布式事务通常都是多台数据 库系统（或者多个数据库连接），每一个单独的数据库系统都是一个独立的RM，每一个RM都有独立的事务，我们将这个事务称之为<strong>分支事务</strong>，我们要保证多个分支事务之间的ACID</p>
+</li>
+<li><p><strong>TM（Transaction Manager）：</strong>事务管理器，多个分支事务的协调者，用于收集分支事务的执行情况，协调各个分支事务，保证多个分支事务的ACID；</p>
+</li>
+</ul>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/%5Cimages%5C%E5%88%86%E5%B8%83%E5%BC%8F%5C5.png"
+                     
+                ></p>
+<h1 id="三、2PC（两阶段提交）"><a href="#三、2PC（两阶段提交）" class="headerlink" title="三、2PC（两阶段提交）"></a>三、2PC（两阶段提交）</h1><p>分布式事务的解决方案有很多种。其中包含2PC（两阶段提交）、3PC（三阶段提交）、TCC（事务补偿）、本地消息表、MQ事务消息等。这一章我们主要讲解2PC（两阶段提交）</p>
+<p>两阶段提交（Two-phase Commit，2PC），将事务的提交划分成了两个阶段，第一阶段为准备阶段（Prepare phase），第二阶段为提交阶段（Commit phase）。</p>
+<h2 id="1-1-2PC流程"><a href="#1-1-2PC流程" class="headerlink" title="1.1 2PC流程"></a>1.1 2PC流程</h2><p><strong>准备阶段：</strong>TM（事务管理器，协调者）给每个RM（资源管理器，分支事务）发送prepare消息，RM接收到请求后，实现自身事务提交前的准备工作，并将执行的数据记录到本地日志表Undo&#x2F;Redo（用于失败回滚，以及后面的真正提交），Undo日志记录数据修改前的数据，一般用于数据回滚，Redo日志记录修改后的日志，用于后续提交事务，<strong>此时事务并没有真正提交，只是记录到日志中</strong>。<strong>在此阶段每个RM资源均被上锁。其他进程&#x2F;线程不可操作</strong></p>
+<p><strong>提交阶段：</strong>根据RM的反馈结果来处理，如果所有的RM都返回成功，那么TM则给每个RM发送commit命令，然后每个RM执行commit，同时释放锁，之后RM返回执行成功结果给TM</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/%5Cimages%5C%E5%88%86%E5%B8%83%E5%BC%8F%5C6.png"
+                     
+                ></p>
+<p>TM接收到多个RM的回执消息时，如果发现其中有一个RM在准备阶段出现错误，那么会给剩下的所有RM发送回滚操作。</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/%5Cimages%5C%E5%88%86%E5%B8%83%E5%BC%8F%5C7.png"
+                     
+                ></p>
+<blockquote>
+<p>注意：<strong>2PC协议只是一个规范</strong>，他规定处理分布式事务可以有两个阶段来处理，第一个是准备阶段，第二个是提交&#x2F;回滚阶段，<strong>具体的实现方案需要落实到对应的解决方案上面（框架）</strong>，而不同的框架在第一阶段和第二阶段做的事情也可能不同，<strong>因此2PC只是让我们作为参考的一种分布式事务的处理规则</strong>。如2PC解决方案中的XA方案和seata方案虽然是基于2PC两阶段提交协议，但两者在实现细节上又稍有不同。</p>
+</blockquote>
+<h2 id="1-2-XA解决方案"><a href="#1-2-XA解决方案" class="headerlink" title="1.2 XA解决方案"></a>1.2 XA解决方案</h2><p>XA是一个分布式事务协议，由Tuxedo提出。XA中大致分为两部分：事务管理器（TM）和资源管理器（RM）。其中资源管理器（RM）由数据库实现，比如Oracle、DB2这些数据库都实现了XA规范的接口，而TM作为全局的调度者，负责各个RM的提交和回滚。XA协议也分为2PC和3PC，本章讨论的是XA协议的2PC；</p>
+<h3 id="1-2-1-MySQL的XA实现"><a href="#1-2-1-MySQL的XA实现" class="headerlink" title="1.2.1 MySQL的XA实现"></a>1.2.1 MySQL的XA实现</h3><p>MySQL XA是基于DTP分布式事务处理模型标准实现的，支持多数据源的分布式事务。</p>
+<p>命令如下：</p>
+<ul>
+<li>开启一个全局事务：</li>
+</ul>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">xa start xid</span><br><span class="line">xa start &quot;001&quot;;</span><br></pre></td></tr></table></figure></div>
+
+<ul>
+<li>将全局事务置于空闲状态（此状态时所有的RM资源已经锁定）：</li>
+</ul>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">xa end xid</span><br><span class="line">xa start &quot;001&quot;;</span><br></pre></td></tr></table></figure></div>
+
+<ul>
+<li>准备阶段：</li>
+</ul>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">xa prepare xid</span><br><span class="line">xa prepare &quot;001&quot;</span><br></pre></td></tr></table></figure></div>
+
+<ul>
+<li>提交阶段：</li>
+</ul>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">xa commit xid</span><br><span class="line">xa commit &quot;001&quot;;</span><br></pre></td></tr></table></figure></div>
+
+<ul>
+<li>不进入两段式直接提交：</li>
+</ul>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">xa commit xid one phase;</span><br><span class="line">xa commit &quot;001&quot; one phase;</span><br></pre></td></tr></table></figure></div>
+
+<h4 id="XA执行流程："><a href="#XA执行流程：" class="headerlink" title="XA执行流程："></a>XA执行流程：</h4><p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/%5Cimages%5C%E5%88%86%E5%B8%83%E5%BC%8F%5C8.png"
+                     
+                ></p>
+<p>创建一张测试表：</p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">create table user(</span><br><span class="line">	id int,</span><br><span class="line">    username varchar(30)</span><br><span class="line">);</span><br><span class="line"></span><br><span class="line">insert into user values(1,&#x27;zs&#x27;);</span><br></pre></td></tr></table></figure></div>
+
+<p>案例：</p>
+<div class="highlight-container" data-rel="Shell"><figure class="iseeu highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">mysql&gt; </span><span class="language-bash">xa start <span class="string">&#x27;001&#x27;</span>;</span></span><br><span class="line">Query OK, 0 rows affected (0.00 sec)</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">mysql&gt; </span><span class="language-bash">update user <span class="built_in">set</span> username=<span class="string">&#x27;ls&#x27;</span>;</span></span><br><span class="line">Query OK, 1 row affected (0.00 sec)</span><br><span class="line">Rows matched: 1  Changed: 1  Warnings: 0</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">mysql&gt; </span><span class="language-bash">xa end <span class="string">&#x27;001&#x27;</span>;</span>			</span><br><span class="line">Query OK, 0 rows affected (0.00 sec)</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">mysql&gt; </span><span class="language-bash">xa prepare <span class="string">&#x27;001&#x27;</span>;</span></span><br><span class="line">Query OK, 0 rows affected (0.00 sec)</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">mysql&gt; </span><span class="language-bash">xa commit <span class="string">&#x27;001&#x27;</span>;			<span class="comment"># 释放锁资源</span></span></span><br><span class="line">Query OK, 0 rows affected (0.00 sec)</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">mysql&gt;</span></span><br></pre></td></tr></table></figure></div>
+
+<blockquote>
+<p><strong>Tips：在MySQL控制台中演示不出一个全局事务中执行多个分支事务，我们可以在下一小结使用Java客户端在一个全局事务操作多个分支事务。</strong></p>
+</blockquote>
+<h3 id="1-2-1-Atomikos实现分布式事务"><a href="#1-2-1-Atomikos实现分布式事务" class="headerlink" title="1.2.1 Atomikos实现分布式事务"></a>1.2.1 Atomikos实现分布式事务</h3><p>JTA（Java Transaction API）： Java事务API（编程接口），是XA在Java上的一种实现。JTA底层采用的是2PC（两阶段提交协议）</p>
+<p>在JTA中存在以下三种角色：</p>
+<ul>
+<li><p><strong>TransactionManager：</strong>事务管理器</p>
+</li>
+<li><p><strong>XAResource：</strong>资源管理器。代表每一个数据源（RM）</p>
+</li>
+<li><p><strong>XID：</strong>事务ID，每一个独立的数据源都会分配一个事务ID（前面的xa start xid）</p>
+</li>
+</ul>
+<p>JTA只是Java提供的一个分布式多数据源的一套编程接口，来帮助我们解决分布式事务，我们具体的实现采用<strong>Atomikos</strong>，Atomikos是一个为Java平台提供增值服务的并且开源类事务管理器</p>
+<h4 id="搭建工程"><a href="#搭建工程" class="headerlink" title="搭建工程"></a>搭建工程</h4><p>创建订单数据库、库存数据库：</p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">create database orders;</span><br><span class="line">use orders;</span><br><span class="line">CREATE TABLE `t_orders` (</span><br><span class="line">  `id` varchar(30) NOT NULL,</span><br><span class="line">  `count` int(11) DEFAULT NULL,</span><br><span class="line">  PRIMARY KEY (`id`)</span><br><span class="line">) ENGINE=InnoDB DEFAULT CHARSET=utf8;</span><br><span class="line"></span><br><span class="line">insert  into `t_orders`(`id`,`count`) values (&#x27;1&#x27;,101);</span><br><span class="line"></span><br><span class="line">create database store;</span><br><span class="line">use store;</span><br><span class="line">CREATE TABLE `t_store` (</span><br><span class="line">  `id` varchar(30) NOT NULL,</span><br><span class="line">  `count` int(11) DEFAULT NULL,</span><br><span class="line">  PRIMARY KEY (`id`)</span><br><span class="line">) ENGINE=InnoDB DEFAULT CHARSET=utf8;</span><br><span class="line"></span><br><span class="line">insert  into `t_store`(`id`,`count`) values (&#x27;1&#x27;,100);</span><br></pre></td></tr></table></figure></div>
+
+<p>pom.xml：</p>
+<div class="highlight-container" data-rel="Xml"><figure class="iseeu highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=<span class="string">&quot;1.0&quot;</span> encoding=<span class="string">&quot;UTF-8&quot;</span>?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">project</span> <span class="attr">xmlns</span>=<span class="string">&quot;http://maven.apache.org/POM/4.0.0&quot;</span></span></span><br><span class="line"><span class="tag">         <span class="attr">xmlns:xsi</span>=<span class="string">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span></span></span><br><span class="line"><span class="tag">         <span class="attr">xsi:schemaLocation</span>=<span class="string">&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">modelVersion</span>&gt;</span>4.0.0<span class="tag">&lt;/<span class="name">modelVersion</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.xa<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>xa_transaction<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.0-SNAPSHOT<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">parent</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-parent<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.0.1.RELEASE<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">relativePath</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">parent</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependencies</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-web<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>mysql<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>mysql-connector-java<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-jdbc<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-test<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">scope</span>&gt;</span>test<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.alibaba<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>druid<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.1.17<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-jta-atomikos<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependencies</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">build</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">plugins</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">plugin</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-maven-plugin<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">plugin</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">plugins</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">build</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">project</span>&gt;</span></span><br></pre></td></tr></table></figure></div>
+
+
+
+<p><strong>DataSourceConfig：</strong></p>
+<div class="highlight-container" data-rel="Java"><figure class="iseeu highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.xa.config;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.atomikos.icatch.jta.UserTransactionManager;</span><br><span class="line"><span class="keyword">import</span> org.springframework.beans.factory.annotation.Qualifier;</span><br><span class="line"><span class="keyword">import</span> org.springframework.boot.jta.atomikos.AtomikosDataSourceBean;</span><br><span class="line"><span class="keyword">import</span> org.springframework.context.annotation.Bean;</span><br><span class="line"><span class="keyword">import</span> org.springframework.context.annotation.Configuration;</span><br><span class="line"><span class="keyword">import</span> org.springframework.transaction.jta.JtaTransactionManager;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.Properties;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">DataSourceConfig</span> &#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * t_orders数据源</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Bean(name = &quot;ordersDS&quot;)</span></span><br><span class="line">    <span class="meta">@Qualifier(&quot;ordersDS&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> AtomikosDataSourceBean <span class="title function_">ordersDS</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="type">AtomikosDataSourceBean</span> <span class="variable">atomikosDataSourceBean</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">AtomikosDataSourceBean</span>();</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 数据源名称</span></span><br><span class="line">        atomikosDataSourceBean.setUniqueResourceName(<span class="string">&quot;ordersDS&quot;</span>);</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 处理Xa协议的数据源类</span></span><br><span class="line">        atomikosDataSourceBean.setXaDataSourceClassName(</span><br><span class="line">                <span class="string">&quot;com.mysql.jdbc.jdbc2.optional.MysqlXADataSource&quot;</span>);</span><br><span class="line">        </span><br><span class="line">        <span class="type">Properties</span> <span class="variable">properties</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Properties</span>();</span><br><span class="line">        properties.put(<span class="string">&quot;URL&quot;</span>,<span class="string">&quot;jdbc:mysql://localhost:3306/orders&quot;</span>);</span><br><span class="line">        properties.put(<span class="string">&quot;user&quot;</span>, <span class="string">&quot;root&quot;</span>);</span><br><span class="line">        properties.put(<span class="string">&quot;password&quot;</span>, <span class="string">&quot;admin&quot;</span>);</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// jdbc相关配置</span></span><br><span class="line">        atomikosDataSourceBean.setXaProperties(properties);</span><br><span class="line">        <span class="keyword">return</span> atomikosDataSourceBean;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * t_store数据源</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Bean(name = &quot;storeDS&quot;)</span></span><br><span class="line">    <span class="meta">@Qualifier(&quot;storeDS&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> AtomikosDataSourceBean <span class="title function_">storeDS</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="type">AtomikosDataSourceBean</span> <span class="variable">atomikosDataSourceBean</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">AtomikosDataSourceBean</span>();</span><br><span class="line">        atomikosDataSourceBean.setUniqueResourceName(<span class="string">&quot;symbolPosition&quot;</span>);</span><br><span class="line">        atomikosDataSourceBean.setXaDataSourceClassName(</span><br><span class="line">                <span class="string">&quot;com.mysql.jdbc.jdbc2.optional.MysqlXADataSource&quot;</span>);</span><br><span class="line">        <span class="type">Properties</span> <span class="variable">properties</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Properties</span>();</span><br><span class="line">        properties.put(<span class="string">&quot;URL&quot;</span>, <span class="string">&quot;jdbc:mysql://localhost:3306/store&quot;</span>);</span><br><span class="line">        properties.put(<span class="string">&quot;user&quot;</span>, <span class="string">&quot;root&quot;</span>);</span><br><span class="line">        properties.put(<span class="string">&quot;password&quot;</span>, <span class="string">&quot;admin&quot;</span>);</span><br><span class="line">        atomikosDataSourceBean.setXaProperties(properties);</span><br><span class="line">        <span class="keyword">return</span> atomikosDataSourceBean;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * transaction manager</span></span><br><span class="line"><span class="comment">     * atomikos 提供的事务管理器(协调多数据源一致性问题的核心管理器)</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="keyword">public</span> UserTransactionManager <span class="title function_">userTransactionManager</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="type">UserTransactionManager</span> <span class="variable">userTransactionManager</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">UserTransactionManager</span>();</span><br><span class="line">        <span class="keyword">return</span> userTransactionManager;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * jta transactionManager</span></span><br><span class="line"><span class="comment">     * Spring 提供的事务管理器(用于整合Atomikos)</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="keyword">public</span> JtaTransactionManager <span class="title function_">transactionManager</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="type">JtaTransactionManager</span> <span class="variable">jtaTransactionManager</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">JtaTransactionManager</span>();</span><br><span class="line">        jtaTransactionManager.setTransactionManager(userTransactionManager());</span><br><span class="line">        <span class="keyword">return</span> jtaTransactionManager;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<p><strong>Controller：</strong></p>
+<div class="highlight-container" data-rel="Java"><figure class="iseeu highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.xa.controller;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.lscl.service.OrdersService;</span><br><span class="line"><span class="keyword">import</span> org.springframework.beans.factory.annotation.Autowired;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.PathVariable;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.RequestMapping;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.RestController;</span><br><span class="line"></span><br><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">OrdersController</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> OrdersService ordersService;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@RequestMapping(&quot;/addOrders/&#123;flag&#125;&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">add</span><span class="params">(<span class="meta">@PathVariable</span> Integer flag)</span> <span class="keyword">throws</span> Exception&#123;</span><br><span class="line">        ordersService.add(flag);;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;ok&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<p>Service：</p>
+<div class="highlight-container" data-rel="Java"><figure class="iseeu highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.xa.service;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.springframework.beans.factory.annotation.Autowired;</span><br><span class="line"><span class="keyword">import</span> org.springframework.beans.factory.annotation.Qualifier;</span><br><span class="line"><span class="keyword">import</span> org.springframework.boot.jta.atomikos.AtomikosDataSourceBean;</span><br><span class="line"><span class="keyword">import</span> org.springframework.stereotype.Service;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> javax.transaction.Transactional;</span><br><span class="line"><span class="keyword">import</span> java.sql.Connection;</span><br><span class="line"><span class="keyword">import</span> java.sql.SQLException;</span><br><span class="line"><span class="keyword">import</span> java.sql.Statement;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Service</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">OrdersService</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="meta">@Qualifier(&quot;ordersDS&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> AtomikosDataSourceBean ordersDS;            <span class="comment">//RM1</span></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="meta">@Qualifier(&quot;storeDS&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> AtomikosDataSourceBean storeDS;             <span class="comment">//RM2</span></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Transactional</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">add</span><span class="params">(Integer flag)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        <span class="type">Connection</span> <span class="variable">ordersConn</span> <span class="operator">=</span> <span class="literal">null</span>;</span><br><span class="line">        <span class="type">Connection</span> <span class="variable">storeConn</span> <span class="operator">=</span> <span class="literal">null</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            ordersConn = ordersDS.getConnection();</span><br><span class="line">            storeConn = storeDS.getConnection();</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 订单+1</span></span><br><span class="line">            <span class="type">String</span> <span class="variable">ordersSQL</span> <span class="operator">=</span> <span class="string">&quot;update t_orders set count=count+1&quot;</span>;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 库存-1</span></span><br><span class="line">            <span class="type">String</span> <span class="variable">storeSQL</span> <span class="operator">=</span> <span class="string">&quot;update t_store set count=count-1&quot;</span>;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 执行订单+1</span></span><br><span class="line">            <span class="type">Statement</span> <span class="variable">ordersState</span> <span class="operator">=</span> ordersConn.createStatement();		<span class="comment">// prepare 阶段</span></span><br><span class="line">            ordersState.execute(ordersSQL);								<span class="comment">// RM上锁</span></span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (flag == <span class="number">500</span>) &#123;</span><br><span class="line">                <span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">1</span> / <span class="number">0</span>;          <span class="comment">// 模拟异常</span></span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 执行库存-1</span></span><br><span class="line">            <span class="type">Statement</span> <span class="variable">storeState</span> <span class="operator">=</span> storeConn.createStatement();			<span class="comment">// prepare 阶段</span></span><br><span class="line">            storeState.execute(storeSQL);								<span class="comment">// RM上锁</span></span><br><span class="line">            </span><br><span class="line">            <span class="comment">// 代码没有问题准备发起全局提交  commit 阶段</span></span><br><span class="line">        &#125; <span class="keyword">catch</span> (SQLException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (ordersConn != <span class="literal">null</span>) &#123;</span><br><span class="line">                ordersConn.close();</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (storeConn != <span class="literal">null</span>) &#123;</span><br><span class="line">                storeConn.close();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<p>调用图解：</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/%5Cimages%5C%E5%88%86%E5%B8%83%E5%BC%8F%5C9.png"
+                     
+                ></p>
+<h3 id="1-2-3-总结"><a href="#1-2-3-总结" class="headerlink" title="1.2.3 总结"></a>1.2.3 总结</h3><p>1）在执行分支事务时，会将RM资源锁住，需要等到所有的RM响应，等到第二阶段执行完毕时（提交&#x2F;回滚），RM的锁才会释放，<strong>在高并发场所不适用</strong>。</p>
+<p>2）XA方案依赖于本地数据库对XA协议的支持，如果本地数据库不支持XA协议那么第三方程序（Java）将操作不了。例如许多非关系型数据库并没有支持XA。</p>
+<p>3）MySQL对XA方案支持的不太友好，MySQL的XA实现，<strong>没有记录prepare阶段日志。</strong></p>
+<h2 id="1-3-seata解决方案"><a href="#1-3-seata解决方案" class="headerlink" title="1.3 seata解决方案"></a>1.3 seata解决方案</h2><p>Seata是一个开源的分布式事务解决方案，是由阿里中间件团队研发的，原名Fescar，后更名为seata，seata致力于提供<strong>高性能</strong>和易于使用的分布式事务服务。Seata将为用户提供AT，TCC，SAGA和XA交易模型，以为用户创建一站式分布式解决方案。</p>
+<ul>
+<li><p>seata中文官网：<a class="link"   target="_blank" rel="noopener" href="http://seata.io/zh-cn/index.html" >http://seata.io/zh-cn/index.html <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+</li>
+<li><p>github地址：<a class="link"   target="_blank" rel="noopener" href="https://github.com/seata/seata" >https://github.com/seata/seata <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+</li>
+</ul>
+<p><strong>seata也是基于2PC的一种分布式解决方案，</strong>对传统的2PC基础上进行了一些<strong>优化</strong>，通过引入事务协调器（TC）来监控各个分支事务的执行状态来判断全局事务是否提交或回滚，引入<strong>日志表来替代锁表</strong>问题。</p>
+<ul>
+<li>阶段1：在同一本地事务中<strong>提交</strong>业务数据并且记录日志到undo表，然后释放本地锁和连接资源。</li>
+<li>阶段2：<ul>
+<li>对于提交情况，异步快速地完成工作（清除日志）。</li>
+<li>对于回滚情况，请根据阶段1中创建的日志数据进行补偿。</li>
+</ul>
+</li>
+</ul>
+<h3 id="1-3-1-seata执行流程："><a href="#1-3-1-seata执行流程：" class="headerlink" title="1.3.1 seata执行流程："></a>1.3.1 seata执行流程：</h3><p>1）当RM启动时，首先注册到TC中。</p>
+<p>2）TM向TC申请开启全局事务，全局事务开启后生成用于标识此次全局事务的id（XID）。每个全局事务ID各不相同。</p>
+<p>4）首先第一个RM向TM开启分支事务，当进行微服务调用时，XID也会随之传递下来，<strong>此时的RM事务已经真正提交</strong></p>
+<p>5）最终TM根据各分支事务执行情况，来请求TC提交或者回滚全局事务 </p>
+<p>6）TC根据XID对应的全局事务下的分支事务来提交或回滚。</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/%5Cimages%5C%E5%88%86%E5%B8%83%E5%BC%8F%5C10.png"
+                     
+                ></p>
+<blockquote>
+<p>TM和全局事务的发起方在一起；</p>
+</blockquote>
+<h3 id="1-3-2-搭建seata工程"><a href="#1-3-2-搭建seata工程" class="headerlink" title="1.3.2 搭建seata工程"></a>1.3.2 搭建seata工程</h3><h4 id="1-2-3-1-启动seata协调器"><a href="#1-2-3-1-启动seata协调器" class="headerlink" title="1.2.3.1 启动seata协调器"></a>1.2.3.1 启动seata协调器</h4><p>启动事务协调器TC</p>
+<div class="highlight-container" data-rel="Shell"><figure class="iseeu highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">seata-server.bat -p 10101 -m file</span><br></pre></td></tr></table></figure></div>
+
+<p>-p：指定启动的端口</p>
+<p>-m：指定启动的模式，file代表以文件方式存储信息</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/%5Cimages%5C%E5%88%86%E5%B8%83%E5%BC%8F%5C12.png"
+                     
+                ></p>
+<h4 id="1-2-3-2-搭建父工程"><a href="#1-2-3-2-搭建父工程" class="headerlink" title="1.2.3.2 搭建父工程"></a>1.2.3.2 搭建父工程</h4><p>pom.xml：</p>
+<div class="highlight-container" data-rel="Xml"><figure class="iseeu highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=<span class="string">&quot;1.0&quot;</span> encoding=<span class="string">&quot;UTF-8&quot;</span>?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">project</span> <span class="attr">xmlns</span>=<span class="string">&quot;http://maven.apache.org/POM/4.0.0&quot;</span></span></span><br><span class="line"><span class="tag">         <span class="attr">xmlns:xsi</span>=<span class="string">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span></span></span><br><span class="line"><span class="tag">         <span class="attr">xsi:schemaLocation</span>=<span class="string">&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">modelVersion</span>&gt;</span>4.0.0<span class="tag">&lt;/<span class="name">modelVersion</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.lscl<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>seata_transaction<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">packaging</span>&gt;</span>pom<span class="tag">&lt;/<span class="name">packaging</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.0-SNAPSHOT<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">modules</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">module</span>&gt;</span>eureka_server<span class="tag">&lt;/<span class="name">module</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">module</span>&gt;</span>store<span class="tag">&lt;/<span class="name">module</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">module</span>&gt;</span>orders<span class="tag">&lt;/<span class="name">module</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">modules</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">properties</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">spring-cloud-alibaba.version</span>&gt;</span>2.1.0.RELEASE<span class="tag">&lt;/<span class="name">spring-cloud-alibaba.version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">properties</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependencyManagement</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependencies</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>commons-lang<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>commons-lang<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.6<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line">            <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.alibaba<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>druid-spring-boot-starter<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.1.16<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line">            <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.alibaba.cloud<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-cloud-alibaba-dependencies<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.1.0.RELEASE<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">type</span>&gt;</span>pom<span class="tag">&lt;/<span class="name">type</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">scope</span>&gt;</span>import<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-dependencies<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.1.3.RELEASE<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">type</span>&gt;</span>pom<span class="tag">&lt;/<span class="name">type</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">scope</span>&gt;</span>import<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line">            <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.cloud<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-cloud-dependencies<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">version</span>&gt;</span>Greenwich.RELEASE<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">type</span>&gt;</span>pom<span class="tag">&lt;/<span class="name">type</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">scope</span>&gt;</span>import<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependencies</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependencyManagement</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">project</span>&gt;</span></span><br></pre></td></tr></table></figure></div>
+
+<h4 id="1-2-3-3-搭建EurekaServer"><a href="#1-2-3-3-搭建EurekaServer" class="headerlink" title="1.2.3.3 搭建EurekaServer"></a>1.2.3.3 搭建EurekaServer</h4><p>1）pom.xml：</p>
+<div class="highlight-container" data-rel="Xml"><figure class="iseeu highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=<span class="string">&quot;1.0&quot;</span> encoding=<span class="string">&quot;UTF-8&quot;</span>?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">project</span> <span class="attr">xmlns</span>=<span class="string">&quot;http://maven.apache.org/POM/4.0.0&quot;</span></span></span><br><span class="line"><span class="tag">         <span class="attr">xmlns:xsi</span>=<span class="string">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span></span></span><br><span class="line"><span class="tag">         <span class="attr">xsi:schemaLocation</span>=<span class="string">&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">parent</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>seata_transaction<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.lscl<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.0-SNAPSHOT<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">parent</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">modelVersion</span>&gt;</span>4.0.0<span class="tag">&lt;/<span class="name">modelVersion</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>eureka_server<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependencies</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.cloud<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-cloud-starter-netflix-eureka-server<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependencies</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">project</span>&gt;</span></span><br></pre></td></tr></table></figure></div>
+
+<p>2）Application.yml</p>
+<div class="highlight-container" data-rel="Yml"><figure class="iseeu highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">server:</span></span><br><span class="line">  <span class="attr">port:</span> <span class="number">10102</span></span><br><span class="line"><span class="attr">eureka:</span></span><br><span class="line">  <span class="attr">client:</span></span><br><span class="line">    <span class="attr">register-with-eureka:</span> <span class="literal">false</span> <span class="comment"># 是否将该服务注册到eureka服务端</span></span><br><span class="line">    <span class="attr">fetch-registry:</span> <span class="literal">false</span>       <span class="comment"># 是否从eureka服务端获取其他服务实例</span></span><br><span class="line">    <span class="attr">service-url:</span>                <span class="comment"># eureka的注册地址</span></span><br><span class="line">      <span class="attr">defaultZone:</span> <span class="string">http://127.0.0.1:$&#123;server.port&#125;/eureka</span></span><br></pre></td></tr></table></figure></div>
+
+
+
+<p>3）启动类</p>
+<div class="highlight-container" data-rel="Java"><figure class="iseeu highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.lscl.eureka;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.springframework.boot.SpringApplication;</span><br><span class="line"><span class="keyword">import</span> org.springframework.boot.autoconfigure.SpringBootApplication;</span><br><span class="line"><span class="keyword">import</span> org.springframework.cloud.netflix.eureka.server.EnableEurekaServer;</span><br><span class="line"></span><br><span class="line"><span class="meta">@SpringBootApplication</span></span><br><span class="line"><span class="meta">@EnableEurekaServer</span>         <span class="comment">// 开启eureka服务器</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">EurekaApplication</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        SpringApplication.run(EurekaApplication.class);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure></div>
+
+<h4 id="1-2-3-4-搭建库存微服"><a href="#1-2-3-4-搭建库存微服" class="headerlink" title="1.2.3.4 搭建库存微服"></a>1.2.3.4 搭建库存微服</h4><p>1）pom.xml：</p>
+<div class="highlight-container" data-rel="Xml"><figure class="iseeu highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=<span class="string">&quot;1.0&quot;</span> encoding=<span class="string">&quot;UTF-8&quot;</span>?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">project</span> <span class="attr">xmlns</span>=<span class="string">&quot;http://maven.apache.org/POM/4.0.0&quot;</span></span></span><br><span class="line"><span class="tag">         <span class="attr">xmlns:xsi</span>=<span class="string">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span></span></span><br><span class="line"><span class="tag">         <span class="attr">xsi:schemaLocation</span>=<span class="string">&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">parent</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>seata_transaction<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.lscl<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.0-SNAPSHOT<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">parent</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">modelVersion</span>&gt;</span>4.0.0<span class="tag">&lt;/<span class="name">modelVersion</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>store<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependencies</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.alibaba.cloud<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-cloud-alibaba-seata<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-data-jpa<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.cloud<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-cloud-starter-openfeign<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.cloud<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-cloud-starter-netflix-hystrix<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.cloud<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-cloud-starter-netflix-eureka-client<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-web<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>mysql<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>mysql-connector-java<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">version</span>&gt;</span>5.1.47<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependencies</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">project</span>&gt;</span></span><br></pre></td></tr></table></figure></div>
+
+
+
+<p>2）registry.conf：</p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">registry &#123;</span><br><span class="line">  # file 、redis、zookeeper、eureka、nacos 、consul、etcd3、sofa</span><br><span class="line">  type = &quot;file&quot;</span><br><span class="line"></span><br><span class="line">  file &#123;</span><br><span class="line">    name = &quot;file.conf&quot;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">config &#123;</span><br><span class="line">  # file、nacos 、apollo、zk</span><br><span class="line">  type = &quot;file&quot;</span><br><span class="line"></span><br><span class="line">  file &#123;</span><br><span class="line">    name = &quot;file.conf&quot;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+
+
+<p>3）file.conf：</p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line">transport &#123;</span><br><span class="line">  # tcp udt unix-domain-socket</span><br><span class="line">  type = &quot;TCP&quot;</span><br><span class="line">  #NIO NATIVE</span><br><span class="line">  server = &quot;NIO&quot;</span><br><span class="line">  #enable heartbeat</span><br><span class="line">  heartbeat = true</span><br><span class="line">  #thread factory for netty</span><br><span class="line">  thread-factory &#123;</span><br><span class="line">    boss-thread-prefix = &quot;NettyBoss&quot;</span><br><span class="line">    worker-thread-prefix = &quot;NettyServerNIOWorker&quot;</span><br><span class="line">    server-executor-thread-prefix = &quot;NettyServerBizHandler&quot;</span><br><span class="line">    share-boss-worker = false</span><br><span class="line">    client-selector-thread-prefix = &quot;NettyClientSelector&quot;</span><br><span class="line">    client-selector-thread-size = 1</span><br><span class="line">    client-worker-thread-prefix = &quot;NettyClientWorkerThread&quot;</span><br><span class="line">    # netty boss thread size,will not be used for UDT</span><br><span class="line">    boss-thread-size = 1</span><br><span class="line">    #auto default pin or 8</span><br><span class="line">    worker-thread-size = 8</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line">## transaction log store</span><br><span class="line">store &#123;</span><br><span class="line">  ## store mode: file、db</span><br><span class="line">  mode = &quot;file&quot;</span><br><span class="line"></span><br><span class="line">  ## file store</span><br><span class="line">  file &#123;</span><br><span class="line">    dir = &quot;sessionStore&quot;</span><br><span class="line"></span><br><span class="line">    # branch session size , if exceeded first try compress lockkey, still exceeded throws exceptions</span><br><span class="line">    max-branch-session-size = 16384</span><br><span class="line">    # globe session size , if exceeded throws exceptions</span><br><span class="line">    max-global-session-size = 512</span><br><span class="line">    # file buffer size , if exceeded allocate new buffer</span><br><span class="line">    file-write-buffer-cache-size = 16384</span><br><span class="line">    # when recover batch read size</span><br><span class="line">    session.reload.read_size = 100</span><br><span class="line">    # async, sync</span><br><span class="line">    flush-disk-mode = async</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">service &#123;</span><br><span class="line">  #vgroup-&gt;rgroup</span><br><span class="line">  vgroup_mapping.orders-fescar-service-group = &quot;default&quot;		# 微服名称</span><br><span class="line">  #only support single node</span><br><span class="line">  default.grouplist = &quot;127.0.0.1:10101&quot;			# seata</span><br><span class="line">  #degrade current not support</span><br><span class="line">  enableDegrade = false</span><br><span class="line">  #disable</span><br><span class="line">  disable = false</span><br><span class="line">&#125;</span><br><span class="line">client &#123;</span><br><span class="line">  async.commit.buffer.limit = 10000</span><br><span class="line">  lock &#123;</span><br><span class="line">    retry.internal = 10</span><br><span class="line">    retry.times = 30</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<p>4）application.xml：</p>
+<div class="highlight-container" data-rel="Yaml"><figure class="iseeu highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">server:</span></span><br><span class="line">  <span class="attr">port:</span> <span class="number">10104</span></span><br><span class="line">  <span class="attr">servlet:</span></span><br><span class="line">    <span class="attr">context-path:</span> <span class="string">/store</span></span><br><span class="line"><span class="attr">spring:</span></span><br><span class="line">  <span class="attr">application:</span></span><br><span class="line">    <span class="attr">name:</span> <span class="string">store</span> <span class="comment">#指定服务名</span></span><br><span class="line">  <span class="attr">datasource:</span></span><br><span class="line">    <span class="attr">driverClassName:</span> <span class="string">com.mysql.jdbc.Driver</span></span><br><span class="line">    <span class="attr">url:</span> <span class="string">jdbc:mysql://localhost:3306/store?serverTimezone=GMT%2b8</span></span><br><span class="line">    <span class="attr">username:</span> <span class="string">root</span></span><br><span class="line">    <span class="attr">password:</span> <span class="string">admin</span></span><br><span class="line">  <span class="attr">jpa:</span></span><br><span class="line">    <span class="attr">properties:</span></span><br><span class="line">      <span class="attr">hibernate:</span></span><br><span class="line">        <span class="attr">format_sql:</span> <span class="literal">true</span>	<span class="comment"># 格式化sql</span></span><br><span class="line">        <span class="attr">show_sql:</span> <span class="literal">true</span>		<span class="comment"># 显示sql</span></span><br><span class="line"><span class="attr">eureka:</span></span><br><span class="line">  <span class="attr">client:</span></span><br><span class="line">    <span class="attr">service-url:</span></span><br><span class="line">      <span class="attr">defaultZone:</span> <span class="string">http://127.0.0.1:10102/eureka</span></span><br></pre></td></tr></table></figure></div>
+
+
+
+<p>5）启动类：</p>
+<div class="highlight-container" data-rel="Java"><figure class="iseeu highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.lscl.store;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.alibaba.druid.pool.DruidDataSource;</span><br><span class="line"><span class="keyword">import</span> io.seata.rm.datasource.DataSourceProxy;</span><br><span class="line"><span class="keyword">import</span> org.springframework.boot.SpringApplication;</span><br><span class="line"><span class="keyword">import</span> org.springframework.boot.autoconfigure.SpringBootApplication;</span><br><span class="line"><span class="keyword">import</span> org.springframework.boot.context.properties.ConfigurationProperties;</span><br><span class="line"><span class="keyword">import</span> org.springframework.cloud.netflix.eureka.EnableEurekaClient;</span><br><span class="line"><span class="keyword">import</span> org.springframework.context.ApplicationContext;</span><br><span class="line"><span class="keyword">import</span> org.springframework.context.annotation.Bean;</span><br><span class="line"><span class="keyword">import</span> org.springframework.context.annotation.Primary;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> javax.sql.DataSource;</span><br><span class="line"></span><br><span class="line"><span class="meta">@EnableEurekaClient</span></span><br><span class="line"><span class="meta">@SpringBootApplication</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">StoreApplication</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        SpringApplication.run(StoreApplication.class);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> ApplicationContext applicationContext;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">StoreApplication</span><span class="params">(ApplicationContext applicationContext)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.applicationContext = applicationContext;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="meta">@ConfigurationProperties(prefix = &quot;spring.datasource&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> DruidDataSource <span class="title function_">druidDataSource</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="type">DruidDataSource</span> <span class="variable">druidDataSource</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">DruidDataSource</span>();</span><br><span class="line">        <span class="keyword">return</span> druidDataSource;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Primary</span></span><br><span class="line">    <span class="meta">@Bean</span>               <span class="comment">// 代理数据源</span></span><br><span class="line">    <span class="keyword">public</span> DataSource <span class="title function_">dataSource</span><span class="params">(DruidDataSource dataSource)</span>  &#123;</span><br><span class="line">        <span class="type">DataSourceProxy</span> <span class="variable">proxyDS</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">DataSourceProxy</span>(dataSource);</span><br><span class="line">        <span class="keyword">return</span> proxyDS;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+
+
+<p>6）entity.java：</p>
+<div class="highlight-container" data-rel="Java"><figure class="iseeu highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.lscl.store.entity;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> javax.persistence.Entity;</span><br><span class="line"><span class="keyword">import</span> javax.persistence.Id;</span><br><span class="line"><span class="keyword">import</span> javax.persistence.Table;</span><br><span class="line"><span class="keyword">import</span> java.io.Serializable;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Entity</span></span><br><span class="line"><span class="meta">@Table(name = &quot;t_store&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Store</span> <span class="keyword">implements</span> <span class="title class_">Serializable</span> &#123;</span><br><span class="line">    <span class="meta">@Id</span></span><br><span class="line">    <span class="keyword">private</span> String id;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> Integer count;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">getId</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> id;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setId</span><span class="params">(String id)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.id = id;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> Integer <span class="title function_">getCount</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> count;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setCount</span><span class="params">(Integer count)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.count = count;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure></div>
+
+
+
+<p>7）dao.java：</p>
+<div class="highlight-container" data-rel="Java"><figure class="iseeu highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.lscl.store.dao;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.lscl.store.entity.Store;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.jpa.repository.JpaRepository;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.jpa.repository.Modifying;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.jpa.repository.Query;</span><br><span class="line"><span class="keyword">import</span> org.springframework.stereotype.Repository;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Repository</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">StoreDao</span> <span class="keyword">extends</span> <span class="title class_">JpaRepository</span>&lt;Store,String&gt; &#123;</span><br><span class="line">    <span class="meta">@Query(&quot;update Store s set s.count=s.count-1&quot;)</span></span><br><span class="line">    <span class="meta">@Modifying</span></span><br><span class="line">    <span class="keyword">void</span> <span class="title function_">updateCount</span><span class="params">()</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure></div>
+
+
+
+<p>8）service.java：</p>
+<div class="highlight-container" data-rel="Java"><figure class="iseeu highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.lscl.store.service;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.lscl.store.dao.StoreDao;</span><br><span class="line"><span class="keyword">import</span> io.seata.core.context.RootContext;</span><br><span class="line"><span class="keyword">import</span> org.springframework.beans.factory.annotation.Autowired;</span><br><span class="line"><span class="keyword">import</span> org.springframework.stereotype.Service;</span><br><span class="line"><span class="keyword">import</span> org.springframework.transaction.annotation.Transactional;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Service</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">StoreService</span> &#123;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> StoreDao storeDao;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Transactional</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">updateCount</span><span class="params">(Integer flag)</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;orders_xid: &quot;</span>+ RootContext.getXID());</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 库存-1</span></span><br><span class="line">        storeDao.updateCount();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span>(flag==<span class="number">200</span>)&#123;			<span class="comment">// 模拟异常</span></span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">RuntimeException</span>(<span class="string">&quot;store...error&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure></div>
+
+
+
+<p>9）controller.java：</p>
+<div class="highlight-container" data-rel="Java"><figure class="iseeu highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.lscl.store.controller;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.lscl.store.service.StoreService;</span><br><span class="line"><span class="keyword">import</span> org.springframework.beans.factory.annotation.Autowired;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.PathVariable;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.RequestMapping;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.RestController;</span><br><span class="line"></span><br><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">StoreController</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> StoreService storeService;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@RequestMapping(&quot;/updateCount/&#123;flag&#125;&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">updateCount</span><span class="params">(<span class="meta">@PathVariable</span> Integer flag)</span>&#123;</span><br><span class="line">        storeService.updateCount(flag);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;store...success&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure></div>
+
+
+
+<h4 id="1-2-3-5-搭建订单微服"><a href="#1-2-3-5-搭建订单微服" class="headerlink" title="1.2.3.5 搭建订单微服"></a>1.2.3.5 搭建订单微服</h4><p>1）pom.xml：</p>
+<div class="highlight-container" data-rel="Xml"><figure class="iseeu highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=<span class="string">&quot;1.0&quot;</span> encoding=<span class="string">&quot;UTF-8&quot;</span>?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">project</span> <span class="attr">xmlns</span>=<span class="string">&quot;http://maven.apache.org/POM/4.0.0&quot;</span></span></span><br><span class="line"><span class="tag">         <span class="attr">xmlns:xsi</span>=<span class="string">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span></span></span><br><span class="line"><span class="tag">         <span class="attr">xsi:schemaLocation</span>=<span class="string">&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">parent</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>seata_transaction<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.lscl<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.0-SNAPSHOT<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">parent</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">modelVersion</span>&gt;</span>4.0.0<span class="tag">&lt;/<span class="name">modelVersion</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>orders<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependencies</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-web<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.alibaba.cloud<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-cloud-alibaba-seata<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-data-jpa<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.cloud<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-cloud-starter-openfeign<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.cloud<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-cloud-starter-netflix-hystrix<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.cloud<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-cloud-starter-netflix-eureka-client<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>mysql<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>mysql-connector-java<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">version</span>&gt;</span>5.1.47<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependencies</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">project</span>&gt;</span></span><br></pre></td></tr></table></figure></div>
+
+<p>2）registry.conf：</p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">registry &#123;</span><br><span class="line">  # file 、redis、zookeeper、eureka、nacos 、consul、etcd3、sofa</span><br><span class="line">  type = &quot;file&quot;</span><br><span class="line"></span><br><span class="line">  file &#123;</span><br><span class="line">    name = &quot;file.conf&quot;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">config &#123;</span><br><span class="line">  # file、nacos 、apollo、zk</span><br><span class="line">  type = &quot;file&quot;</span><br><span class="line"></span><br><span class="line">  file &#123;</span><br><span class="line">    name = &quot;file.conf&quot;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<p>3）file.conf：</p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line">transport &#123;</span><br><span class="line">  # tcp udt unix-domain-socket</span><br><span class="line">  type = &quot;TCP&quot;</span><br><span class="line">  #NIO NATIVE</span><br><span class="line">  server = &quot;NIO&quot;</span><br><span class="line">  #enable heartbeat</span><br><span class="line">  heartbeat = true</span><br><span class="line">  #thread factory for netty</span><br><span class="line">  thread-factory &#123;</span><br><span class="line">    boss-thread-prefix = &quot;NettyBoss&quot;</span><br><span class="line">    worker-thread-prefix = &quot;NettyServerNIOWorker&quot;</span><br><span class="line">    server-executor-thread-prefix = &quot;NettyServerBizHandler&quot;</span><br><span class="line">    share-boss-worker = false</span><br><span class="line">    client-selector-thread-prefix = &quot;NettyClientSelector&quot;</span><br><span class="line">    client-selector-thread-size = 1</span><br><span class="line">    client-worker-thread-prefix = &quot;NettyClientWorkerThread&quot;</span><br><span class="line">    # netty boss thread size,will not be used for UDT</span><br><span class="line">    boss-thread-size = 1</span><br><span class="line">    #auto default pin or 8</span><br><span class="line">    worker-thread-size = 8</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line">## transaction log store</span><br><span class="line">store &#123;</span><br><span class="line">  ## store mode: file、db</span><br><span class="line">  mode = &quot;file&quot;</span><br><span class="line"></span><br><span class="line">  ## file store</span><br><span class="line">  file &#123;</span><br><span class="line">    dir = &quot;sessionStore&quot;</span><br><span class="line"></span><br><span class="line">    # branch session size , if exceeded first try compress lockkey, still exceeded throws exceptions</span><br><span class="line">    max-branch-session-size = 16384</span><br><span class="line">    # globe session size , if exceeded throws exceptions</span><br><span class="line">    max-global-session-size = 512</span><br><span class="line">    # file buffer size , if exceeded allocate new buffer</span><br><span class="line">    file-write-buffer-cache-size = 16384</span><br><span class="line">    # when recover batch read size</span><br><span class="line">    session.reload.read_size = 100</span><br><span class="line">    # async, sync</span><br><span class="line">    flush-disk-mode = async</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">service &#123;</span><br><span class="line">  #vgroup-&gt;rgroup</span><br><span class="line">  vgroup_mapping.store-fescar-service-group = &quot;default&quot;</span><br><span class="line">  #only support single node</span><br><span class="line">  default.grouplist = &quot;127.0.0.1:10101&quot;</span><br><span class="line">  #degrade current not support</span><br><span class="line">  enableDegrade = false</span><br><span class="line">  #disable</span><br><span class="line">  disable = false</span><br><span class="line">&#125;</span><br><span class="line">client &#123;</span><br><span class="line">  async.commit.buffer.limit = 10000</span><br><span class="line">  lock &#123;</span><br><span class="line">    retry.internal = 10</span><br><span class="line">    retry.times = 30</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<p>4）application.yml：</p>
+<div class="highlight-container" data-rel="Yml"><figure class="iseeu highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">server:</span></span><br><span class="line">  <span class="attr">port:</span> <span class="number">10103</span></span><br><span class="line">  <span class="attr">servlet:</span></span><br><span class="line">    <span class="attr">context-path:</span> <span class="string">/orders</span></span><br><span class="line"><span class="attr">spring:</span></span><br><span class="line">  <span class="attr">application:</span></span><br><span class="line">    <span class="attr">name:</span> <span class="string">orders</span> <span class="comment">#指定服务名</span></span><br><span class="line">  <span class="attr">datasource:</span></span><br><span class="line">    <span class="attr">driverClassName:</span> <span class="string">com.mysql.jdbc.Driver</span></span><br><span class="line">    <span class="attr">url:</span> <span class="string">jdbc:mysql://localhost:3306/orders?serverTimezone=GMT%2b8</span></span><br><span class="line">    <span class="attr">username:</span> <span class="string">root</span></span><br><span class="line">    <span class="attr">password:</span> <span class="string">admin</span></span><br><span class="line">  <span class="attr">jpa:</span></span><br><span class="line">    <span class="attr">properties:</span></span><br><span class="line">      <span class="attr">hibernate:</span></span><br><span class="line">        <span class="attr">format_sql:</span> <span class="literal">true</span>	<span class="comment"># 格式化sql</span></span><br><span class="line">        <span class="attr">show_sql:</span> <span class="literal">true</span>		<span class="comment"># 显示sql</span></span><br><span class="line"><span class="attr">eureka:</span></span><br><span class="line">  <span class="attr">client:</span></span><br><span class="line">    <span class="attr">service-url:</span></span><br><span class="line">      <span class="attr">defaultZone:</span> <span class="string">http://127.0.0.1:10102/eureka</span></span><br><span class="line"><span class="attr">feign:</span>   <span class="comment"># 开启熔断器</span></span><br><span class="line">  <span class="attr">hystrix:</span></span><br><span class="line">    <span class="attr">enabled:</span> <span class="literal">true</span></span><br></pre></td></tr></table></figure></div>
+
+<p>5）启动类：</p>
+<div class="highlight-container" data-rel="Java"><figure class="iseeu highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.lscl.orders;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.alibaba.druid.pool.DruidDataSource;</span><br><span class="line"><span class="keyword">import</span> io.seata.rm.datasource.DataSourceProxy;</span><br><span class="line"><span class="keyword">import</span> org.springframework.boot.SpringApplication;</span><br><span class="line"><span class="keyword">import</span> org.springframework.boot.autoconfigure.SpringBootApplication;</span><br><span class="line"><span class="keyword">import</span> org.springframework.boot.context.properties.ConfigurationProperties;</span><br><span class="line"><span class="keyword">import</span> org.springframework.cloud.client.discovery.EnableDiscoveryClient;</span><br><span class="line"><span class="keyword">import</span> org.springframework.cloud.netflix.eureka.EnableEurekaClient;</span><br><span class="line"><span class="keyword">import</span> org.springframework.cloud.openfeign.EnableFeignClients;</span><br><span class="line"><span class="keyword">import</span> org.springframework.context.ApplicationContext;</span><br><span class="line"><span class="keyword">import</span> org.springframework.context.annotation.Bean;</span><br><span class="line"><span class="keyword">import</span> org.springframework.context.annotation.Primary;</span><br><span class="line"></span><br><span class="line"><span class="meta">@EnableEurekaClient</span></span><br><span class="line"><span class="meta">@EnableDiscoveryClient</span></span><br><span class="line"><span class="meta">@EnableFeignClients</span></span><br><span class="line"><span class="meta">@SpringBootApplication</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">OrdersApplication</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        SpringApplication.run(OrdersApplication.class);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> ApplicationContext applicationContext;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">OrdersApplication</span><span class="params">(ApplicationContext applicationContext)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.applicationContext = applicationContext;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="meta">@ConfigurationProperties(prefix = &quot;spring.datasource&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> DruidDataSource <span class="title function_">druidDataSource</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="type">DruidDataSource</span> <span class="variable">druidDataSource</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">DruidDataSource</span>();</span><br><span class="line">        <span class="keyword">return</span> druidDataSource;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Primary</span></span><br><span class="line">    <span class="meta">@Bean</span>       <span class="comment">// 代理数据源</span></span><br><span class="line">    <span class="keyword">public</span> DataSourceProxy <span class="title function_">dataSource</span><span class="params">(DruidDataSource dataSource)</span>  &#123;</span><br><span class="line">        <span class="type">DataSourceProxy</span> <span class="variable">proxyDS</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">DataSourceProxy</span>(dataSource);</span><br><span class="line">        <span class="keyword">return</span> proxyDS;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<p>6）Client：</p>
+<div class="highlight-container" data-rel="Java"><figure class="iseeu highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.lscl.orders.client;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.lscl.orders.client.impl.StoreClientImpl;</span><br><span class="line"><span class="keyword">import</span> org.springframework.cloud.openfeign.FeignClient;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.PathVariable;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.RequestMapping;</span><br><span class="line"></span><br><span class="line"><span class="meta">@FeignClient(value = &quot;store&quot;,fallback = StoreClientImpl.class)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">StoreClient</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@RequestMapping(&quot;/store/updateCount/&#123;flag&#125;&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">updateCount</span><span class="params">(<span class="meta">@PathVariable(&quot;flag&quot;)</span> Integer flag)</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure></div>
+
+<p>7）ClientImpl：</p>
+<div class="highlight-container" data-rel="Java"><figure class="iseeu highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.lscl.orders.client.impl;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.lscl.orders.client.StoreClient;</span><br><span class="line"><span class="keyword">import</span> org.springframework.stereotype.Component;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">StoreClientImpl</span> <span class="keyword">implements</span> <span class="title class_">StoreClient</span> &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">updateCount</span><span class="params">(Integer flag)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;no&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure></div>
+
+<p>8）entity：</p>
+<div class="highlight-container" data-rel="Java"><figure class="iseeu highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.lscl.orders.entity;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> javax.persistence.Entity;</span><br><span class="line"><span class="keyword">import</span> javax.persistence.Id;</span><br><span class="line"><span class="keyword">import</span> javax.persistence.Table;</span><br><span class="line"><span class="keyword">import</span> java.io.Serializable;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Entity</span></span><br><span class="line"><span class="meta">@Table(name = &quot;t_orders&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Orders</span> <span class="keyword">implements</span> <span class="title class_">Serializable</span> &#123;</span><br><span class="line">    <span class="meta">@Id</span></span><br><span class="line">    <span class="keyword">private</span> String id;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> Integer count;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">getId</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> id;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setId</span><span class="params">(String id)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.id = id;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> Integer <span class="title function_">getCount</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> count;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setCount</span><span class="params">(Integer count)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.count = count;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure></div>
+
+<p>9）dao：</p>
+<div class="highlight-container" data-rel="Java"><figure class="iseeu highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.lscl.orders.dao;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.lscl.orders.entity.Orders;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.jpa.repository.JpaRepository;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.jpa.repository.Modifying;</span><br><span class="line"><span class="keyword">import</span> org.springframework.data.jpa.repository.Query;</span><br><span class="line"><span class="keyword">import</span> org.springframework.stereotype.Repository;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Repository</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">OrdersDao</span> <span class="keyword">extends</span> <span class="title class_">JpaRepository</span>&lt;Orders,String&gt; &#123;</span><br><span class="line">    <span class="meta">@Query(&quot;update Orders o set o.count=o.count+1&quot;)</span></span><br><span class="line">    <span class="meta">@Modifying</span></span><br><span class="line">    <span class="keyword">void</span> <span class="title function_">updateCount</span><span class="params">()</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure></div>
+
+<p>10）service：</p>
+<div class="highlight-container" data-rel="Java"><figure class="iseeu highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.lscl.orders.service;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.lscl.orders.client.StoreClient;</span><br><span class="line"><span class="keyword">import</span> com.lscl.orders.dao.OrdersDao;</span><br><span class="line"><span class="keyword">import</span> io.seata.core.context.RootContext;</span><br><span class="line"><span class="keyword">import</span> io.seata.spring.annotation.GlobalTransactional;</span><br><span class="line"><span class="keyword">import</span> org.springframework.beans.factory.annotation.Autowired;</span><br><span class="line"><span class="keyword">import</span> org.springframework.stereotype.Service;</span><br><span class="line"><span class="keyword">import</span> org.springframework.transaction.annotation.Transactional;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Service</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">OrdersService</span> &#123;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> OrdersDao ordersDao;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> StoreClient storeClient;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Transactional</span></span><br><span class="line">    <span class="meta">@GlobalTransactional</span>            <span class="comment">// 开启全局事务</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">updateCount</span><span class="params">(Integer flag)</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;orders_xid: &quot;</span>+RootContext.getXID());</span><br><span class="line">        <span class="comment">// 订单+1</span></span><br><span class="line">        ordersDao.updateCount();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 库存-1</span></span><br><span class="line">        <span class="type">String</span> <span class="variable">msg</span> <span class="operator">=</span> storeClient.updateCount(flag);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span>(<span class="string">&quot;no&quot;</span>.equals(msg))&#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">RuntimeException</span>(<span class="string">&quot;store...error&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        System.out.println(msg);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (flag == <span class="number">100</span>) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">RuntimeException</span>(<span class="string">&quot;orders...error&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure></div>
+
+<p>11）controller：</p>
+<div class="highlight-container" data-rel="Java"><figure class="iseeu highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.lscl.orders.controller;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.lscl.orders.service.OrdersService;</span><br><span class="line"><span class="keyword">import</span> org.springframework.beans.factory.annotation.Autowired;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.PathVariable;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.RequestMapping;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.RestController;</span><br><span class="line"></span><br><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">OrdersController</span> &#123;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> OrdersService ordersService;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@RequestMapping(&quot;/updateCount/&#123;flag&#125;&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">updateCount</span><span class="params">(<span class="meta">@PathVariable</span> Integer flag)</span>&#123;</span><br><span class="line"></span><br><span class="line">        ordersService.updateCount(flag);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;orders...success&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure></div>
+
+<h4 id="1-2-3-5-创建undo-log表"><a href="#1-2-3-5-创建undo-log表" class="headerlink" title="1.2.3.5 创建undo_log表"></a>1.2.3.5 创建undo_log表</h4><p>根据2PC协议，我们知道在第一阶段时，执行完业务sql之后，会把前后镜像数据以及业务 SQL 相关的信息组成一条回滚日志记录，插入到 <code>UNDO_LOG</code> 表中</p>
+<p>在第二阶段时如果是回滚则根据 UNDO LOG 中的前镜像和业务 SQL 的相关信息生成并执行回滚的语句</p>
+<p>如果是提交则分支提交请求将异步和批量地删除相应 UNDO LOG 记录。</p>
+<p>在订单、库存两个数据库中分别创建对应的undo_log日志表。</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> `undo_log` (</span><br><span class="line">  `id` <span class="type">bigint</span>(<span class="number">20</span>) <span class="keyword">NOT</span> <span class="keyword">NULL</span> AUTO_INCREMENT,</span><br><span class="line">  `branch_id` <span class="type">bigint</span>(<span class="number">20</span>) <span class="keyword">NOT</span> <span class="keyword">NULL</span>,</span><br><span class="line">  `xid` <span class="type">varchar</span>(<span class="number">100</span>) <span class="keyword">NOT</span> <span class="keyword">NULL</span>,</span><br><span class="line">  `context` <span class="type">varchar</span>(<span class="number">128</span>) <span class="keyword">NOT</span> <span class="keyword">NULL</span>,</span><br><span class="line">  `rollback_info` longblob <span class="keyword">NOT</span> <span class="keyword">NULL</span>,</span><br><span class="line">  `log_status` <span class="type">int</span>(<span class="number">11</span>) <span class="keyword">NOT</span> <span class="keyword">NULL</span>,</span><br><span class="line">  `log_created` datetime <span class="keyword">NOT</span> <span class="keyword">NULL</span>,</span><br><span class="line">  `log_modified` datetime <span class="keyword">NOT</span> <span class="keyword">NULL</span>,</span><br><span class="line">  <span class="keyword">PRIMARY</span> KEY (`id`),</span><br><span class="line">  <span class="keyword">UNIQUE</span> KEY `ux_undo_log` (`xid`,`branch_id`)</span><br><span class="line">) ENGINE<span class="operator">=</span>InnoDB AUTO_INCREMENT<span class="operator">=</span><span class="number">1</span> <span class="keyword">DEFAULT</span> CHARSET<span class="operator">=</span>utf8;</span><br></pre></td></tr></table></figure></div>
+
+
+
+
+
+<p>全部RM执行成功流程：</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/%5Cimages%5C%E5%88%86%E5%B8%83%E5%BC%8F%5C11.png"
+                     
+                ></p>
+<p>某个RM执行失败流程：</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/%5Cimages%5C%E5%88%86%E5%B8%83%E5%BC%8F%5C13.png"
+                     
+                ></p>
+<h3 id="1-3-3-总结"><a href="#1-3-3-总结" class="headerlink" title="1.3.3 总结"></a>1.3.3 总结</h3><p>seata也是基于2PC的一种分布式解决方案。seata方案解决了XA方案在准备阶段时，RM锁的问题。在高并发情况下，应当避免XA方案。</p>
+<p>xa方案依赖于数据库对XA协议的支持，seata则是通过业务逻辑的处理（记录undo_log表），来达到数据的回滚，底层不依赖于数据库。</p>
+
+        </div>
+
+        
+            <div class="post-copyright-info w-full my-8 px-2 sm:px-6 md:px-8">
+                <div class="article-copyright-info-container">
+    <ul>
+        <li><strong>Title:</strong> 分布式事务</li>
+        <li><strong>Author:</strong> MinGe</li>
+        <li><strong>Created at
+                :</strong> 2024-10-05 10:56:00</li>
+        
+            <li>
+                <strong>Updated at
+                    :</strong> 2024-11-12 16:49:43
+            </li>
+        
+        <li>
+            <strong>Link:</strong> https://redefine.ohevan.com/2024/10/05/分布式事务/
+        </li>
+        <li>
+            <strong>
+                License:
+            </strong>
+            
+
+            
+                This work is licensed under <a class="license" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0">CC BY-NC-SA 4.0</a>.
+            
+        </li>
+    </ul>
+</div>
+
+            </div>
+        
+
+        
+            <ul class="post-tags-box text-lg mt-1.5 flex-wrap justify-center flex md:hidden">
+                
+                    <li class="tag-item mx-0.5">
+                        <a href="/tags/java/">#java</a>&nbsp;
+                    </li>
+                
+            </ul>
+        
+
+        
+
+        
+            <div class="article-nav my-8 flex justify-between items-center px-2 sm:px-6 md:px-8">
+                
+                    <div class="article-prev border-border-color shadow-redefine-flat shadow-shadow-color-2 rounded-medium px-4 py-2 hover:shadow-redefine-flat-hover hover:shadow-shadow-color-2">
+                        <a class="prev"
+                        rel="prev"
+                        href="/2024/10/05/Docker/"
+                        >
+                            <span class="left arrow-icon flex justify-center items-center">
+                                <i class="fa-solid fa-chevron-left"></i>
+                            </span>
+                            <span class="title flex justify-center items-center">
+                                <span class="post-nav-title-item">Docker</span>
+                                <span class="post-nav-item">Prev posts</span>
+                            </span>
+                        </a>
+                    </div>
+                
+                
+                    <div class="article-next border-border-color shadow-redefine-flat shadow-shadow-color-2 rounded-medium px-4 py-2 hover:shadow-redefine-flat-hover hover:shadow-shadow-color-2">
+                        <a class="next"
+                        rel="next"
+                        href="/2024/06/08/Nginx/"
+                        >
+                            <span class="title flex justify-center items-center">
+                                <span class="post-nav-title-item">Nginx</span>
+                                <span class="post-nav-item">Next posts</span>
+                            </span>
+                            <span class="right arrow-icon flex justify-center items-center">
+                                <i class="fa-solid fa-chevron-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                
+            </div>
+        
+
+
+        
+    </div>
+
+    
+        <div class="toc-content-container">
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <div class="toc-title">On this page</div>
+        <div class="page-title">分布式事务</div>
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1%E6%A6%82%E8%BF%B0"><span class="nav-text">一、分布式事务概述</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-%E4%BB%80%E4%B9%88%E6%98%AF%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1"><span class="nav-text">1.1 什么是分布式事务</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-1-%E5%8D%95%E6%9C%8D%E5%8A%A1%E5%A4%9A%E6%95%B0%E6%8D%AE%E6%BA%90"><span class="nav-text">1.1.1 单服务多数据源</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-2-%E5%A4%9A%E6%9C%8D%E5%8A%A1%E5%8D%95%E6%95%B0%E6%8D%AE%E6%BA%90"><span class="nav-text">1.1.2 多服务单数据源</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-3-%E5%A4%9A%E6%9C%8D%E5%8A%A1%E5%A4%9A%E6%95%B0%E6%8D%AE%E6%BA%90"><span class="nav-text">1.1.3 多服务多数据源</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-2-%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1%E7%90%86%E8%AE%BA"><span class="nav-text">1.2 分布式事务理论</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-1-CAP%E7%90%86%E8%AE%BA"><span class="nav-text">1.2.1 CAP理论</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-2-CAP%E7%BB%84%E5%90%88%E6%96%B9%E5%BC%8F"><span class="nav-text">1.2.2 CAP组合方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-3-BASE%E7%90%86%E8%AE%BA"><span class="nav-text">1.2.3 BASE理论</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81DTP%E4%BA%8B%E5%8A%A1%E5%A4%84%E7%90%86%E6%A8%A1%E5%9E%8B"><span class="nav-text">二、DTP事务处理模型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E3%80%812PC%EF%BC%88%E4%B8%A4%E9%98%B6%E6%AE%B5%E6%8F%90%E4%BA%A4%EF%BC%89"><span class="nav-text">三、2PC（两阶段提交）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-2PC%E6%B5%81%E7%A8%8B"><span class="nav-text">1.1 2PC流程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-2-XA%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="nav-text">1.2 XA解决方案</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-1-MySQL%E7%9A%84XA%E5%AE%9E%E7%8E%B0"><span class="nav-text">1.2.1 MySQL的XA实现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-1-Atomikos%E5%AE%9E%E7%8E%B0%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1"><span class="nav-text">1.2.1 Atomikos实现分布式事务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-3-%E6%80%BB%E7%BB%93"><span class="nav-text">1.2.3 总结</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-3-seata%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="nav-text">1.3 seata解决方案</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-3-1-seata%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B%EF%BC%9A"><span class="nav-text">1.3.1 seata执行流程：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-3-2-%E6%90%AD%E5%BB%BAseata%E5%B7%A5%E7%A8%8B"><span class="nav-text">1.3.2 搭建seata工程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-3-3-%E6%80%BB%E7%BB%93"><span class="nav-text">1.3.3 总结</span></a></li></ol></li></ol></li></ol>
+
+    </div>
+</div>
+        </div>
+    
+</div>
+
+
+
+                
+
+            </div>
+
+            
+
+        </div>
+
+        <div class="main-content-footer">
+            <footer class="footer mt-5 py-5 h-auto text-base text-third-text-color relative border-t-2 border-t-border-color">
+    <div class="info-container py-3 text-center">
+        
+        <div class="text-center">
+            &copy;
+            
+              <span>2022</span>
+              -
+            
+            2024&nbsp;&nbsp;<i class="fa-solid fa-heart fa-beat" style="--fa-animation-duration: 0.5s; color: #f54545"></i>&nbsp;&nbsp;<a href="/">MinGe</a>
+            
+                
+                <p class="post-count space-x-0.5">
+                    <span>
+                        20 posts in total
+                    </span>
+                    
+                </p>
+            
+        </div>
+        
+        <div class="relative text-center lg:absolute lg:left-[20px] lg:top-1/2 lg:-translate-y-1/2 lg:text-left">
+            <span class="lg:block text-sm">POWERED BY <?xml version="1.0" encoding="utf-8"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg class="relative top-[2px] inline-block align-baseline" version="1.1" id="圖層_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="1rem" height="1rem" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve"><path fill="#0E83CD" d="M256.4,25.8l-200,115.5L56,371.5l199.6,114.7l200-115.5l0.4-230.2L256.4,25.8z M349,354.6l-18.4,10.7l-18.6-11V275H200v79.6l-18.4,10.7l-18.6-11v-197l18.5-10.6l18.5,10.8V237h112v-79.6l18.5-10.6l18.5,10.8V354.6z"/></svg><a target="_blank" class="text-base" href="https://hexo.io">Hexo</a></span>
+            <span class="text-sm lg:block">THEME&nbsp;<a class="text-base" target="_blank" href="https://github.com/EvanNotFound/hexo-theme-redefine">Redefine v2.7.1</a></span>
+        </div>
+        
+        
+            <div>
+                Blog up for <span class="odometer" id="runtime_days" ></span> days <span class="odometer" id="runtime_hours"></span> hrs <span class="odometer" id="runtime_minutes"></span> Min <span class="odometer" id="runtime_seconds"></span> Sec
+            </div>
+        
+        
+            <script data-swup-reload-script>
+                try {
+                    function odometer_init() {
+                    const elements = document.querySelectorAll('.odometer');
+                    elements.forEach(el => {
+                        new Odometer({
+                            el,
+                            format: '( ddd).dd',
+                            duration: 200
+                        });
+                    });
+                    }
+                    odometer_init();
+                } catch (error) {}
+            </script>
+        
+        
+        
+    </div>  
+</footer>
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="article-tools-list">
+        <!-- TOC aside toggle -->
+        
+            <li class="right-bottom-tools page-aside-toggle">
+                <i class="fa-regular fa-outdent"></i>
+            </li>
+        
+
+        <!-- go comment -->
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-side-tools-container">
+        <div class="side-tools-container">
+    <ul class="hidden-tools-list">
+        <li class="right-bottom-tools tool-font-adjust-plus flex justify-center items-center">
+            <i class="fa-regular fa-magnifying-glass-plus"></i>
+        </li>
+
+        <li class="right-bottom-tools tool-font-adjust-minus flex justify-center items-center">
+            <i class="fa-regular fa-magnifying-glass-minus"></i>
+        </li>
+
+        <li class="right-bottom-tools tool-dark-light-toggle flex justify-center items-center">
+            <i class="fa-regular fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+
+        <li class="right-bottom-tools tool-scroll-to-bottom flex justify-center items-center">
+            <i class="fa-regular fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="visible-tools-list">
+        <li class="right-bottom-tools toggle-tools-list flex justify-center items-center">
+            <i class="fa-regular fa-cog fa-spin"></i>
+        </li>
+        
+            <li class="right-bottom-tools tool-scroll-to-top flex justify-center items-center">
+                <i class="arrow-up fas fa-arrow-up"></i>
+                <span class="percent"></span>
+            </li>
+        
+        
+    </ul>
+</div>
+
+    </div>
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+
+</main>
+
+
+    
+<script src="/js/libs/Swup.min.js"></script>
+
+<script src="/js/libs/SwupSlideTheme.min.js"></script>
+
+<script src="/js/libs/SwupScriptsPlugin.min.js"></script>
+
+<script src="/js/libs/SwupProgressPlugin.min.js"></script>
+
+<script src="/js/libs/SwupScrollPlugin.min.js"></script>
+
+<script src="/js/libs/SwupPreloadPlugin.min.js"></script>
+
+<script>
+    const swup = new Swup({
+        plugins: [
+            new SwupScriptsPlugin({
+                optin: true,
+            }),
+            new SwupProgressPlugin(),
+            new SwupScrollPlugin({
+                offset: 80,
+            }),
+            new SwupSlideTheme({
+                mainElement: ".main-content-body",
+            }),
+            new SwupPreloadPlugin(),
+        ],
+        containers: ["#swup"],
+    });
+</script>
+
+
+
+
+
+
+
+<script src="/js/tools/imageViewer.js" type="module"></script>
+
+<script src="/js/utils.js" type="module"></script>
+
+<script src="/js/main.js" type="module"></script>
+
+<script src="/js/layouts/navbarShrink.js" type="module"></script>
+
+<script src="/js/tools/scrollTopBottom.js" type="module"></script>
+
+<script src="/js/tools/lightDarkSwitch.js" type="module"></script>
+
+<script src="/js/layouts/categoryList.js" type="module"></script>
+
+
+
+
+
+    
+<script src="/js/tools/codeBlock.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/layouts/lazyload.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/tools/runtime.js"></script>
+
+    
+<script src="/js/libs/odometer.min.js"></script>
+
+    
+<link rel="stylesheet" href="/assets/odometer-theme-minimal.css">
+
+
+
+
+  
+<script src="/js/libs/Typed.min.js"></script>
+
+  
+<script src="/js/plugins/typed.js" type="module"></script>
+
+
+
+
+
+
+
+
+    
+<script src="/js/libs/anime.min.js"></script>
+
+
+
+<div class="post-scripts" data-swup-reload-script>
+    
+        
+<script src="/js/tools/tocToggle.js" type="module"></script>
+
+<script src="/js/layouts/toc.js" type="module"></script>
+
+<script src="/js/plugins/tabs.js" type="module"></script>
+
+    
+</div>
+
+
+</body>
+</html>

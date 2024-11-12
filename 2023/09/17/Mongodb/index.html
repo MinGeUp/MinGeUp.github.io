@@ -18,18 +18,24 @@
     <meta name="googlebot" content="index,follow">
     <meta name="revisit-after" content="1 days">
     
-        <meta name="description" content="Mongodb">
+        <meta name="description" content="一、MongoDB 简介1.1. 吐槽和评论数据特点分析吐槽和评论两项功能存在以下特点： （1）数据量大 （2）写入操作频繁（高并发） （3）价值较低 对于这样的数据，我们更适合使用 MongoDB 来实现数据的存储 1.2. 什么是 MongoDBMongoDB 是一个跨平台的，面向文档的数据库，是当前 NoSQL 数据库产品中最热门的一种之一。它介于关系数据库和非关系数据库之间，是非关系数据库">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Mongodb">
 <meta property="og:url" content="http://example.com/2023/09/17/Mongodb/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="Mongodb">
+<meta property="og:description" content="一、MongoDB 简介1.1. 吐槽和评论数据特点分析吐槽和评论两项功能存在以下特点： （1）数据量大 （2）写入操作频繁（高并发） （3）价值较低 对于这样的数据，我们更适合使用 MongoDB 来实现数据的存储 1.2. 什么是 MongoDBMongoDB 是一个跨平台的，面向文档的数据库，是当前 NoSQL 数据库产品中最热门的一种之一。它介于关系数据库和非关系数据库之间，是非关系数据库">
 <meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/%5Cimages%5CMongoDB%5C1.png">
+<meta property="og:image" content="http://example.com/%5Cimages%5CMongoDB%5C2.png">
+<meta property="og:image" content="http://example.com/%5Cimages%5CMongoDB%5C3.png">
+<meta property="og:image" content="http://example.com/%5Cimages%5CMongoDB%5C4.png">
+<meta property="og:image" content="http://example.com/%5Cimages%5CMongoDB%5C5.png">
 <meta property="article:published_time" content="2023-09-17T03:11:00.000Z">
-<meta property="article:modified_time" content="2024-11-05T06:55:31.952Z">
+<meta property="article:modified_time" content="2024-11-12T08:55:59.810Z">
 <meta property="article:author" content="John Doe">
 <meta property="article:tag" content="java">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/%5Cimages%5CMongoDB%5C1.png">
     
     
     <!--- Icon Part-->
@@ -281,7 +287,7 @@
         <div class="label text-third-text-color text-sm">Categories</div>
     </a>
     <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
-        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">19</div>
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">20</div>
         <div class="label text-third-text-color text-sm">Posts</div>
     </a>
 </div>
@@ -335,8 +341,8 @@
     
         <span class="article-date article-meta-item">
             <i class="fa-regular fa-wrench"></i>&nbsp;
-            <span class="desktop">2024-11-05 14:55:31</span>
-            <span class="mobile">2024-11-05 14:55:31</span>
+            <span class="desktop">2024-11-12 16:55:59</span>
+            <span class="mobile">2024-11-12 16:55:59</span>
             <span class="hover-info">Updated</span>
         </span>
     
@@ -386,7 +392,254 @@
 
 
         <div class="article-content markdown-body px-2 sm:px-6 md:px-8 pb-8">
-            <h1 id="Mongodb"><a href="#Mongodb" class="headerlink" title="Mongodb"></a>Mongodb</h1>
+            <h1 id="一、MongoDB-简介"><a href="#一、MongoDB-简介" class="headerlink" title="一、MongoDB 简介"></a>一、MongoDB 简介</h1><h2 id="1-1-吐槽和评论数据特点分析"><a href="#1-1-吐槽和评论数据特点分析" class="headerlink" title="1.1. 吐槽和评论数据特点分析"></a>1.1. 吐槽和评论数据特点分析</h2><p>吐槽和评论两项功能存在以下特点：</p>
+<p>（1）数据量大</p>
+<p>（2）写入操作频繁（高并发）</p>
+<p>（3）价值较低</p>
+<p>对于这样的数据，我们更适合使用 MongoDB 来实现数据的存储</p>
+<h2 id="1-2-什么是-MongoDB"><a href="#1-2-什么是-MongoDB" class="headerlink" title="1.2. 什么是 MongoDB"></a>1.2. 什么是 MongoDB</h2><p>MongoDB 是一个跨平台的，面向文档的数据库，是当前 NoSQL 数据库产品中最热门的一种之一。<strong>它介于关系数据库和非关系数据库之间</strong>，是非关系数据库当中功能最丰富，最像关系数据库的产品。它支持的数据结构非常松散，是类似 JSON 的BSON 格式，因此可以存储比较复杂的数据类型。</p>
+<ul>
+<li>MongoDB 的官方网站地址是：<a class="link"   target="_blank" rel="noopener" href="http://www.mongodb.org/" >http://www.mongodb.org/ <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></li>
+</ul>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/%5Cimages%5CMongoDB%5C1.png"
+                     
+                ></p>
+<h2 id="1-3-MongoDB-特点"><a href="#1-3-MongoDB-特点" class="headerlink" title="1.3. MongoDB 特点"></a>1.3. MongoDB 特点</h2><p>MongoDB最大的特点是他支持的查询语言非常强大，其语法有点类似于面向对象的查询语言，几乎可以实现类似关系数据库单表查询的绝大部分功能，而且还支持对数据建立索引。它是一个面向集合的,模式自由的文档型数据库。</p>
+<p>具体特点总结如下：</p>
+<p>（1）面向集合存储，易于存储对象类型的数据</p>
+<p>（2）模式自由</p>
+<p>（3）支持动态查询</p>
+<p>（4）支持完全索引，包含内部对象B</p>
+<p>（5）支持复制和故障恢复</p>
+<p>（6）使用高效的二进制数据存储，包括大型对象（如视频等）</p>
+<p>（7）自动处理碎片，以支持云计算层次的扩展性</p>
+<p>（8）支持 Python，PHP，Ruby，Java，C，C#，Javascript，Perl 及C++语言的驱动程序，社区中也提供了对 Erlang 及.NET 等平台的驱动程序</p>
+<p>（9） 文件存储格式为 BSON（一种 JSON 的扩展）</p>
+<h2 id="1-4-MongoDB-体系结构"><a href="#1-4-MongoDB-体系结构" class="headerlink" title="1.4. MongoDB 体系结构"></a>1.4. MongoDB 体系结构</h2><p>MongoDB 的逻辑结构是一种层次结构。主要由：</p>
+<p>文档(document)、集合(collection)、数据库(database)这三部分组成的。逻辑结构是面向用户的，用户使用 MongoDB 开发应用程序使用的就是逻辑结构。</p>
+<p>（1）MongoDB 的文档（document），相当于关系数据库中的一行记录。</p>
+<p>（2）多个文档组成一个集合（collection），相当于关系数据库的表。</p>
+<p>（3）多个集合（collection），逻辑上组织在一起，就是数据库（database）。</p>
+<p>（4）一个 MongoDB 实例支持多个数据库（database）。文档(document)、集合(collection)、数据库(database)的层次结构如下图：</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/%5Cimages%5CMongoDB%5C2.png"
+                     
+                ></p>
+<p>下表是 MongoDB 与 MySQL 数据库逻辑结构概念的对比：</p>
+<table>
+<thead>
+<tr>
+<th>MongoDB</th>
+<th>关系型数据库 MySQL</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>数据库(databases)</td>
+<td>数据库(databases)</td>
+</tr>
+<tr>
+<td>集合(collections)</td>
+<td>表(table)</td>
+</tr>
+<tr>
+<td>文档(document)</td>
+<td>行(row)</td>
+</tr>
+</tbody></table>
+<h2 id="1-5-数据类型"><a href="#1-5-数据类型" class="headerlink" title="1.5. 数据类型"></a>1.5. 数据类型</h2><p>基本数据类型</p>
+<p><strong>null</strong>：用于表示空值或者不存在的字段，{“x”:null}</p>
+<p><strong>布尔型</strong>：布尔类型有两个值 true 和 false，{“x”:true}</p>
+<p><strong>数值</strong>：shell 默认使用 64为浮点型数值。{“x”：3.14}或{“x”：3}。对于整型值，可以使用NumberInt（4 字节符号整数）或 NumberLong（8 字节符号整数），{“x”:NumberInt(“3”)}{“x”:NumberLong(“3”)}</p>
+<p><strong>字符串</strong>：UTF-8 字符串都可以表示为字符串类型的数据，{“x”：“呵呵”}</p>
+<p><strong>日期</strong>：日期被存储为自新纪元依赖经过的毫秒数，不存储时区，{“x”:new Date()}</p>
+<p><strong>正则表达式</strong>：查询时，使用正则表达式作为限定条件，语法与 JavaScript的正则表达式相同，{“x”:&#x2F;[abc]&#x2F;}</p>
+<p><strong>数组</strong>：数据列表或数据集可以表示为数组，{“x”： [“a“，“b”,”c”]}</p>
+<p><strong>内嵌文档</strong>：文档可以嵌套其他文档，被嵌套的文档作为值来处理，{“x”:{“y”:3 }}</p>
+<p><strong>对象 Id</strong>：对象 id 是一个 12 字节的字符串，是文档的唯一标识，{“x”:objectId() }</p>
+<p><strong>二进制数据</strong>：二进制数据是一个任意字节的字符串。它不能直接在 shell<br>中使用。如果要将非 utf-字符保存到数据库中，二进制数据是唯一的方式。</p>
+<p><strong>代码</strong>：查询和文档中可以包括任何 JavaScript 代码，{“x”:function(){&#x2F;…&#x2F;}}</p>
+<h1 id="二、走进-MongoDB"><a href="#二、走进-MongoDB" class="headerlink" title="二、走进 MongoDB"></a>二、走进 MongoDB</h1><h2 id="2-1-MongoDB-安装与启动"><a href="#2-1-MongoDB-安装与启动" class="headerlink" title="2.1. MongoDB 安装与启动"></a>2.1. MongoDB 安装与启动</h2><h3 id="2-1-1-window-安装-MongoDB"><a href="#2-1-1-window-安装-MongoDB" class="headerlink" title="2.1.1. window 安装 MongoDB"></a>2.1.1. window 安装 MongoDB</h3><p>双击“资源mongodb”中的“mongodb-win32-x86_64-2008plusssl-3.2.10-signed.msi”按照提示步骤安装即可。安装完成后，软件会安装在 C:\ProgramFiles\MongoDB<br>目录中。</p>
+<p>我们要启动的服务程序就是 C:\Program Files\MongoDB\Server\3.2\bin目录下的 mongod.exe，为了方便我们每次启动，我将C:\ProgramFiles\MongoDB\Server\3.2\bin 设置到环境变量 path 中。</p>
+<p>启动</p>
+<p>（1）首先打开命令提示符，创建一个用于存放数据的目录</p>
+<div class="highlight-container" data-rel="Shell"><figure class="iseeu highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mkdir d:\\data</span><br></pre></td></tr></table></figure></div>
+
+<p>（2）启动服务</p>
+<div class="highlight-container" data-rel="Shell"><figure class="iseeu highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mongod --dbpath=d:\\data</span><br></pre></td></tr></table></figure></div>
+
+<p>我们在启动信息中可以看到，mongoDB 的默认端口是 27017如果我们想改变默认的启动端口，可以通过–port 来指定端口</p>
+<p>在命令提示符输入以下命令即可完成登陆</p>
+<div class="highlight-container" data-rel="Shell"><figure class="iseeu highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">mongo 主机名:端口</span><br><span class="line">mongo 127.0.0.1:27017</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">如果是127.0.0.1:27017可以省略不写</span></span><br><span class="line">mogon</span><br></pre></td></tr></table></figure></div>
+
+<p>退出 mongodb</p>
+<div class="highlight-container" data-rel="Shell"><figure class="iseeu highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">exit</span><br></pre></td></tr></table></figure></div>
+
+<h3 id="2-1-2-Docker-安装-MongoDB"><a href="#2-1-2-Docker-安装-MongoDB" class="headerlink" title="2.1.2. Docker 安装 MongoDB"></a>2.1.2. Docker 安装 MongoDB</h3><p>在宿主机创建 mongo 容器</p>
+<div class="highlight-container" data-rel="Shell"><figure class="iseeu highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -id --name=ktc_mongo -p 27017:27017 mongo</span><br></pre></td></tr></table></figure></div>
+
+<p>远程登陆</p>
+<div class="highlight-container" data-rel="Shell"><figure class="iseeu highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mongo 192.168.12.128</span><br></pre></td></tr></table></figure></div>
+
+<p>MongoDB客户端操作起来未免太过复杂，因此我们采用第三方的可视化工具来帮我们操作MongoDB，就类似于我们使用Navicat来操作MySQL一样</p>
+<h3 id="2-1-3-安装nosqlbooster-可视化工具"><a href="#2-1-3-安装nosqlbooster-可视化工具" class="headerlink" title="2.1.3 安装nosqlbooster 可视化工具"></a>2.1.3 安装nosqlbooster 可视化工具</h3><p>NoSQLBooster for MongoDB(原名MongoBooster)是一个面向MongoDB v2.6-4.2的、以shell为中心的跨平台GUI工具，它提供了全面的服务器监控工具sserver监控工具、流畅的查询生成器、SQL查询、ES2017语法支持和真正的智能感知体验。</p>
+<p>1、创建一个新的客户端连接</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/%5Cimages%5CMongoDB%5C3.png"
+                     
+                ></p>
+<p>2、nosqlbooster 默认的窗口显示比较小，我们可以在<code>View&gt;Zoom Out/In</code>下面选择对应的百分比</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/%5Cimages%5CMongoDB%5C4.png"
+                     
+                ></p>
+<p>接下来以吐槽表为例讲解 MongoDB 常用命令</p>
+<h2 id="2-2-常用命令"><a href="#2-2-常用命令" class="headerlink" title="2.2. 常用命令"></a>2.2. 常用命令</h2><h3 id="2-2-1-选择和创建数据库"><a href="#2-2-1-选择和创建数据库" class="headerlink" title="2.2.1. 选择和创建数据库"></a>2.2.1. 选择和创建数据库</h3><p>选择和创建数据库的语法格式：</p>
+<div class="highlight-container" data-rel="Shell"><figure class="iseeu highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">use 数据库名称</span><br></pre></td></tr></table></figure></div>
+
+<p>如果数据库不存在则自动创建</p>
+<p>以下语句创建 spit 数据库</p>
+<div class="highlight-container" data-rel="Shell"><figure class="iseeu highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">use spitdb</span><br></pre></td></tr></table></figure></div>
+
+<h3 id="2-2-2-插入和查询文档"><a href="#2-2-2-插入和查询文档" class="headerlink" title="2.2.2. 插入和查询文档"></a>2.2.2. 插入和查询文档</h3><p>插入文档的语法格式：</p>
+<div class="highlight-container" data-rel="Shell"><figure class="iseeu highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">db.集合名称.insert(数据);</span><br></pre></td></tr></table></figure></div>
+
+<p>我们这里可以插入以下测试数据：</p>
+<div class="highlight-container" data-rel="Shell"><figure class="iseeu highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">db.spit.insert(</span><br><span class="line">	&#123;content:&quot;今天天气好晴朗&quot;,userid:&quot;1&quot;,nickname:&quot;小标&quot;,visits:NumberInt(902)&#125;</span><br><span class="line">)</span><br></pre></td></tr></table></figure></div>
+
+<p>查询集合的语法格式：</p>
+<div class="highlight-container" data-rel="Shell"><figure class="iseeu highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">db.集合名称.find()</span><br></pre></td></tr></table></figure></div>
+
+<p>如果我们要查询 spit 集合的所有文档，我们输入以下命令：</p>
+<div class="highlight-container" data-rel="Shell"><figure class="iseeu highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">db.spit.find()</span><br></pre></td></tr></table></figure></div>
+
+<p>这里你会发现每条文档会有一个叫_id的字段，这个相当于我们原来关系数据库中表的主键，当你在插入文档记录时没有指定该字段，MongoDB 会自动创建，其类型是ObjectID类型。如果我们在插入文档记录时指定该字段也可以，其类型可以是 ObjectID类型，也可以是 MongoDB 支持的任意类型。</p>
+<p>输入以下测试语句:</p>
+<div class="highlight-container" data-rel="Shell"><figure class="iseeu highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line">db.spit.insert(</span><br><span class="line">	&#123;</span><br><span class="line">		_id:&quot;1&quot;,</span><br><span class="line">		content:&quot;处处好风光&quot;,</span><br><span class="line">		userid:&quot;1&quot;,</span><br><span class="line">		nickname:&quot;小东&quot;,</span><br><span class="line">		visits:NumberInt(2020)</span><br><span class="line">	&#125;</span><br><span class="line">);</span><br><span class="line">db.spit.insert(</span><br><span class="line">	&#123;</span><br><span class="line">		_id:&quot;2&quot;,</span><br><span class="line">		content:&quot;你是风儿&quot;,</span><br><span class="line">		userid:&quot;2&quot;,</span><br><span class="line">		nickname:&quot;小方&quot;,</span><br><span class="line">		visits:NumberInt(2020)</span><br><span class="line">	&#125;</span><br><span class="line">);</span><br><span class="line">db.spit.insert(</span><br><span class="line">	&#123;</span><br><span class="line">		_id:&quot;3&quot;,</span><br><span class="line">		content:&quot;我是沙&quot;,</span><br><span class="line">		userid:&quot;3&quot;,</span><br><span class="line">		nickname:&quot;小标&quot;,</span><br><span class="line">		visits:NumberInt(2020)</span><br><span class="line">	&#125;</span><br><span class="line">);</span><br><span class="line">db.spit.insert(</span><br><span class="line">	&#123;</span><br><span class="line">		_id:&quot;4&quot;,</span><br><span class="line">		content:&quot;缠缠绵绵&quot;,</span><br><span class="line">		userid:&quot;4&quot;,</span><br><span class="line">		nickname:&quot;小准&quot;,</span><br><span class="line">		visits:NumberInt(2020)</span><br><span class="line">	&#125;</span><br><span class="line">);</span><br><span class="line">db.spit.insert(</span><br><span class="line">	&#123;</span><br><span class="line">		_id:&quot;5&quot;,</span><br><span class="line">		content:&quot;老天呀&quot;,</span><br><span class="line">		userid:&quot;1&quot;,</span><br><span class="line">		nickname:&quot;小东&quot;,</span><br><span class="line">		visits:NumberInt(2020)</span><br><span class="line">	&#125;</span><br><span class="line">);</span><br></pre></td></tr></table></figure></div>
+
+<p>如果我想按一定条件来查询，比如我想查询 userid 为 1的记录，怎么办？很简单！只要在 find()中添加参数即可，参数也是 json格式，如下：</p>
+<div class="highlight-container" data-rel="Shell"><figure class="iseeu highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">db.spit.find(&#123;userid:&#x27;1&#x27;&#125;)</span><br></pre></td></tr></table></figure></div>
+
+<p>如果你只需要返回符合条件的第一条数据，我们可以使用 findOne 命令来实现</p>
+<div class="highlight-container" data-rel="Shell"><figure class="iseeu highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">db.spit.findOne(&#123;userid:&#x27;1&#x27;&#125;)</span><br></pre></td></tr></table></figure></div>
+
+<p>如果你想返回指定条数的记录，可以在 find 方法后调用 limit 来返回结果，例如：</p>
+<div class="highlight-container" data-rel="Shell"><figure class="iseeu highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">db.spit.find().limit(3)</span><br></pre></td></tr></table></figure></div>
+
+<p>nosqlbooster默认是以树结构（Tree）来显示结果集的，我们可以设置为表结构（Table）来显示结果集，便于观察数据</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/%5Cimages%5CMongoDB%5C5.png"
+                     
+                ></p>
+<h3 id="2-2-3-修改和删除文档"><a href="#2-2-3-修改和删除文档" class="headerlink" title="2.2.3. 修改和删除文档"></a>2.2.3. 修改和删除文档</h3><p>修改文档的语法结构：</p>
+<div class="highlight-container" data-rel="Shell"><figure class="iseeu highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">db.集合名称.update(条件,修改后的数据)</span><br></pre></td></tr></table></figure></div>
+
+<p>如果我们想修改_id 为 1 的记录，浏览量为 1000，输入以下语句：</p>
+<div class="highlight-container" data-rel="Shell"><figure class="iseeu highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">db.spit.update(&#123;_id:&quot;1&quot;&#125;,&#123;visits:NumberInt(1000)&#125;)</span><br></pre></td></tr></table></figure></div>
+
+<p>执行后，我们会发现，这条文档除了 visits字段其它字段都不见了，为了解决这个问题，我们需要使用修改器$set<br>来实现，命令如下：</p>
+<div class="highlight-container" data-rel="Shell"><figure class="iseeu highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">db.spit.update(&#123;_id:&quot;2&quot;&#125;,&#123;$set:&#123;visits:NumberInt(2000)&#125;&#125;)</span><br></pre></td></tr></table></figure></div>
+
+<p>这样就 OK 啦。</p>
+<p>删除文档的语法结构：</p>
+<div class="highlight-container" data-rel="Shell"><figure class="iseeu highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">db.集合名称.remove(条件)</span><br></pre></td></tr></table></figure></div>
+
+<p>以下语句可以将数据全部删除，<strong>请慎用</strong></p>
+<div class="highlight-container" data-rel="Shell"><figure class="iseeu highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">db.spit.remove(&#123;&#125;)</span><br></pre></td></tr></table></figure></div>
+
+<p>如果删除 visits&#x3D;1000 的记录，输入以下语句</p>
+<div class="highlight-container" data-rel="Shell"><figure class="iseeu highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">db.spit.remove(&#123;visits:1000&#125;)</span><br></pre></td></tr></table></figure></div>
+
+<h3 id="2-2-4-统计条数"><a href="#2-2-4-统计条数" class="headerlink" title="2.2.4. 统计条数"></a>2.2.4. 统计条数</h3><p>统计记录条件使用 count()方法。以下语句统计 spit 集合的记录数</p>
+<div class="highlight-container" data-rel="Shell"><figure class="iseeu highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">db.spit.count()</span><br></pre></td></tr></table></figure></div>
+
+<p>如果按条件统计 ，例如：统计 userid 为 3的记录条</p>
+<div class="highlight-container" data-rel="Shell"><figure class="iseeu highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">db.spit.count(&#123;userid:&quot;3&quot;&#125;) </span><br></pre></td></tr></table></figure></div>
+
+<h3 id="2-2-5-模糊查询"><a href="#2-2-5-模糊查询" class="headerlink" title="2.2.5. 模糊查询"></a>2.2.5. 模糊查询</h3><p>MongoDB 的模糊查询是通过正则表达式的方式实现的。格式为：</p>
+<div class="highlight-container" data-rel="Shell"><figure class="iseeu highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/模糊查询字符串/</span><br></pre></td></tr></table></figure></div>
+
+<p>例如，我要查询吐槽内容包含“流量”的所有文档，代码如下：</p>
+<div class="highlight-container" data-rel="Shell"><figure class="iseeu highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">db.spit.find(&#123;content:/是/&#125;)</span><br></pre></td></tr></table></figure></div>
+
+<p>如果要查询昵称为小开头的，代码如下：</p>
+<div class="highlight-container" data-rel="Shell"><figure class="iseeu highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">db.spit.find(&#123;nickname:/^小/&#125;)</span><br></pre></td></tr></table></figure></div>
+
+<p>如果要查询昵称为小结尾的，代码如下：</p>
+<div class="highlight-container" data-rel="Shell"><figure class="iseeu highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">db.spit.find(&#123;nickname:/小$/&#125;)</span><br></pre></td></tr></table></figure></div>
+
+<h3 id="2-2-6-大于-小于-不等于"><a href="#2-2-6-大于-小于-不等于" class="headerlink" title="2.2.6. 大于 小于 不等于"></a>2.2.6. 大于 小于 不等于</h3><p>&lt;, &lt;&#x3D;, &gt;, &gt;&#x3D; 这个操作符也是很常用的，格式如下:</p>
+<div class="highlight-container" data-rel="Shell"><figure class="iseeu highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">db.集合名称.find(&#123; &quot;field&quot; : &#123; $gt: value &#125;&#125;) // 大于: field &gt; value</span><br><span class="line"></span><br><span class="line">db.集合名称.find(&#123; &quot;field&quot; : &#123; $lt: value &#125;&#125;) // 小于: field &lt; value</span><br><span class="line"></span><br><span class="line">db.集合名称.find(&#123; &quot;field&quot; : &#123; $gte: value &#125;&#125;) // 大于等于: field &gt;= value</span><br><span class="line"></span><br><span class="line">db.集合名称.find(&#123; &quot;field&quot; : &#123; $lte: value &#125;&#125;) // 小于等于: field &lt;= value</span><br><span class="line"></span><br><span class="line">db.集合名称.find(&#123; &quot;field&quot; : &#123; $ne: value &#125;&#125;) // 不等于: field != value</span><br><span class="line"></span><br><span class="line">示例：查询吐槽浏览量大于 1000 的记录</span><br><span class="line"></span><br><span class="line">db.spit.find(&#123;visits:&#123;$gt:1000&#125;&#125;)</span><br></pre></td></tr></table></figure></div>
+
+
+
+<h3 id="2-2-7-包含与不包含"><a href="#2-2-7-包含与不包含" class="headerlink" title="2.2.7. 包含与不包含"></a>2.2.7. 包含与不包含</h3><p>包含使用$in 操作符。</p>
+<p>示例：查询吐槽集合中 userid 字段包含 3和 4的文档</p>
+<p>语法：</p>
+<div class="highlight-container" data-rel="Sql"><figure class="iseeu highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">db.spit.find(&#123;<span class="string">&#x27;field&#x27;</span>:&#123;$<span class="keyword">in</span>:[&quot;value&quot;,&quot;value&quot;]&#125;&#125;)</span><br></pre></td></tr></table></figure></div>
+
+<p>示例：</p>
+<div class="highlight-container" data-rel="Shell"><figure class="iseeu highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">db.spit.find(&#123;userid:&#123;$in:[&quot;3&quot;,&quot;4&quot;]&#125;&#125;)</span><br></pre></td></tr></table></figure></div>
+
+<p>不包含使用$nin 操作符。</p>
+<p>示例：查询吐槽集合中 userid 字段不包含 3和 4的文档</p>
+<div class="highlight-container" data-rel="Shell"><figure class="iseeu highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">db.spit.find(&#123;userid:&#123;$nin:[&quot;3&quot;,&quot;4&quot;]&#125;&#125;)</span><br></pre></td></tr></table></figure></div>
+
+<h3 id="2-2-8-条件连接"><a href="#2-2-8-条件连接" class="headerlink" title="2.2.8. 条件连接"></a>2.2.8. 条件连接</h3><p>我们如果需要查询同时满足两个以上条件，需要使用$and 操作符将条件进行关联。（相当SQL 的 and）</p>
+<p>格式为：</p>
+<div class="highlight-container" data-rel="Shell"><figure class="iseeu highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">db.spit.find($and:[ &#123; &#125;,&#123; &#125;,&#123; &#125; ])</span><br></pre></td></tr></table></figure></div>
+
+<p>示例：查询吐槽集合中 visits 大于等于 1000 并且小于 2000 的文档</p>
+<div class="highlight-container" data-rel="Shell"><figure class="iseeu highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">db.spit.find(&#123;$and:[ &#123;visits:&#123;$gte:1000&#125;&#125; ,&#123;visits:&#123;$lt:2000&#125; &#125;]&#125;)</span><br></pre></td></tr></table></figure></div>
+
+<p>如果两个以上条件之间是或者的关系，我们使用 操作符进行关联，与前面 and的使用方式相同</p>
+<p>格式为：</p>
+<div class="highlight-container" data-rel="Shell"><figure class="iseeu highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$</span><span class="language-bash">or:[ &#123; &#125;,&#123; &#125;,&#123; &#125; ]</span></span><br></pre></td></tr></table></figure></div>
+
+<p>示例：查询吐槽集合中 userid 为 3，或者浏览量小于 2000 的文档记录</p>
+<div class="highlight-container" data-rel="Shell"><figure class="iseeu highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">db.spit.find(&#123;$or:[ &#123;userid:&quot;3&quot;&#125; ,&#123;visits:&#123;$lt:2000&#125; &#125;]&#125;)</span><br></pre></td></tr></table></figure></div>
+
+<h3 id="2-2-9-列值增长"><a href="#2-2-9-列值增长" class="headerlink" title="2.2.9.列值增长"></a>2.2.9.列值增长</h3><p>如果我们想实现对某列值在原有值的基础上进行增加或减少，可以使用$inc运算符来实现</p>
+<div class="highlight-container" data-rel="Shell"><figure class="iseeu highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">db.spit.update(&#123;_id:&quot;2&quot;&#125;,&#123;$inc:&#123;visits:NumberInt(1)&#125;&#125; )</span><br></pre></td></tr></table></figure></div>
+
+<h1 id="三、Java-操作-MongoDB"><a href="#三、Java-操作-MongoDB" class="headerlink" title="三、Java 操作 MongoDB"></a>三、Java 操作 MongoDB</h1><h2 id="3-1-MongoDB-Driver"><a href="#3-1-MongoDB-Driver" class="headerlink" title="3.1. MongoDB-Driver"></a>3.1. MongoDB-Driver</h2><p>mongodb-driver 是 mongo 官方推出的 java 连接 mongoDB 的驱动包，相当于 JDBC驱动。我们通过一个入门的案例来了解 mongodb-driver 的基本使用</p>
+<h3 id="3-1-1-查询全部记录"><a href="#3-1-1-查询全部记录" class="headerlink" title="3.1.1. 查询全部记录"></a>3.1.1. 查询全部记录</h3><p>（1）创建工程 mongoDemo, 引入依赖</p>
+<div class="highlight-container" data-rel="Xml"><figure class="iseeu highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependencies</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.mongodb<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>mongodb-driver<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">version</span>&gt;</span>3.6.3<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>junit<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>junit<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">version</span>&gt;</span>4.12<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">scope</span>&gt;</span>test<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependencies</span>&gt;</span></span><br></pre></td></tr></table></figure></div>
+
+<p>2）创建测试类</p>
+<div class="highlight-container" data-rel="Java"><figure class="iseeu highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.itdfbz.demo;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.mongodb.MongoClient;</span><br><span class="line"><span class="keyword">import</span> com.mongodb.client.FindIterable;</span><br><span class="line"><span class="keyword">import</span> com.mongodb.client.MongoCollection;</span><br><span class="line"><span class="keyword">import</span> com.mongodb.client.MongoDatabase;</span><br><span class="line"><span class="keyword">import</span> org.bson.Document;</span><br><span class="line"><span class="keyword">import</span> org.junit.Test;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">MongoDBTest</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">test1</span><span class="params">()</span> &#123;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//创建MongoDB客户端对象指定主机和端口</span></span><br><span class="line">        <span class="type">MongoClient</span> <span class="variable">client</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">MongoClient</span>(<span class="string">&quot;localhost&quot;</span>, <span class="number">27017</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//指定连接的数据库</span></span><br><span class="line">        <span class="type">MongoDatabase</span> <span class="variable">spitdb</span> <span class="operator">=</span> client.getDatabase(<span class="string">&quot;spitdb&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//获取文档对象</span></span><br><span class="line">        MongoCollection&lt;Document&gt; spit = spitdb.getCollection(<span class="string">&quot;spit&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//查询</span></span><br><span class="line">        FindIterable&lt;Document&gt; docs = spit.find();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (Document doc : docs) &#123;</span><br><span class="line"></span><br><span class="line">            System.out.print(<span class="string">&quot;_id: &quot;</span> + doc.getString(<span class="string">&quot;_id&quot;</span>));</span><br><span class="line">            System.out.print(<span class="string">&quot;content: &quot;</span> + doc.getString(<span class="string">&quot;content&quot;</span>));</span><br><span class="line">            System.out.print(<span class="string">&quot;userid: &quot;</span> + doc.getString(<span class="string">&quot;userid&quot;</span>));</span><br><span class="line">            System.out.print(<span class="string">&quot;nickname: &quot;</span> + doc.getString(<span class="string">&quot;nickname&quot;</span>));</span><br><span class="line">            System.out.println(<span class="string">&quot;visits: &quot;</span> + doc.getInteger(<span class="string">&quot;visits&quot;</span>));</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//关闭连接，释放资源</span></span><br><span class="line">        client.close();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure></div>
+
+
+
+<h3 id="3-1-2-条件查询"><a href="#3-1-2-条件查询" class="headerlink" title="3.1.2. 条件查询"></a>3.1.2. 条件查询</h3><p>BasicDBObject 对象：表示一个具体的记录，BasicDBObject 实现了 DBObject，是keyvalue 的数据结构，用起来和 HashMap 是基本一致的。</p>
+<p>db.spit.find({userid:”1”})</p>
+<p>（1）查询 userid 为 1的记录</p>
+<div class="highlight-container" data-rel="Java"><figure class="iseeu highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.itdfbz.demo;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.mongodb.BasicDBObject;</span><br><span class="line"><span class="keyword">import</span> com.mongodb.MongoClient;</span><br><span class="line"><span class="keyword">import</span> com.mongodb.client.FindIterable;</span><br><span class="line"><span class="keyword">import</span> com.mongodb.client.MongoCollection;</span><br><span class="line"><span class="keyword">import</span> com.mongodb.client.MongoDatabase;</span><br><span class="line"><span class="keyword">import</span> org.bson.Document;</span><br><span class="line"><span class="keyword">import</span> org.junit.Test;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">MongoDBTest</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">test1</span><span class="params">()</span> &#123;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//创建MongoDB客户端对象指定主机和端口</span></span><br><span class="line">        <span class="type">MongoClient</span> <span class="variable">client</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">MongoClient</span>(<span class="string">&quot;localhost&quot;</span>, <span class="number">27017</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//指定连接的数据库</span></span><br><span class="line">        <span class="type">MongoDatabase</span> <span class="variable">spitdb</span> <span class="operator">=</span> client.getDatabase(<span class="string">&quot;spitdb&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//获取文档对象</span></span><br><span class="line">        MongoCollection&lt;Document&gt; spit = spitdb.getCollection(<span class="string">&quot;spit&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//封装BasicDBObject对象</span></span><br><span class="line">        BasicDBObject dbObject=<span class="keyword">new</span> <span class="title class_">BasicDBObject</span>(<span class="string">&quot;userid&quot;</span>,<span class="string">&quot;1&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//查询</span></span><br><span class="line">        FindIterable&lt;Document&gt; docs = spit.find(dbObject);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (Document doc : docs) &#123;</span><br><span class="line"></span><br><span class="line">            System.out.print(<span class="string">&quot;_id: &quot;</span> + doc.getString(<span class="string">&quot;_id&quot;</span>));</span><br><span class="line">            System.out.print(<span class="string">&quot;content: &quot;</span> + doc.getString(<span class="string">&quot;content&quot;</span>));</span><br><span class="line">            System.out.print(<span class="string">&quot;userid: &quot;</span> + doc.getString(<span class="string">&quot;userid&quot;</span>));</span><br><span class="line">            System.out.print(<span class="string">&quot;nickname: &quot;</span> + doc.getString(<span class="string">&quot;nickname&quot;</span>));</span><br><span class="line">            System.out.println(<span class="string">&quot;visits: &quot;</span> + doc.getInteger(<span class="string">&quot;visits&quot;</span>));</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//关闭连接，释放资源</span></span><br><span class="line">        client.close();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure></div>
+
+
+
+<p>（2）查询浏览量大于 1000 的记录</p>
+<div class="highlight-container" data-rel="Java"><figure class="iseeu highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.itdfbz.demo;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.mongodb.BasicDBObject;</span><br><span class="line"><span class="keyword">import</span> com.mongodb.MongoClient;</span><br><span class="line"><span class="keyword">import</span> com.mongodb.client.FindIterable;</span><br><span class="line"><span class="keyword">import</span> com.mongodb.client.MongoCollection;</span><br><span class="line"><span class="keyword">import</span> com.mongodb.client.MongoDatabase;</span><br><span class="line"><span class="keyword">import</span> org.bson.Document;</span><br><span class="line"><span class="keyword">import</span> org.junit.Test;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">MongoDBTest</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">test1</span><span class="params">()</span> &#123;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//创建MongoDB客户端对象指定主机和端口</span></span><br><span class="line">        <span class="type">MongoClient</span> <span class="variable">client</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">MongoClient</span>(<span class="string">&quot;localhost&quot;</span>, <span class="number">27017</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//指定连接的数据库</span></span><br><span class="line">        <span class="type">MongoDatabase</span> <span class="variable">spitdb</span> <span class="operator">=</span> client.getDatabase(<span class="string">&quot;spitdb&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//获取文档对象</span></span><br><span class="line">        MongoCollection&lt;Document&gt; spit = spitdb.getCollection(<span class="string">&quot;spit&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//封装BasicDBObject对象  //db.spit.find(&#123; visits: &#123;$gt:NumberInt(1000)   &#125;  &#125;)</span></span><br><span class="line">        BasicDBObject dbObject=<span class="keyword">new</span> <span class="title class_">BasicDBObject</span>(<span class="string">&quot;visits&quot;</span>,<span class="keyword">new</span> <span class="title class_">BasicDBObject</span>(<span class="string">&quot;$gt&quot;</span>,<span class="number">1000</span>));</span><br><span class="line"></span><br><span class="line">        <span class="comment">//查询</span></span><br><span class="line">        FindIterable&lt;Document&gt; docs = spit.find(dbObject);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (Document doc : docs) &#123;</span><br><span class="line"></span><br><span class="line">            System.out.print(<span class="string">&quot;_id: &quot;</span> + doc.getString(<span class="string">&quot;_id&quot;</span>));</span><br><span class="line">            System.out.print(<span class="string">&quot;content: &quot;</span> + doc.getString(<span class="string">&quot;content&quot;</span>));</span><br><span class="line">            System.out.print(<span class="string">&quot;userid: &quot;</span> + doc.getString(<span class="string">&quot;userid&quot;</span>));</span><br><span class="line">            System.out.print(<span class="string">&quot;nickname: &quot;</span> + doc.getString(<span class="string">&quot;nickname&quot;</span>));</span><br><span class="line">            System.out.println(<span class="string">&quot;visits: &quot;</span> + doc.getInteger(<span class="string">&quot;visits&quot;</span>));</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//关闭连接，释放资源</span></span><br><span class="line">        client.close();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure></div>
+
+
+
+<h3 id="3-1-3-插入数据"><a href="#3-1-3-插入数据" class="headerlink" title="3.1.3. 插入数据"></a>3.1.3. 插入数据</h3><div class="highlight-container" data-rel="Java"><figure class="iseeu highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.itdfbz.demo;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.mongodb.BasicDBObject;</span><br><span class="line"><span class="keyword">import</span> com.mongodb.MongoClient;</span><br><span class="line"><span class="keyword">import</span> com.mongodb.client.FindIterable;</span><br><span class="line"><span class="keyword">import</span> com.mongodb.client.MongoCollection;</span><br><span class="line"><span class="keyword">import</span> com.mongodb.client.MongoDatabase;</span><br><span class="line"><span class="keyword">import</span> org.bson.Document;</span><br><span class="line"><span class="keyword">import</span> org.junit.Test;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">MongoDBTest</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">test1</span><span class="params">()</span> &#123;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//创建MongoDB客户端对象指定主机和端口</span></span><br><span class="line">        <span class="type">MongoClient</span> <span class="variable">client</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">MongoClient</span>(<span class="string">&quot;localhost&quot;</span>, <span class="number">27017</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//指定连接的数据库</span></span><br><span class="line">        <span class="type">MongoDatabase</span> <span class="variable">spitdb</span> <span class="operator">=</span> client.getDatabase(<span class="string">&quot;spitdb&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//获取文档对象</span></span><br><span class="line">        MongoCollection&lt;Document&gt; spit = spitdb.getCollection(<span class="string">&quot;spit&quot;</span>);</span><br><span class="line"></span><br><span class="line">        Document doc=<span class="keyword">new</span> <span class="title class_">Document</span>();</span><br><span class="line">        doc.put(<span class="string">&quot;_id&quot;</span>,<span class="string">&quot;10&quot;</span>);</span><br><span class="line">        doc.put(<span class="string">&quot;content&quot;</span>,<span class="string">&quot;还珠格格这部剧很好&quot;</span>);</span><br><span class="line">        doc.put(<span class="string">&quot;visits&quot;</span>,<span class="number">2000</span>);</span><br><span class="line">        doc.put(<span class="string">&quot;nickname&quot;</span>,<span class="string">&quot;小标&quot;</span>);</span><br><span class="line">        doc.put(<span class="string">&quot;userid&quot;</span>,<span class="string">&quot;1&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//添加一个文档</span></span><br><span class="line">        spit.insertOne(doc);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//关闭连接，释放资源</span></span><br><span class="line">        client.close();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure></div>
+
+
+
+<h2 id="3-2-SpringDataMongoDB"><a href="#3-2-SpringDataMongoDB" class="headerlink" title="3.2. SpringDataMongoDB"></a>3.2. SpringDataMongoDB</h2><p>SpringData 家族成员之一，用于操作 MongoDb 的持久层框架，封装了底层的mongodbdriver。</p>
+<p>官网主页： <a class="link"   target="_blank" rel="noopener" href="https://projects.spring.io/spring-data-mongodb/" >https://projects.spring.io/spring-data-mongodb/ <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
+
         </div>
 
         
@@ -400,7 +653,7 @@
         
             <li>
                 <strong>Updated at
-                    :</strong> 2024-11-05 14:55:31
+                    :</strong> 2024-11-12 16:55:59
             </li>
         
         <li>
@@ -481,7 +734,7 @@
     <div class="post-toc">
         <div class="toc-title">On this page</div>
         <div class="page-title">Mongodb</div>
-        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Mongodb"><span class="nav-text">Mongodb</span></a></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81MongoDB-%E7%AE%80%E4%BB%8B"><span class="nav-text">一、MongoDB 简介</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-%E5%90%90%E6%A7%BD%E5%92%8C%E8%AF%84%E8%AE%BA%E6%95%B0%E6%8D%AE%E7%89%B9%E7%82%B9%E5%88%86%E6%9E%90"><span class="nav-text">1.1. 吐槽和评论数据特点分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-2-%E4%BB%80%E4%B9%88%E6%98%AF-MongoDB"><span class="nav-text">1.2. 什么是 MongoDB</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-3-MongoDB-%E7%89%B9%E7%82%B9"><span class="nav-text">1.3. MongoDB 特点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-4-MongoDB-%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84"><span class="nav-text">1.4. MongoDB 体系结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-5-%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B"><span class="nav-text">1.5. 数据类型</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E8%B5%B0%E8%BF%9B-MongoDB"><span class="nav-text">二、走进 MongoDB</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-MongoDB-%E5%AE%89%E8%A3%85%E4%B8%8E%E5%90%AF%E5%8A%A8"><span class="nav-text">2.1. MongoDB 安装与启动</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-1-window-%E5%AE%89%E8%A3%85-MongoDB"><span class="nav-text">2.1.1. window 安装 MongoDB</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-2-Docker-%E5%AE%89%E8%A3%85-MongoDB"><span class="nav-text">2.1.2. Docker 安装 MongoDB</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-3-%E5%AE%89%E8%A3%85nosqlbooster-%E5%8F%AF%E8%A7%86%E5%8C%96%E5%B7%A5%E5%85%B7"><span class="nav-text">2.1.3 安装nosqlbooster 可视化工具</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4"><span class="nav-text">2.2. 常用命令</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-1-%E9%80%89%E6%8B%A9%E5%92%8C%E5%88%9B%E5%BB%BA%E6%95%B0%E6%8D%AE%E5%BA%93"><span class="nav-text">2.2.1. 选择和创建数据库</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-2-%E6%8F%92%E5%85%A5%E5%92%8C%E6%9F%A5%E8%AF%A2%E6%96%87%E6%A1%A3"><span class="nav-text">2.2.2. 插入和查询文档</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-3-%E4%BF%AE%E6%94%B9%E5%92%8C%E5%88%A0%E9%99%A4%E6%96%87%E6%A1%A3"><span class="nav-text">2.2.3. 修改和删除文档</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-4-%E7%BB%9F%E8%AE%A1%E6%9D%A1%E6%95%B0"><span class="nav-text">2.2.4. 统计条数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-5-%E6%A8%A1%E7%B3%8A%E6%9F%A5%E8%AF%A2"><span class="nav-text">2.2.5. 模糊查询</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-6-%E5%A4%A7%E4%BA%8E-%E5%B0%8F%E4%BA%8E-%E4%B8%8D%E7%AD%89%E4%BA%8E"><span class="nav-text">2.2.6. 大于 小于 不等于</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-7-%E5%8C%85%E5%90%AB%E4%B8%8E%E4%B8%8D%E5%8C%85%E5%90%AB"><span class="nav-text">2.2.7. 包含与不包含</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-8-%E6%9D%A1%E4%BB%B6%E8%BF%9E%E6%8E%A5"><span class="nav-text">2.2.8. 条件连接</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-9-%E5%88%97%E5%80%BC%E5%A2%9E%E9%95%BF"><span class="nav-text">2.2.9.列值增长</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E3%80%81Java-%E6%93%8D%E4%BD%9C-MongoDB"><span class="nav-text">三、Java 操作 MongoDB</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-MongoDB-Driver"><span class="nav-text">3.1. MongoDB-Driver</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-1-%E6%9F%A5%E8%AF%A2%E5%85%A8%E9%83%A8%E8%AE%B0%E5%BD%95"><span class="nav-text">3.1.1. 查询全部记录</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-2-%E6%9D%A1%E4%BB%B6%E6%9F%A5%E8%AF%A2"><span class="nav-text">3.1.2. 条件查询</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-3-%E6%8F%92%E5%85%A5%E6%95%B0%E6%8D%AE"><span class="nav-text">3.1.3. 插入数据</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-SpringDataMongoDB"><span class="nav-text">3.2. SpringDataMongoDB</span></a></li></ol></li></ol>
 
     </div>
 </div>
@@ -514,7 +767,7 @@
                 
                 <p class="post-count space-x-0.5">
                     <span>
-                        19 posts in total
+                        20 posts in total
                     </span>
                     
                 </p>

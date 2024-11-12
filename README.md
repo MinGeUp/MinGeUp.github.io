@@ -1,1 +1,5 @@
-# MinGeUp.github.io
+# MinGeUp
+
+------
+
+个人博客

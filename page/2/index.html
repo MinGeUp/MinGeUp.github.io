@@ -309,7 +309,7 @@
         <div class="label text-third-text-color text-sm">Categories</div>
     </a>
     <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
-        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">19</div>
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">20</div>
         <div class="label text-third-text-color text-sm">Posts</div>
     </a>
 </div>
@@ -387,7 +387,7 @@
         <div class="label text-third-text-color text-sm">Categories</div>
     </a>
     <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
-        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">19</div>
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">20</div>
         <div class="label text-third-text-color text-sm">Posts</div>
     </a>
 </div>
@@ -469,6 +469,88 @@ MySQL用到了很多这种锁机制，比如行锁，表...
     </div>
 
     <a href="/2023/06/10/MySQL%E4%BA%8B%E5%8A%A1/">Read more<span class="seo-reader-text">MySQL事务</span>&nbsp;<i class="fa-solid fa-angle-right"></i></a>
+</div>
+
+                </div>
+            </li>
+        
+            <li class="home-article-item">
+
+                
+
+                
+
+                
+                <div class="flex flex-col gap-5 px-7 pb-7 pt-7">
+                    <h3 class="home-article-title">
+                        <a href="/2023/06/10/MySQL%E6%9E%B6%E6%9E%84/">
+                            MySQL架构
+                        </a>
+                    </h3>
+
+                    <div class="home-article-content markdown-body">
+                        
+                            
+                            一、MySQL架构与执行流程MySQL 数据库是单进程多线程的架构，和 SQL Server 类似，和 Oracle 不一样，Oracle 是多进程架构。
+
+MySQL官网（5.7版本）：https://dev.mysql.com/doc/refman/5.7/en/ 
+
+1.1 MySQL架构组件
+MySQL主要有如下组件构成：
+
+Connectors：连接组件：
+
+向外界的其他应用程序提...
+                        
+                    </div>
+
+                    <div class="home-article-meta-info-container">
+    <div class="home-article-meta-info">
+        <span><i class="fa-solid fa-calendars"></i>&nbsp;
+            <span class="home-article-date" data-date="Sat Jun 10 2023 09:11:00 GMT+0800">
+                
+                    2023-06-10
+                
+            </span>
+        </span>
+        
+            <span class="home-article-category">
+                <i class="fa-solid fa-folders"></i>&nbsp;
+            <ul>
+                
+                
+                    
+                        
+                        <li>
+                            <a href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>&nbsp;
+                        </li>
+                    
+                    
+                
+            </ul>
+        </span>
+        
+        
+            <span class="home-article-tag">
+                <i class="fa-solid fa-tags"></i>&nbsp;
+                <ul>
+                    
+                        <li>
+                            
+                            <a href="/tags/java/">java</a>&nbsp;
+                        </li>
+                    
+                        <li>
+                            | 
+                            <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a>&nbsp;
+                        </li>
+                    
+                </ul>
+            </span>
+        
+    </div>
+
+    <a href="/2023/06/10/MySQL%E6%9E%B6%E6%9E%84/">Read more<span class="seo-reader-text">MySQL架构</span>&nbsp;<i class="fa-solid fa-angle-right"></i></a>
 </div>
 
                 </div>
@@ -636,7 +718,8 @@ Data Mani...
                     <div class="home-article-content markdown-body">
                         
                             
-                            RabbitMQ
+                            一、消息中间件简介1.1 概述MQ全称为Message Queue，消息队列是消息在传递过程中的容器，消息队列常用于分布式系统之间的通信
+消息队列中间件是分布式系统中重要的组件，主要解决应用耦合，异步消息，流量削锋等问题实现高性能，高可用，可伸缩和最终一致性架构；使用较多的消息队列有ActiveMQ，RabbitMQ，ZeroMQ，Kafka，MetaMQ，RocketMQ以下介绍消息队列在...
                         
                     </div>
 
@@ -704,7 +787,25 @@ Data Mani...
                     <div class="home-article-content markdown-body">
                         
                             
-                            Redis
+                            Redis是一个开源的，基于内存的且支持持久化，高性能的Key-Value的NoSQL数据库。
+一、数据类型1.1 string1.2.1 string基本操作
+string类型数据结构如下：
+
+
+
+set：存数据
+
+12SET key valueset name zhangsan
+
+
+get：取数据
+
+123GET keyget name
+
+
+del：删除数据
+
+123DEL key [k...
                         
                     </div>
 
@@ -772,7 +873,8 @@ Data Mani...
                     <div class="home-article-content markdown-body">
                         
                             
-                            Mybatis
+                            一、Mybatis1.1 MyBatis简介MyBatis 本是apache的一个开源项目iBatis, 2010年这个项目由apache software foundation 迁移到了google code，并且改名为MyBatis 。2013年11月迁移到Github。
+MyBatis是一款优秀的持久层框架，它支持定制化 SQL、存储过程以及高级映射。MyBatis 避免了几乎所有的 ...
                         
                     </div>
 
@@ -840,7 +942,8 @@ Data Mani...
                     <div class="home-article-content markdown-body">
                         
                             
-                            SpringBoot
+                            一、SpringBoot简介1.1 Spring优缺点1.1.1 Spring的优点Spring是Java企业版（Java Enterprise Edition，JEE，也称J2EE）的轻量级代替品。无需开发重量级的Enterprise JavaBean（EJB），Spring为企业级Java开发提供了一种相对简单的方法，通过依赖注入和面向切面编程
+简单来说，Spring是一个JavaEE轻...
                         
                     </div>
 
@@ -908,9 +1011,12 @@ Data Mani...
                     <div class="home-article-content markdown-body">
                         
                             
-                            Spring1.Spring:是一个开源的轻量级 JavaBean 容器框架。使用 JavaBean 代替 EJB ，并提供了丰富的企业应用功能，降低应用开发的复杂性。特点：轻量：非入侵性的、所依赖的东西少、资源占用少、部署简单，不同功能选择不同的 jar 组合
-容器：工厂模式实现对 JavaBean 进行管理，通过控制反转（IOC）将应用程序的配置和依赖性与应用代码分开
-松耦合：通过 xm...
+                            一、Spring概述1.1 Spring是什么Spring是一个JavaEE轻量级的一站式开发框架。
+JavaEE： 就是用于开发B&#x2F;S的程序。（企业级）
+轻量级：使用最少代码启动框架，然后根据你的需求选择，选择你喜欢的模块使用。
+一站式：提供了表示层，服务层，持久层的所有支持。
+很强大！
+1.2 Spring出现的背景在世界第一套有Java官方Sun公司推出的企业级开发框架EJB...
                         
                     </div>
 
@@ -1065,7 +1171,7 @@ ja...
                 
                 <p class="post-count space-x-0.5">
                     <span>
-                        19 posts in total
+                        20 posts in total
                     </span>
                     
                 </p>
