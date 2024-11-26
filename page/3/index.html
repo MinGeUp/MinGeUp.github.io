@@ -13,14 +13,14 @@
     
     <!--- Seo Part-->
     
-    <link rel="canonical" href="http://example.com/tags/java/page/2/"/>
+    <link rel="canonical" href="http://example.com/page/3/"/>
     <meta name="robots" content="index,follow">
     <meta name="googlebot" content="index,follow">
     <meta name="revisit-after" content="1 days">
     
         <meta property="og:type" content="website">
 <meta property="og:title" content="MinGe">
-<meta property="og:url" content="http://example.com/tags/java/page/2/index.html">
+<meta property="og:url" content="http://example.com/page/3/index.html">
 <meta property="og:site_name" content="MinGe">
 <meta property="og:locale" content="en_US">
 <meta property="article:author" content="John Doe">
@@ -35,8 +35,6 @@
     <!--- Page Info-->
     
     <title>
-        
-            Tag: java -
         
         MinGe 博客
     </title>
@@ -116,6 +114,41 @@
 <main class="page-container" id="swup">
 
     
+        <style>
+    .home-article-item,
+    .sidebar-links,
+    .sidebar-content,
+    a.page-number,
+    a.extend,
+    .sidebar-links .links:hover,
+    .right-bottom-tools,
+    footer.footer {
+        background-color: var(--background-color-transparent-80) !important;
+    }
+    .right-bottom-tools:hover,
+    a.page-number:hover,
+    a.extend:hover {
+        background-color: var(--primary-color) !important;
+    }
+    .site-info,
+    .home-article-sticky-label {
+        background-color: var(--background-color-transparent-15) !important;
+    }
+    .home-article-sticky-label {
+        backdrop-filter: none !important;
+    }
+    .home-banner-background {
+        filter: blur(15px);
+    }
+</style>
+
+<div class="home-banner-background transition-fade fixed top-0 left-0 w-screen h-screen scale-125 sm:scale-110 box-border will-change-transform bg-cover">
+    <img src="/images/wallhaven-wqery6-light.webp" alt="home-banner-background" class="w-full h-full object-cover dark:hidden">
+    <img src="/images/wallhaven-wqery6-dark.webp" alt="home-banner-background" class="w-full h-full object-cover hidden dark:block">
+</div>
+
+
+    
 
     <div class="main-content-container">
 
@@ -127,9 +160,9 @@
         <div class="left">
             
             <a class="logo-title" href="/">
-                
+                <h1>
                 MinGe 博客
-                
+                </h1>
             </a>
         </div>
 
@@ -143,7 +176,7 @@
 
                             <li class="navbar-item">
                                 <!-- Menu -->
-                                <a class=""
+                                <a class="active"
                                    href="/"
                                         >
                                     <i class="fa-regular fa-house fa-fw"></i>
@@ -194,7 +227,7 @@
 
                     <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
                         
-                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full active"
                            href="/"
                         >
                             <span>
@@ -292,108 +325,535 @@
         <div class="main-content-body">
 
             
+                <div class="home-sidebar-container">
+    <div class="sticky-container sticky">
+        
+        
+            
+                <div class="sidebar-links">
+                    <div class="site-info">
+                        <div class="site-name">MinGe 博客</div>
+                        
+                    </div>
+                    
+                        
+                            
+                                <a class="links" href="/archives">
+                                    
+                                        <i class="fa-regular fa-archive icon-space"></i>
+                                    
+                                    <span class="link-name">Archives</span>
+                                </a>
+                            
+                        
+                            
+                                <a class="links" href="/tags">
+                                    
+                                        <i class="fa-regular fa-tags icon-space"></i>
+                                    
+                                    <span class="link-name">Tags</span>
+                                </a>
+                            
+                        
+                            
+                                <a class="links" href="/categories">
+                                    
+                                        <i class="fa-regular fa-folder icon-space"></i>
+                                    
+                                    <span class="link-name">Categories</span>
+                                </a>
+                            
+                        
+                    
+                </div>
+            
+            <div class="sidebar-content"  marginTop >
+                <div class="avatar flex justify-center">
+    <img src="/images/redefine-avatar.svg">
+</div>
+                <div class="author flex flex-col justify-center my-2.5 mx-0">
+    <div class="name">MinGe</div>
+    
+        <div class="label">Lv3</div>
+    
+</div>
+                <div class="statistics flex justify-around my-2.5">
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/tags">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">3</div>
+        <div class="label text-third-text-color text-sm">Tags</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/categories">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">2</div>
+        <div class="label text-third-text-color text-sm">Categories</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">20</div>
+        <div class="label text-third-text-color text-sm">Posts</div>
+    </a>
+</div>
+            </div>
+        
+
+    </div>
+</div>
+
+            
 
             <div class="main-content">
 
                 
-                    <div class="tag-container">
-	<div class="tag-name">
-		<i class="fa-solid fa-tag"></i>&nbsp;java
-	</div>
-	<div class="tag-post-list">
-		
-<div class="archive-list-container">
-    
-        <section class="archive-item mb-spacing-unit last:mb-0">
-            <div class="archive-item-header flex flex-row items-center mb-2">
-                <span class="archive-year font-semibold text-3xl mr-2">2023</span>
-                <span class="archive-year-post-count text-xs md:text-sm font-bold rounded-small bg-third-background-color py-[2px] px-[10px] border border-border-color">6</span>
-            </div>
-            
-            <ul class="article-list pl-0 md:pl-8 text-lg leading-[1.5]">
+                    <div class="home-content-container">
+    <ul class="home-article-list">
+        
+            <li class="home-article-item">
+
                 
-                    
-                    
-                         <!-- Close the previous LI if not the first item -->
-                        <li class="article-item space-y-2 px-6 pt-10 pb-2 text-xl relative border-l-2 border-border-color" date-is='10-03'>
-                    
-                    <a href="/2023/10/03/Elasticsearch/" class="block w-fit">
-                        <span class="article-title my-0.5 text-2xl">Elasticsearch</span>
-                    </a>
-                    
+
                 
-                    
+
+                
+                <div class="flex flex-col gap-5 px-7 pb-7 pt-7">
+                    <h3 class="home-article-title">
+                        <a href="/2023/06/10/MySQL%E7%B4%A2%E5%BC%95/">
+                            MySQL索引
+                        </a>
+                    </h3>
+
+                    <div class="home-article-content markdown-body">
+                        
+                            
+                            索引1.1 索引概述索引是帮助数据库快速查询数据的一种数据结构，在数据库中，数据库系统除了存储数据之外还维护着一种特殊的数据结构，这种数据结构以某种方式指向数据，这样就可以在这种数据结构上实现高级算法来查询数据，这种数据结构就是索引。
+
+索引示意图：
+
+
+如图所示，索引能够帮我们快速的定位到数据的具体位置，高效查询。一般来说，索引本身也很大，不可能全部存储在内存当中，因此索引往往以索引文件的...
+                        
+                    </div>
+
+                    <div class="home-article-meta-info-container">
+    <div class="home-article-meta-info">
+        <span><i class="fa-solid fa-calendars"></i>&nbsp;
+            <span class="home-article-date" data-date="Sat Jun 10 2023 09:11:00 GMT+0800">
+                
+                    2023-06-10
+                
+            </span>
+        </span>
+        
+            <span class="home-article-category">
+                <i class="fa-solid fa-folders"></i>&nbsp;
+            <ul>
+                
+                
                     
                         
-                            </li>
-                         <!-- Close the previous LI if not the first item -->
-                        <li class="article-item space-y-2 px-6 pt-10 pb-2 text-xl relative border-l-2 border-border-color" date-is='09-17'>
+                        <li>
+                            <a href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>&nbsp;
+                        </li>
                     
-                    <a href="/2023/09/17/Mongodb/" class="block w-fit">
-                        <span class="article-title my-0.5 text-2xl">Mongodb</span>
-                    </a>
                     
                 
-                    
-                    
-                        
-                            </li>
-                         <!-- Close the previous LI if not the first item -->
-                        <li class="article-item space-y-2 px-6 pt-10 pb-2 text-xl relative border-l-2 border-border-color" date-is='06-10'>
-                    
-                    <a href="/2023/06/10/JDBC/" class="block w-fit">
-                        <span class="article-title my-0.5 text-2xl">JDBC</span>
-                    </a>
-                    
-                
-                    
-                    
-                    <a href="/2023/06/10/MySQL%E6%9E%B6%E6%9E%84/" class="block w-fit">
-                        <span class="article-title my-0.5 text-2xl">MySQL架构</span>
-                    </a>
-                    
-                
-                    
-                    
-                        
-                            </li>
-                         <!-- Close the previous LI if not the first item -->
-                        <li class="article-item space-y-2 px-6 pt-10 pb-2 text-xl relative border-l-2 border-border-color" date-is='04-04'>
-                    
-                    <a href="/2023/04/04/RabbitMQ/" class="block w-fit">
-                        <span class="article-title my-0.5 text-2xl">RabbitMQ</span>
-                    </a>
-                    
-                
-                    
-                    
-                        
-                            </li>
-                         <!-- Close the previous LI if not the first item -->
-                        <li class="article-item space-y-2 px-6 pt-10 pb-2 text-xl relative border-l-2 border-border-color" date-is='02-05'>
-                    
-                    <a href="/2023/02/05/Redis/" class="block w-fit">
-                        <span class="article-title my-0.5 text-2xl">Redis</span>
-                    </a>
-                    
-                
-                </li> <!-- Ensure the last item is properly closed -->
             </ul>
-        </section>
-    
+        </span>
+        
+        
+            <span class="home-article-tag">
+                <i class="fa-solid fa-tags"></i>&nbsp;
+                <ul>
+                    
+                        <li>
+                            
+                            <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a>&nbsp;
+                        </li>
+                    
+                </ul>
+            </span>
+        
+    </div>
+
+    <a href="/2023/06/10/MySQL%E7%B4%A2%E5%BC%95/">Read more<span class="seo-reader-text">MySQL索引</span>&nbsp;<i class="fa-solid fa-angle-right"></i></a>
 </div>
 
-	</div>
+                </div>
+            </li>
+        
+            <li class="home-article-item">
+
+                
+
+                
+
+                
+                <div class="flex flex-col gap-5 px-7 pb-7 pt-7">
+                    <h3 class="home-article-title">
+                        <a href="/2023/06/10/SQL%E8%AF%AD%E5%8F%A5/">
+                            SQL语句简介
+                        </a>
+                    </h3>
+
+                    <div class="home-article-content markdown-body">
+                        
+                            
+                            一、SQL语句Structured Query Language：结构化查询语言，简称SQL；是一种通用的数据库查询语言，不只在MySQL中可以使用，其它数据库也可以使用。但不同的数据库之间&#x2F;images&#x2F;SQL语句会有一些差别。
+1.1 SQL语句分类
+Data Definition Language：简称DDL；数据定义语言，用于建库，建表等操作
+
+Data Mani...
+                        
+                    </div>
+
+                    <div class="home-article-meta-info-container">
+    <div class="home-article-meta-info">
+        <span><i class="fa-solid fa-calendars"></i>&nbsp;
+            <span class="home-article-date" data-date="Sat Jun 10 2023 09:11:00 GMT+0800">
+                
+                    2023-06-10
+                
+            </span>
+        </span>
+        
+            <span class="home-article-category">
+                <i class="fa-solid fa-folders"></i>&nbsp;
+            <ul>
+                
+                
+                    
+                        
+                        <li>
+                            <a href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>&nbsp;
+                        </li>
+                    
+                    
+                
+            </ul>
+        </span>
+        
+        
+            <span class="home-article-tag">
+                <i class="fa-solid fa-tags"></i>&nbsp;
+                <ul>
+                    
+                        <li>
+                            
+                            <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a>&nbsp;
+                        </li>
+                    
+                </ul>
+            </span>
+        
+    </div>
+
+    <a href="/2023/06/10/SQL%E8%AF%AD%E5%8F%A5/">Read more<span class="seo-reader-text">SQL语句简介</span>&nbsp;<i class="fa-solid fa-angle-right"></i></a>
 </div>
 
-<div class="tag-paginator">
-	<div class="paginator">
-    <a class="extend prev" rel="prev" href="/tags/java/"><i class="fa-regular fa-angle-left"></i></a><a class="page-number" href="/tags/java/">1</a><span class="page-number current">2</span><a class="page-number" href="/tags/java/page/3/">3</a><a class="extend next" rel="next" href="/tags/java/page/3/"><i class="fa-regular fa-angle-right"></i></a>
+                </div>
+            </li>
+        
+            <li class="home-article-item">
+
+                
+
+                
+
+                
+                <div class="flex flex-col gap-5 px-7 pb-7 pt-7">
+                    <h3 class="home-article-title">
+                        <a href="/2023/04/04/RabbitMQ/">
+                            RabbitMQ
+                        </a>
+                    </h3>
+
+                    <div class="home-article-content markdown-body">
+                        
+                            
+                            一、消息中间件简介1.1 概述MQ全称为Message Queue，消息队列是消息在传递过程中的容器，消息队列常用于分布式系统之间的通信
+消息队列中间件是分布式系统中重要的组件，主要解决应用耦合，异步消息，流量削锋等问题实现高性能，高可用，可伸缩和最终一致性架构；使用较多的消息队列有ActiveMQ，RabbitMQ，ZeroMQ，Kafka，MetaMQ，RocketMQ以下介绍消息队列在...
+                        
+                    </div>
+
+                    <div class="home-article-meta-info-container">
+    <div class="home-article-meta-info">
+        <span><i class="fa-solid fa-calendars"></i>&nbsp;
+            <span class="home-article-date" data-date="Tue Apr 04 2023 15:04:00 GMT+0800">
+                
+                    2023-04-04
+                
+            </span>
+        </span>
+        
+            <span class="home-article-category">
+                <i class="fa-solid fa-folders"></i>&nbsp;
+            <ul>
+                
+                
+                    
+                        
+                        <li>
+                            <a href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>&nbsp;
+                        </li>
+                    
+                    
+                
+            </ul>
+        </span>
+        
+        
+            <span class="home-article-tag">
+                <i class="fa-solid fa-tags"></i>&nbsp;
+                <ul>
+                    
+                        <li>
+                            
+                            <a href="/tags/java/">java</a>&nbsp;
+                        </li>
+                    
+                </ul>
+            </span>
+        
+    </div>
+
+    <a href="/2023/04/04/RabbitMQ/">Read more<span class="seo-reader-text">RabbitMQ</span>&nbsp;<i class="fa-solid fa-angle-right"></i></a>
 </div>
 
+                </div>
+            </li>
+        
+            <li class="home-article-item">
+
+                
+
+                
+
+                
+                <div class="flex flex-col gap-5 px-7 pb-7 pt-7">
+                    <h3 class="home-article-title">
+                        <a href="/2023/02/05/Redis/">
+                            Redis
+                        </a>
+                    </h3>
+
+                    <div class="home-article-content markdown-body">
+                        
+                            
+                            Redis是一个开源的，基于内存的且支持持久化，高性能的Key-Value的NoSQL数据库。
+一、数据类型1.1 string1.2.1 string基本操作
+string类型数据结构如下：
+
+
+
+set：存数据
+
+12SET key valueset name zhangsan
+
+
+get：取数据
+
+123GET keyget name
+
+
+del：删除数据
+
+123DEL key [k...
+                        
+                    </div>
+
+                    <div class="home-article-meta-info-container">
+    <div class="home-article-meta-info">
+        <span><i class="fa-solid fa-calendars"></i>&nbsp;
+            <span class="home-article-date" data-date="Sun Feb 05 2023 16:44:00 GMT+0800">
+                
+                    2023-02-05
+                
+            </span>
+        </span>
+        
+            <span class="home-article-category">
+                <i class="fa-solid fa-folders"></i>&nbsp;
+            <ul>
+                
+                
+                    
+                        
+                        <li>
+                            <a href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>&nbsp;
+                        </li>
+                    
+                    
+                
+            </ul>
+        </span>
+        
+        
+            <span class="home-article-tag">
+                <i class="fa-solid fa-tags"></i>&nbsp;
+                <ul>
+                    
+                        <li>
+                            
+                            <a href="/tags/java/">java</a>&nbsp;
+                        </li>
+                    
+                </ul>
+            </span>
+        
+    </div>
+
+    <a href="/2023/02/05/Redis/">Read more<span class="seo-reader-text">Redis</span>&nbsp;<i class="fa-solid fa-angle-right"></i></a>
 </div>
 
+                </div>
+            </li>
+        
+            <li class="home-article-item">
 
+                
+
+                
+
+                
+                <div class="flex flex-col gap-5 px-7 pb-7 pt-7">
+                    <h3 class="home-article-title">
+                        <a href="/2023/01/01/Mybatis/">
+                            Mybatis
+                        </a>
+                    </h3>
+
+                    <div class="home-article-content markdown-body">
+                        
+                            
+                            一、Mybatis1.1 MyBatis简介MyBatis 本是apache的一个开源项目iBatis, 2010年这个项目由apache software foundation 迁移到了google code，并且改名为MyBatis 。2013年11月迁移到Github。
+MyBatis是一款优秀的持久层框架，它支持定制化 SQL、存储过程以及高级映射。MyBatis 避免了几乎所有的 ...
+                        
+                    </div>
+
+                    <div class="home-article-meta-info-container">
+    <div class="home-article-meta-info">
+        <span><i class="fa-solid fa-calendars"></i>&nbsp;
+            <span class="home-article-date" data-date="Sun Jan 01 2023 10:30:00 GMT+0800">
+                
+                    2023-01-01
+                
+            </span>
+        </span>
+        
+            <span class="home-article-category">
+                <i class="fa-solid fa-folders"></i>&nbsp;
+            <ul>
+                
+                
+                    
+                        
+                        <li>
+                            <a href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>&nbsp;
+                        </li>
+                    
+                    
+                
+            </ul>
+        </span>
+        
+        
+            <span class="home-article-tag">
+                <i class="fa-solid fa-tags"></i>&nbsp;
+                <ul>
+                    
+                        <li>
+                            
+                            <a href="/tags/java/">java</a>&nbsp;
+                        </li>
+                    
+                </ul>
+            </span>
+        
+    </div>
+
+    <a href="/2023/01/01/Mybatis/">Read more<span class="seo-reader-text">Mybatis</span>&nbsp;<i class="fa-solid fa-angle-right"></i></a>
+</div>
+
+                </div>
+            </li>
+        
+            <li class="home-article-item">
+
+                
+
+                
+
+                
+                <div class="flex flex-col gap-5 px-7 pb-7 pt-7">
+                    <h3 class="home-article-title">
+                        <a href="/2022/11/26/SpringBoot/">
+                            SpringBoot
+                        </a>
+                    </h3>
+
+                    <div class="home-article-content markdown-body">
+                        
+                            
+                            一、SpringBoot简介1.1 Spring优缺点1.1.1 Spring的优点Spring是Java企业版（Java Enterprise Edition，JEE，也称J2EE）的轻量级代替品。无需开发重量级的Enterprise JavaBean（EJB），Spring为企业级Java开发提供了一种相对简单的方法，通过依赖注入和面向切面编程
+简单来说，Spring是一个JavaEE轻...
+                        
+                    </div>
+
+                    <div class="home-article-meta-info-container">
+    <div class="home-article-meta-info">
+        <span><i class="fa-solid fa-calendars"></i>&nbsp;
+            <span class="home-article-date" data-date="Sat Nov 26 2022 10:20:00 GMT+0800">
+                
+                    2022-11-26
+                
+            </span>
+        </span>
+        
+            <span class="home-article-category">
+                <i class="fa-solid fa-folders"></i>&nbsp;
+            <ul>
+                
+                
+                    
+                        
+                        <li>
+                            <a href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>&nbsp;
+                        </li>
+                    
+                    
+                
+            </ul>
+        </span>
+        
+        
+            <span class="home-article-tag">
+                <i class="fa-solid fa-tags"></i>&nbsp;
+                <ul>
+                    
+                        <li>
+                            
+                            <a href="/tags/java/">java</a>&nbsp;
+                        </li>
+                    
+                </ul>
+            </span>
+        
+    </div>
+
+    <a href="/2022/11/26/SpringBoot/">Read more<span class="seo-reader-text">SpringBoot</span>&nbsp;<i class="fa-solid fa-angle-right"></i></a>
+</div>
+
+                </div>
+            </li>
+        
+    </ul>
+
+    <div class="home-paginator px-7 py-5">
+        <div class="paginator">
+    <a class="extend prev" rel="prev" href="/page/2/"><i class="fa-regular fa-angle-left"></i></a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/4/"><i class="fa-regular fa-angle-right"></i></a>
+</div>
+
+    </div>
+</div>
+
+                    <div class="comment-container pjax"></div>
                 
 
             </div>
@@ -542,6 +1002,7 @@
         containers: ["#swup"],
     });
 </script>
+
 
 
 
