@@ -25,25 +25,25 @@
 <meta property="og:site_name" content="MinGe">
 <meta property="og:description" content="一、分布式事务概述1.1 什么是分布式事务1.1.1 单服务多数据源 在单个系统中，完成某项业务需要操作多个数据源，并且操作时要么全部成功要么全部失败，由于数据是存储在不同的数据库中，因此都有对应的连接（Connection），不同的连接会开启不同的事务。使用传统的解决方案无法保证两个事务同时ACID。 例如上图的电商系统：电商系统在下订单的时候必须要对应的减少一个库存，不可能订单已经下好了，结果">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="http://example.com/%5Cimages%5C%E5%88%86%E5%B8%83%E5%BC%8F%5C1.png">
-<meta property="og:image" content="http://example.com/%5Cimages%5C%E5%88%86%E5%B8%83%E5%BC%8F%5C2.png">
-<meta property="og:image" content="http://example.com/%5Cimages%5C%E5%88%86%E5%B8%83%E5%BC%8F%5C3.png">
-<meta property="og:image" content="http://example.com/%5Cimages%5C%E5%88%86%E5%B8%83%E5%BC%8F%5C4.png">
-<meta property="og:image" content="http://example.com/%5Cimages%5C%E5%88%86%E5%B8%83%E5%BC%8F%5C5.png">
-<meta property="og:image" content="http://example.com/%5Cimages%5C%E5%88%86%E5%B8%83%E5%BC%8F%5C6.png">
-<meta property="og:image" content="http://example.com/%5Cimages%5C%E5%88%86%E5%B8%83%E5%BC%8F%5C7.png">
-<meta property="og:image" content="http://example.com/%5Cimages%5C%E5%88%86%E5%B8%83%E5%BC%8F%5C8.png">
-<meta property="og:image" content="http://example.com/%5Cimages%5C%E5%88%86%E5%B8%83%E5%BC%8F%5C9.png">
-<meta property="og:image" content="http://example.com/%5Cimages%5C%E5%88%86%E5%B8%83%E5%BC%8F%5C10.png">
-<meta property="og:image" content="http://example.com/%5Cimages%5C%E5%88%86%E5%B8%83%E5%BC%8F%5C12.png">
-<meta property="og:image" content="http://example.com/%5Cimages%5C%E5%88%86%E5%B8%83%E5%BC%8F%5C11.png">
-<meta property="og:image" content="http://example.com/%5Cimages%5C%E5%88%86%E5%B8%83%E5%BC%8F%5C13.png">
+<meta property="og:image" content="http://example.com/images/%E5%88%86%E5%B8%83%E5%BC%8F/1.png">
+<meta property="og:image" content="http://example.com/images/%E5%88%86%E5%B8%83%E5%BC%8F/2.png">
+<meta property="og:image" content="http://example.com/images/%E5%88%86%E5%B8%83%E5%BC%8F/3.png">
+<meta property="og:image" content="http://example.com/images/%E5%88%86%E5%B8%83%E5%BC%8F/4.png">
+<meta property="og:image" content="http://example.com/images/%E5%88%86%E5%B8%83%E5%BC%8F/5.png">
+<meta property="og:image" content="http://example.com/images/%E5%88%86%E5%B8%83%E5%BC%8F/6.png">
+<meta property="og:image" content="http://example.com/images/%E5%88%86%E5%B8%83%E5%BC%8F/7.png">
+<meta property="og:image" content="http://example.com/images/%E5%88%86%E5%B8%83%E5%BC%8F/8.png">
+<meta property="og:image" content="http://example.com/images/%E5%88%86%E5%B8%83%E5%BC%8F/9.png">
+<meta property="og:image" content="http://example.com/images/%E5%88%86%E5%B8%83%E5%BC%8F/10.png">
+<meta property="og:image" content="http://example.com/images/%E5%88%86%E5%B8%83%E5%BC%8F/12.png">
+<meta property="og:image" content="http://example.com/images/%E5%88%86%E5%B8%83%E5%BC%8F/11.png">
+<meta property="og:image" content="http://example.com/images/%E5%88%86%E5%B8%83%E5%BC%8F/13.png">
 <meta property="article:published_time" content="2024-10-05T02:56:00.000Z">
-<meta property="article:modified_time" content="2024-11-12T08:49:43.082Z">
+<meta property="article:modified_time" content="2024-11-26T02:48:05.749Z">
 <meta property="article:author" content="John Doe">
 <meta property="article:tag" content="java">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://example.com/%5Cimages%5C%E5%88%86%E5%B8%83%E5%BC%8F%5C1.png">
+<meta name="twitter:image" content="http://example.com/images/%E5%88%86%E5%B8%83%E5%BC%8F/1.png">
     
     
     <!--- Icon Part-->
@@ -349,8 +349,8 @@
     
         <span class="article-date article-meta-item">
             <i class="fa-regular fa-wrench"></i>&nbsp;
-            <span class="desktop">2024-11-12 16:49:43</span>
-            <span class="mobile">2024-11-12 16:49:43</span>
+            <span class="desktop">2024-11-26 10:48:05</span>
+            <span class="mobile">2024-11-26 10:48:05</span>
             <span class="hover-info">Updated</span>
         </span>
     
@@ -403,7 +403,7 @@
             <h1 id="一、分布式事务概述"><a href="#一、分布式事务概述" class="headerlink" title="一、分布式事务概述"></a>一、分布式事务概述</h1><h2 id="1-1-什么是分布式事务"><a href="#1-1-什么是分布式事务" class="headerlink" title="1.1 什么是分布式事务"></a>1.1 什么是分布式事务</h2><h3 id="1-1-1-单服务多数据源"><a href="#1-1-1-单服务多数据源" class="headerlink" title="1.1.1 单服务多数据源"></a>1.1.1 单服务多数据源</h3><p><img  
                      lazyload
                      src="/images/loading.svg"
-                     data-src="/%5Cimages%5C%E5%88%86%E5%B8%83%E5%BC%8F%5C1.png"
+                     data-src="/images/%E5%88%86%E5%B8%83%E5%BC%8F/1.png"
                      
                 ></p>
 <p>在单个系统中，完成某项业务需要操作多个数据源，并且操作时要么<strong>全部成功</strong>要么<strong>全部失败</strong>，由于数据是存储在不同的数据库中，因此都有对应的连接（Connection），不同的连接会开启不同的事务。使用传统的解决方案无法保证两个事务同时<strong>ACID</strong>。</p>
@@ -411,7 +411,7 @@
 <h3 id="1-1-2-多服务单数据源"><a href="#1-1-2-多服务单数据源" class="headerlink" title="1.1.2 多服务单数据源"></a>1.1.2 多服务单数据源</h3><p><img  
                      lazyload
                      src="/images/loading.svg"
-                     data-src="/%5Cimages%5C%E5%88%86%E5%B8%83%E5%BC%8F%5C2.png"
+                     data-src="/images/%E5%88%86%E5%B8%83%E5%BC%8F/2.png"
                      
                 ></p>
 <p>在多个系统（微服务）中，完成某项业务操作同一个数据源，并且操作时要么<strong>全部成功</strong>要么<strong>全部失败</strong>，数据是存储在同一个数据库，但是由于系统不同，下订单微服务下单的时候，会新创建一个连接（Connection），那么此时远程调用库存微服务的时候，也会开启一个新的Connection，不同的Connection都有<strong>各自独立的开启事务、提交&#x2F;回滚事务</strong>等操作，无法保证两个事务同时ACID；</p>
@@ -419,7 +419,7 @@
 <h3 id="1-1-3-多服务多数据源"><a href="#1-1-3-多服务多数据源" class="headerlink" title="1.1.3 多服务多数据源"></a>1.1.3 多服务多数据源</h3><p><img  
                      lazyload
                      src="/images/loading.svg"
-                     data-src="/%5Cimages%5C%E5%88%86%E5%B8%83%E5%BC%8F%5C3.png"
+                     data-src="/images/%E5%88%86%E5%B8%83%E5%BC%8F/3.png"
                      
                 ></p>
 <p>在多个系统中，完成某个业务操作多个数据源（主流的分布式架构），并且操作时要么<strong>全部成功</strong>要么<strong>全部失败</strong>，数据存储在不同的数据库，业务也存在不同的系统中，当订单微服务下订单时会有新的Connection，与此同时调用远端的库存微服务减库存时，库存微服务必然会创建一个新的Connection用于减库存操作，因此<strong>无法保证多个事务同时ACID；</strong></p>
@@ -431,7 +431,7 @@
 <h4 id="1-2-1-1-一致性（Consistency）"><a href="#1-2-1-1-一致性（Consistency）" class="headerlink" title="1.2.1.1 一致性（Consistency）"></a>1.2.1.1 一致性（Consistency）</h4><p><img  
                      lazyload
                      src="/images/loading.svg"
-                     data-src="/%5Cimages%5C%E5%88%86%E5%B8%83%E5%BC%8F%5C4.png"
+                     data-src="/images/%E5%88%86%E5%B8%83%E5%BC%8F/4.png"
                      
                 ></p>
 <p>一致性指的是数据的<strong>强一致性</strong>，每次读取到的数据都是最新数据，当master数据库进行写入时，有新的请求读取slave数据库都必须是最新的数据，<strong>哪怕需要等待</strong>。如果master写入失败，那么slave读取的则是旧数据。一致性强调的是一致，master和slave的数据必须要保证一致。</p>
@@ -468,7 +468,7 @@
 <p><img  
                      lazyload
                      src="/images/loading.svg"
-                     data-src="/%5Cimages%5C%E5%88%86%E5%B8%83%E5%BC%8F%5C5.png"
+                     data-src="/images/%E5%88%86%E5%B8%83%E5%BC%8F/5.png"
                      
                 ></p>
 <h1 id="三、2PC（两阶段提交）"><a href="#三、2PC（两阶段提交）" class="headerlink" title="三、2PC（两阶段提交）"></a>三、2PC（两阶段提交）</h1><p>分布式事务的解决方案有很多种。其中包含2PC（两阶段提交）、3PC（三阶段提交）、TCC（事务补偿）、本地消息表、MQ事务消息等。这一章我们主要讲解2PC（两阶段提交）</p>
@@ -478,14 +478,14 @@
 <p><img  
                      lazyload
                      src="/images/loading.svg"
-                     data-src="/%5Cimages%5C%E5%88%86%E5%B8%83%E5%BC%8F%5C6.png"
+                     data-src="/images/%E5%88%86%E5%B8%83%E5%BC%8F/6.png"
                      
                 ></p>
 <p>TM接收到多个RM的回执消息时，如果发现其中有一个RM在准备阶段出现错误，那么会给剩下的所有RM发送回滚操作。</p>
 <p><img  
                      lazyload
                      src="/images/loading.svg"
-                     data-src="/%5Cimages%5C%E5%88%86%E5%B8%83%E5%BC%8F%5C7.png"
+                     data-src="/images/%E5%88%86%E5%B8%83%E5%BC%8F/7.png"
                      
                 ></p>
 <blockquote>
@@ -522,7 +522,7 @@
 <h4 id="XA执行流程："><a href="#XA执行流程：" class="headerlink" title="XA执行流程："></a>XA执行流程：</h4><p><img  
                      lazyload
                      src="/images/loading.svg"
-                     data-src="/%5Cimages%5C%E5%88%86%E5%B8%83%E5%BC%8F%5C8.png"
+                     data-src="/images/%E5%88%86%E5%B8%83%E5%BC%8F/8.png"
                      
                 ></p>
 <p>创建一张测试表：</p>
@@ -566,7 +566,7 @@
 <p><img  
                      lazyload
                      src="/images/loading.svg"
-                     data-src="/%5Cimages%5C%E5%88%86%E5%B8%83%E5%BC%8F%5C9.png"
+                     data-src="/images/%E5%88%86%E5%B8%83%E5%BC%8F/9.png"
                      
                 ></p>
 <h3 id="1-2-3-总结"><a href="#1-2-3-总结" class="headerlink" title="1.2.3 总结"></a>1.2.3 总结</h3><p>1）在执行分支事务时，会将RM资源锁住，需要等到所有的RM响应，等到第二阶段执行完毕时（提交&#x2F;回滚），RM的锁才会释放，<strong>在高并发场所不适用</strong>。</p>
@@ -596,7 +596,7 @@
 <p><img  
                      lazyload
                      src="/images/loading.svg"
-                     data-src="/%5Cimages%5C%E5%88%86%E5%B8%83%E5%BC%8F%5C10.png"
+                     data-src="/images/%E5%88%86%E5%B8%83%E5%BC%8F/10.png"
                      
                 ></p>
 <blockquote>
@@ -610,7 +610,7 @@
 <p><img  
                      lazyload
                      src="/images/loading.svg"
-                     data-src="/%5Cimages%5C%E5%88%86%E5%B8%83%E5%BC%8F%5C12.png"
+                     data-src="/images/%E5%88%86%E5%B8%83%E5%BC%8F/12.png"
                      
                 ></p>
 <h4 id="1-2-3-2-搭建父工程"><a href="#1-2-3-2-搭建父工程" class="headerlink" title="1.2.3.2 搭建父工程"></a>1.2.3.2 搭建父工程</h4><p>pom.xml：</p>
@@ -717,14 +717,14 @@
 <p><img  
                      lazyload
                      src="/images/loading.svg"
-                     data-src="/%5Cimages%5C%E5%88%86%E5%B8%83%E5%BC%8F%5C11.png"
+                     data-src="/images/%E5%88%86%E5%B8%83%E5%BC%8F/11.png"
                      
                 ></p>
 <p>某个RM执行失败流程：</p>
 <p><img  
                      lazyload
                      src="/images/loading.svg"
-                     data-src="/%5Cimages%5C%E5%88%86%E5%B8%83%E5%BC%8F%5C13.png"
+                     data-src="/images/%E5%88%86%E5%B8%83%E5%BC%8F/13.png"
                      
                 ></p>
 <h3 id="1-3-3-总结"><a href="#1-3-3-总结" class="headerlink" title="1.3.3 总结"></a>1.3.3 总结</h3><p>seata也是基于2PC的一种分布式解决方案。seata方案解决了XA方案在准备阶段时，RM锁的问题。在高并发情况下，应当避免XA方案。</p>
@@ -743,7 +743,7 @@
         
             <li>
                 <strong>Updated at
-                    :</strong> 2024-11-12 16:49:43
+                    :</strong> 2024-11-26 10:48:05
             </li>
         
         <li>
