@@ -422,7 +422,8 @@
                     <div class="home-article-content markdown-body">
                         
                             
-                            设计模式
+                            设计模式分类1、创建型模式：工厂方法模式、抽象工厂模式、单例模式、建造者模式、原型模式。2、结构型模式：适配器模式、装饰器模式、代理模式、外观模式、桥接模式、组合模式、享元模式。3、行为型模式：策略模式、模板方法模式、观察者模式、迭代子模式、责任链模式、命令模式、备忘录模式、状态模式、访问者模式、中介者模式、解释器模式。
+原则1、单一责任原则（Single Responsibility Pr...
                         
                     </div>
 
@@ -698,6 +699,75 @@ JDBC API是一组接口，没有具体的实现。实现类由各数...
                 
                 <div class="flex flex-col gap-5 px-7 pb-7 pt-7">
                     <h3 class="home-article-title">
+                        <a href="/2023/06/10/MySQL%E4%BA%8B%E5%8A%A1/">
+                            MySQL事务
+                        </a>
+                    </h3>
+
+                    <div class="home-article-content markdown-body">
+                        
+                            
+                            一、MySQL锁机制锁是计算机协调多个进程或线程并发访问某一资源的机制。在数据库中，除传统的计算资源（如CPU、RAM、I&#x2F;O等）的争用以外，数据也是一种供许多用户共享的资源。如何保证数据并发访问的一致性、有效性是所有数据库必须解决的一 个问题，锁冲突也是影响数据库并发访问性能的一个重要因素。从这个角度来说，锁对数据库而言显得尤其重要。
+MySQL用到了很多这种锁机制，比如行锁，表...
+                        
+                    </div>
+
+                    <div class="home-article-meta-info-container">
+    <div class="home-article-meta-info">
+        <span><i class="fa-solid fa-calendars"></i>&nbsp;
+            <span class="home-article-date" data-date="Sat Jun 10 2023 09:11:00 GMT+0800">
+                
+                    2023-06-10
+                
+            </span>
+        </span>
+        
+            <span class="home-article-category">
+                <i class="fa-solid fa-folders"></i>&nbsp;
+            <ul>
+                
+                
+                    
+                        
+                        <li>
+                            <a href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>&nbsp;
+                        </li>
+                    
+                    
+                
+            </ul>
+        </span>
+        
+        
+            <span class="home-article-tag">
+                <i class="fa-solid fa-tags"></i>&nbsp;
+                <ul>
+                    
+                        <li>
+                            
+                            <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a>&nbsp;
+                        </li>
+                    
+                </ul>
+            </span>
+        
+    </div>
+
+    <a href="/2023/06/10/MySQL%E4%BA%8B%E5%8A%A1/">Read more<span class="seo-reader-text">MySQL事务</span>&nbsp;<i class="fa-solid fa-angle-right"></i></a>
+</div>
+
+                </div>
+            </li>
+        
+            <li class="home-article-item">
+
+                
+
+                
+
+                
+                <div class="flex flex-col gap-5 px-7 pb-7 pt-7">
+                    <h3 class="home-article-title">
                         <a href="/2023/06/10/MySQL%E6%9E%B6%E6%9E%84/">
                             MySQL架构
                         </a>
@@ -766,79 +836,6 @@ Connectors：连接组件：
     </div>
 
     <a href="/2023/06/10/MySQL%E6%9E%B6%E6%9E%84/">Read more<span class="seo-reader-text">MySQL架构</span>&nbsp;<i class="fa-solid fa-angle-right"></i></a>
-</div>
-
-                </div>
-            </li>
-        
-            <li class="home-article-item">
-
-                
-
-                
-
-                
-                <div class="flex flex-col gap-5 px-7 pb-7 pt-7">
-                    <h3 class="home-article-title">
-                        <a href="/2023/06/10/MySQL%E7%B4%A2%E5%BC%95/">
-                            MySQL索引
-                        </a>
-                    </h3>
-
-                    <div class="home-article-content markdown-body">
-                        
-                            
-                            索引1.1 索引概述索引是帮助数据库快速查询数据的一种数据结构，在数据库中，数据库系统除了存储数据之外还维护着一种特殊的数据结构，这种数据结构以某种方式指向数据，这样就可以在这种数据结构上实现高级算法来查询数据，这种数据结构就是索引。
-
-索引示意图：
-
-
-如图所示，索引能够帮我们快速的定位到数据的具体位置，高效查询。一般来说，索引本身也很大，不可能全部存储在内存当中，因此索引往往以索引文件的...
-                        
-                    </div>
-
-                    <div class="home-article-meta-info-container">
-    <div class="home-article-meta-info">
-        <span><i class="fa-solid fa-calendars"></i>&nbsp;
-            <span class="home-article-date" data-date="Sat Jun 10 2023 09:11:00 GMT+0800">
-                
-                    2023-06-10
-                
-            </span>
-        </span>
-        
-            <span class="home-article-category">
-                <i class="fa-solid fa-folders"></i>&nbsp;
-            <ul>
-                
-                
-                    
-                        
-                        <li>
-                            <a href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>&nbsp;
-                        </li>
-                    
-                    
-                
-            </ul>
-        </span>
-        
-        
-            <span class="home-article-tag">
-                <i class="fa-solid fa-tags"></i>&nbsp;
-                <ul>
-                    
-                        <li>
-                            
-                            <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a>&nbsp;
-                        </li>
-                    
-                </ul>
-            </span>
-        
-    </div>
-
-    <a href="/2023/06/10/MySQL%E7%B4%A2%E5%BC%95/">Read more<span class="seo-reader-text">MySQL索引</span>&nbsp;<i class="fa-solid fa-angle-right"></i></a>
 </div>
 
                 </div>
